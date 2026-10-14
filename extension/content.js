@@ -984,7 +984,7 @@
           };
           
           try {
-            await fetch('https://stitchmatrix-api.humangeek77-star.workers.dev/api/sync-github', {
+            await fetch('https://stitchmatrix-api.humangeek77.workers.dev/api/sync-github', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(payload)

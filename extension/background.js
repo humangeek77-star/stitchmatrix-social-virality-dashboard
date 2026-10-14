@@ -49,7 +49,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   
   if (request.action === 'API_PROXY_ANALYZE') {
     // Allow proxying to worker if needed
-    fetch('https://stitchmatrix-api.humangeek77-star.workers.dev/api/analyze', {
+    fetch('https://stitchmatrix-api.humangeek77.workers.dev/api/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(request.payload)
