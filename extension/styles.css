@@ -1,6 +1,7 @@
-/* StitchMatrix — Scoped Shadow DOM Stylesheet
-   Design DNA: Slate Dark Mode (#0F172A), Cobalt Blue (#2563EB), Emerald (#10B981)
-   No cyber-hacker tropes; Linear / Stripe-grade clean enterprise aesthetic.
+/* StitchMatrix — Linear / Stripe-Caliber Enterprise Design System
+   Neutral Charcoal-Slate Palette (#09090B / #121214 / #18181B / #27272A)
+   Precision Typography (Inter, San Francisco, JetBrains Mono)
+   Zero Sci-Fi / Hacker Tropes. Pure Executive Utility.
 */
 
 :host {
@@ -8,7 +9,7 @@
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: 13px;
   line-height: 1.5;
-  color: #E2E8F0;
+  color: #E4E4E7; /* Zinc 200 */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -26,9 +27,9 @@
   right: 0;
   transform: translateY(-50%);
   width: 32px;
-  height: 96px;
-  background: #0F172A;
-  border: 1px solid #334155;
+  height: 84px;
+  background: #121214;
+  border: 1px solid #27272A;
   border-right: none;
   border-radius: 8px 0 0 8px;
   display: flex;
@@ -38,28 +39,29 @@
   gap: 8px;
   cursor: pointer;
   z-index: 2147483646;
-  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.4);
-  transition: all 0.2s ease;
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.35);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .sm-floating-trigger:hover {
-  background: #1E293B;
+  background: #18181B;
   width: 36px;
-  border-color: #2563EB;
+  border-color: #3F3F46;
 }
 
-.sm-floating-trigger .trigger-icon {
-  width: 16px;
-  height: 16px;
-  color: #60A5FA;
+.sm-floating-trigger svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: #A1A1AA;
+  stroke-width: 1.75;
 }
 
 .sm-floating-trigger .trigger-dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: #10B981;
-  box-shadow: 0 0 6px #10B981;
 }
 
 /* Main Sidebar Drawer */
@@ -69,15 +71,15 @@
   right: 0;
   width: 380px;
   height: 100vh;
-  background: #0F172A; /* Slate 900 */
-  border-left: 1px solid #1E293B;
-  color: #E2E8F0;
+  background: #09090B; /* Pure Neutral Deep Charcoal */
+  border-left: 1px solid #222226;
+  color: #E4E4E7;
   z-index: 2147483647;
   transform: translateX(380px);
-  transition: transform 380ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 340ms cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
-  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.65);
+  box-shadow: -12px 0 36px rgba(0, 0, 0, 0.6);
   overflow: hidden;
 }
 
@@ -85,11 +87,11 @@
   transform: translateX(0);
 }
 
-/* Telemetry Status Bar */
+/* Top Header */
 .sm-header {
-  padding: 14px 16px;
-  background: #090E17;
-  border-bottom: 1px solid #1E293B;
+  padding: 14px 18px;
+  background: #0D0D10;
+  border-bottom: 1px solid #1E1E22;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -98,46 +100,55 @@
 .sm-header-brand {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .sm-header-logo {
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
-  background: linear-gradient(135deg, #2563EB, #3B82F6);
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: #18181B;
+  border: 1px solid #27272A;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #FFFFFF;
-  font-weight: 700;
+  color: #F4F4F5;
+  font-weight: 600;
   font-size: 11px;
 }
 
 .sm-header-title {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
-  color: #F8FAFC;
-  letter-spacing: -0.01em;
+  color: #F4F4F5;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
 }
 
 .sm-header-subtitle {
-  font-size: 10px;
-  color: #64748B;
-  letter-spacing: 0.02em;
+  font-size: 11px;
+  color: #71717A;
+  letter-spacing: -0.005em;
+  font-weight: 400;
+}
+
+.sm-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .sm-status-badge {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  background: #121215;
+  border: 1px solid #222226;
   padding: 3px 8px;
   border-radius: 9999px;
-  font-size: 10px;
-  font-weight: 500;
-  color: #10B981;
+  font-size: 11px;
+  font-weight: 450;
+  color: #A1A1AA;
 }
 
 .sm-status-dot {
@@ -145,22 +156,15 @@
   height: 6px;
   border-radius: 50%;
   background: #10B981;
-  box-shadow: 0 0 6px #10B981;
-  animation: sm-pulse 2s infinite ease-in-out;
-}
-
-@keyframes sm-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.85); }
 }
 
 .sm-close-btn {
   background: transparent;
-  border: none;
-  color: #64748B;
+  border: 1px solid transparent;
+  color: #71717A;
   cursor: pointer;
   padding: 4px;
-  border-radius: 4px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -168,67 +172,68 @@
 }
 
 .sm-close-btn:hover {
-  color: #F8FAFC;
-  background: #1E293B;
+  color: #F4F4F5;
+  background: #18181B;
+  border-color: #27272A;
 }
 
 /* Scrollable Content Body */
 .sm-content-body {
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 .sm-content-body::-webkit-scrollbar {
-  width: 5px;
+  width: 4px;
 }
 
 .sm-content-body::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #27272A;
   border-radius: 4px;
 }
 
-/* Card Surface */
+/* Linear-Style Card Surface */
 .sm-card {
-  background: #141E33;
-  border: 1px solid #1E293B;
-  border-radius: 8px;
-  padding: 14px;
+  background: #121214;
+  border: 1px solid #1E1E22;
+  border-radius: 10px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* Optimization Index Component */
 .sm-index-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
 }
 
 .sm-index-label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: #94A3B8;
+  font-size: 12px;
+  font-weight: 500;
+  color: #A1A1AA;
+  letter-spacing: -0.01em;
 }
 
 .sm-index-score {
-  font-family: "JetBrains Mono", "SF Mono", Menlo, monospace;
-  font-size: 12px;
-  font-weight: 700;
-  color: #38BDF8;
+  font-size: 13px;
+  font-weight: 600;
+  color: #F4F4F5;
+  letter-spacing: -0.02em;
 }
 
 .sm-progress-bar-bg {
   width: 100%;
-  height: 6px;
-  background: #090E17;
-  border-radius: 3px;
+  height: 5px;
+  background: #1F1F23;
+  border-radius: 9999px;
   overflow: hidden;
   position: relative;
 }
@@ -236,39 +241,35 @@
 .sm-progress-bar-fill {
   height: 100%;
   width: 94.2%;
-  background: linear-gradient(90deg, #2563EB, #38BDF8, #10B981);
-  border-radius: 3px;
-  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+  background: #3B82F6; /* Clean Solid Linear Blue */
+  border-radius: 9999px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .sm-telemetry-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 4px;
-  font-family: "JetBrains Mono", "SF Mono", Menlo, monospace;
-  font-size: 10px;
-  color: #64748B;
+  padding-top: 2px;
+  font-size: 11px;
+  color: #71717A;
 }
 
 .sm-telemetry-surge {
   color: #10B981;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .sm-telemetry-node {
-  color: #94A3B8;
+  color: #71717A;
 }
 
 /* Target Market Selector */
-.sm-section-title {
-  font-size: 11px;
-  font-weight: 600;
-  color: #94A3B8;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 2px;
+.sm-section-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #A1A1AA;
+  letter-spacing: -0.01em;
 }
 
 .sm-select-wrapper {
@@ -277,22 +278,27 @@
 
 .sm-select {
   width: 100%;
-  background: #090E17;
-  border: 1px solid #334155;
-  border-radius: 6px;
-  padding: 8px 12px;
-  color: #F8FAFC;
-  font-size: 12px;
-  font-weight: 500;
+  background: #18181B;
+  border: 1px solid #27272A;
+  border-radius: 8px;
+  padding: 8px 30px 8px 12px;
+  color: #F4F4F5;
+  font-size: 12.5px;
+  font-weight: 450;
   outline: none;
   appearance: none;
   cursor: pointer;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.sm-select:hover {
+  background: #1C1C20;
+  border-color: #3F3F46;
 }
 
 .sm-select:focus {
-  border-color: #2563EB;
-  box-shadow: 0 0 0 1px #2563EB;
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 1px #3B82F6;
 }
 
 .sm-select-chevron {
@@ -301,12 +307,14 @@
   top: 50%;
   transform: translateY(-50%);
   pointer-events: none;
-  color: #64748B;
+  color: #71717A;
+  font-size: 9px;
 }
 
+/* Segmented Filter Badges */
 .sm-badges-row {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
@@ -314,103 +322,106 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: #090E17;
-  border: 1px solid #1E293B;
-  border-radius: 4px;
-  padding: 3px 8px;
-  font-size: 10px;
-  font-weight: 500;
-  color: #94A3B8;
+  background: #18181B;
+  border: 1px solid #27272A;
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-size: 11px;
+  font-weight: 450;
+  color: #A1A1AA;
   cursor: pointer;
   user-select: none;
   transition: all 0.15s ease;
 }
 
 .sm-badge:hover {
-  background: #1E293B;
-  color: #F8FAFC;
-  border-color: #334155;
+  background: #202024;
+  color: #F4F4F5;
+  border-color: #3F3F46;
 }
 
 .sm-badge.active {
-  border-color: #2563EB;
-  color: #60A5FA;
-  background: rgba(37, 99, 235, 0.1);
+  background: #1E2433;
+  border-color: #2E4C7E;
+  color: #93C5FD;
 }
 
-/* Mutation Tabs */
+/* Segmented Tabs (Linear Style) */
 .sm-tabs-row {
   display: flex;
-  background: #090E17;
-  border-radius: 6px;
-  padding: 2px;
-  border: 1px solid #1E293B;
+  background: #141416;
+  border-radius: 8px;
+  padding: 3px;
+  border: 1px solid #222226;
 }
 
 .sm-tab-btn {
   flex: 1;
   background: transparent;
   border: none;
-  padding: 6px 4px;
-  font-size: 10px;
-  font-weight: 600;
-  color: #64748B;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #71717A;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 6px;
   text-align: center;
   transition: all 0.15s ease;
 }
 
-.sm-tab-btn.active {
-  background: #1E293B;
-  color: #F8FAFC;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+.sm-tab-btn:hover {
+  color: #D4D4D8;
 }
 
-/* Script Production Terminal */
+.sm-tab-btn.active {
+  background: #202024;
+  color: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* Script Production Terminal (Clean Editor) */
 .sm-terminal-card {
-  background: #090E17;
-  border: 1px solid #1E293B;
-  border-radius: 8px;
+  background: #121214;
+  border: 1px solid #1E1E22;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .sm-terminal-header {
-  padding: 8px 12px;
-  background: #0D1322;
-  border-bottom: 1px solid #1E293B;
+  padding: 9px 14px;
+  background: #151518;
+  border-bottom: 1px solid #1E1E22;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-family: "JetBrains Mono", "SF Mono", Menlo, monospace;
-  font-size: 10px;
-  color: #64748B;
+  font-size: 11px;
+  color: #71717A;
+  font-weight: 500;
 }
 
 .sm-terminal-content {
-  padding: 12px;
+  padding: 14px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  font-family: "JetBrains Mono", "SF Mono", Menlo, monospace;
-  font-size: 11px;
-  line-height: 1.6;
+  gap: 12px;
 }
 
 .sm-frame-block {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  background: rgba(15, 23, 42, 0.6);
-  border-left: 2px solid #2563EB;
-  padding: 6px 10px;
-  border-radius: 0 4px 4px 0;
+  gap: 4px;
+  background: #161619;
+  border: 1px solid #222226;
+  border-left: 3px solid #3B82F6;
+  padding: 10px 12px;
+  border-radius: 6px;
 }
 
 .sm-frame-block.thesis {
-  border-left-color: #38BDF8;
+  border-left-color: #60A5FA;
 }
 
 .sm-frame-block.cta {
@@ -418,26 +429,27 @@
 }
 
 .sm-frame-label {
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: #64748B;
-  letter-spacing: 0.05em;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #71717A;
+  letter-spacing: 0.01em;
 }
 
 .sm-frame-text {
-  color: #E2E8F0;
+  font-family: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: #D4D4D8;
   white-space: pre-wrap;
   word-break: break-word;
 }
 
 .sm-terminal-ribbon {
-  padding: 6px 12px;
-  background: #06090F;
-  border-top: 1px solid #1E293B;
-  font-family: "JetBrains Mono", "SF Mono", Menlo, monospace;
-  font-size: 9px;
-  color: #475569;
+  padding: 7px 14px;
+  background: #0E0E10;
+  border-top: 1px solid #1C1C1F;
+  font-size: 11px;
+  color: #52525B;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -445,13 +457,17 @@
 
 .sm-ribbon-tag {
   color: #10B981;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 /* Bottom Action Zone */
 .sm-footer {
-  padding: 16px;
-  background: #090E17;
-  border-top: 1px solid #1E293B;
+  padding: 16px 18px;
+  background: #0D0D10;
+  border-top: 1px solid #1E1E22;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -460,25 +476,25 @@
 /* Primary Enterprise Button */
 .sm-btn-primary {
   width: 100%;
-  background: #2563EB; /* Secure Cobalt Blue */
+  background: #2563EB;
   color: #FFFFFF;
-  border: none;
-  border-radius: 6px;
-  padding: 11px 16px;
+  border: 1px solid #3B82F6;
+  border-radius: 8px;
+  padding: 10px 16px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 550;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   transition: all 0.15s ease;
-  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3), 0 0 12px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .sm-btn-primary:hover {
   background: #1D4ED8;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+  border-color: #2563EB;
 }
 
 .sm-btn-primary:active {
@@ -487,17 +503,18 @@
 
 .sm-btn-primary.success {
   background: #059669;
+  border-color: #10B981;
 }
 
 /* Secondary Micro Actions */
 .sm-btn-secondary {
   width: 100%;
-  background: #1E293B;
-  color: #E2E8F0;
-  border: 1px solid #334155;
-  border-radius: 6px;
+  background: #18181B;
+  color: #D4D4D8;
+  border: 1px solid #27272A;
+  border-radius: 8px;
   padding: 8px 12px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   display: flex;
@@ -508,8 +525,9 @@
 }
 
 .sm-btn-secondary:hover {
-  background: #334155;
+  background: #202024;
   color: #FFFFFF;
+  border-color: #3F3F46;
 }
 
 .sm-btn-grid {

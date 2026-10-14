@@ -8,23 +8,20 @@ export default {
   theme: {
     extend: {
       colors: {
-        slate: {
-          850: '#141E33',
-          900: '#0F172A',
-          950: '#090E17',
+        zinc: {
+          925: '#121214',
+          950: '#09090B',
         },
         brand: {
           blue: '#2563EB',
           'blue-hover': '#1D4ED8',
-          electric: '#3B82F6',
-          sky: '#38BDF8',
+          accent: '#3B82F6',
           emerald: '#10B981',
-          amber: '#F59E0B',
         }
       },
       fontFamily: {
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        mono: ['JetBrains Mono', 'SF Mono', 'Menlo', 'monospace'],
+        mono: ['JetBrains Mono', 'SF Mono', 'Menlo', 'Consolas', 'monospace'],
       }
     },
   },

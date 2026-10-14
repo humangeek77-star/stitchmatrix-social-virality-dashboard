@@ -9,12 +9,12 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('overview');
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex">
+    <div className="min-h-screen bg-[#09090B] text-zinc-100 flex antialiased">
       {/* Fixed Left Navigation Sidebar */}
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
       {/* Main Content Area (Offset by sidebar width 256px) */}
-      <div className="flex-1 ml-64 flex flex-col min-h-screen">
+      <div className="flex-1 ml-64 flex flex-col min-h-screen bg-[#09090B]">
         {/* Top Header */}
         <Header />
 

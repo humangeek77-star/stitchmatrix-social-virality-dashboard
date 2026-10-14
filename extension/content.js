@@ -1,6 +1,7 @@
 /**
  * StitchMatrix — Script Matrix Studio
  * Chrome Extension Manifest V3 In-DOM Sidebar Engine
+ * Design DNA: Linear / Stripe Minimalist Dark Theme (#09090B / #121214 / #18181B / #27272A)
  * Injected on: TikTok, YouTube Shorts, and Instagram Reels
  */
 
@@ -15,34 +16,34 @@
   const SCRIPT_MUTATIONS = [
     {
       id: 'mutation_alpha',
-      tabLabel: 'Mutation A (Contrarian)',
+      tabLabel: 'Contrarian',
       alignmentScore: '95.8%',
-      surge: '+482% SURGE',
-      hook: `Stop updating your LinkedIn headline. If you're still relying on inbound recruiter DMs in 2026, you're already 8 months behind the curve.`,
-      thesis: `The top 1% of tech earners don't apply to public listings. They build an asynchronous Proof-of-Work pipeline that triggers algorithmic inbound. Here is the exact 3-step architecture our cohort deployed last week to bypass the recruiter filter completely.`,
-      cta: `Drop the word "PIPELINE" below and I'll send you our unlisted high-density career framework doc before the open window closes tonight.`
+      surge: '+482% surge',
+      hook: "Stop updating your LinkedIn headline. If you're still relying on inbound recruiter DMs in 2026, you're already 8 months behind the curve.",
+      thesis: "The top 1% of tech earners don't apply to public listings. They build an asynchronous Proof-of-Work pipeline that triggers algorithmic inbound. Here is the exact 3-step architecture our cohort deployed last week to bypass the recruiter filter completely.",
+      cta: 'Drop the word "PIPELINE" below and I\'ll send you our unlisted high-density career framework doc before the open window closes tonight.'
     },
     {
       id: 'mutation_beta',
-      tabLabel: 'Mutation B (Tactical)',
+      tabLabel: 'Tactical',
       alignmentScore: '94.2%',
-      surge: '+450% SURGE',
-      hook: `Most engineers think getting promoted requires 60-hour workweeks. Here is the exact spreadsheet matrix I used to double senior salary in 90 days.`,
-      thesis: `Rule one: Quantify organizational leverage, not raw ticket output. Rule two: Replace status updates with asymmetric business KPI reports that reach VP-level visibility within 48 hours. Rule three: Own the deployment choke-points.`,
-      cta: `Bookmark this breakdown before it's taken down. Full repository templates are pinned in the bio.`
+      surge: '+450% surge',
+      hook: "Most engineers think getting promoted requires 60-hour workweeks. Here is the exact spreadsheet matrix I used to double senior salary in 90 days.",
+      thesis: "Rule one: Quantify organizational leverage, not raw ticket output. Rule two: Replace status updates with asymmetric business KPI reports that reach VP-level visibility within 48 hours. Rule three: Own the deployment choke-points.",
+      cta: "Bookmark this breakdown before it's taken down. Full repository templates are pinned in the bio."
     },
     {
       id: 'mutation_gamma',
-      tabLabel: 'Mutation C (Teardown)',
+      tabLabel: 'Teardown',
       alignmentScore: '92.7%',
-      surge: '+390% SURGE',
-      hook: `This one viral framework generated 4.2M impressions and $180K in organic pipeline with zero paid ad spend. Let's inspect the telemetry.`,
-      thesis: `Notice how the first 1.8 seconds eliminates preamble? No intro animations, zero throat-clearing. You deliver the punchline in frame one, stack 3 high-contrast proof points, and deliver immediate utility before the 12-second retention cliff.`,
-      cta: `Run this exact prompt script through your own studio today. Comment "MATRIX" for the copy-paste prompt bundle.`
+      surge: '+390% surge',
+      hook: "This one viral framework generated 4.2M impressions and $180K in organic pipeline with zero paid ad spend. Let's inspect the telemetry.",
+      thesis: "Notice how the first 1.8 seconds eliminates preamble? No intro animations, zero throat-clearing. You deliver the punchline in frame one, stack 3 high-contrast proof points, and deliver immediate utility before the 12-second retention cliff.",
+      cta: 'Run this exact prompt script through your own studio today. Comment "MATRIX" for the copy-paste prompt bundle.'
     }
   ];
 
-  let currentMutationIndex = 1; // Default to Mutation B (matches 94.2% Stitch mockup)
+  let currentMutationIndex = 1; // Default to Mutation B (Tactical 94.2%)
   let isOpen = false;
 
   // Create Host Container
@@ -61,7 +62,7 @@
       font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       font-size: 13px;
       line-height: 1.5;
-      color: #E2E8F0;
+      color: #E4E4E7;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
@@ -79,9 +80,9 @@
       right: 0;
       transform: translateY(-50%);
       width: 32px;
-      height: 96px;
-      background: #0F172A;
-      border: 1px solid #334155;
+      height: 84px;
+      background: #121214;
+      border: 1px solid #27272A;
       border-right: none;
       border-radius: 8px 0 0 8px;
       display: flex;
@@ -91,31 +92,29 @@
       gap: 8px;
       cursor: pointer;
       z-index: 2147483646;
-      box-shadow: -4px 0 16px rgba(0, 0, 0, 0.4);
+      box-shadow: -4px 0 16px rgba(0, 0, 0, 0.35);
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .sm-floating-trigger:hover {
-      background: #1E293B;
+      background: #18181B;
       width: 36px;
-      border-color: #2563EB;
+      border-color: #3F3F46;
     }
 
     .sm-floating-trigger svg {
-      width: 16px;
-      height: 16px;
+      width: 15px;
+      height: 15px;
       fill: none;
-      stroke: #60A5FA;
-      stroke-width: 2;
+      stroke: #A1A1AA;
+      stroke-width: 1.75;
     }
 
     .sm-floating-trigger .trigger-dot {
-      width: 6px;
-      height: 6px;
+      width: 5px;
+      height: 5px;
       border-radius: 50%;
       background: #10B981;
-      box-shadow: 0 0 6px #10B981;
-      animation: sm-pulse 2s infinite ease-in-out;
     }
 
     /* Main Sidebar Drawer */
@@ -125,15 +124,15 @@
       right: 0;
       width: 380px;
       height: 100vh;
-      background: #0F172A; /* Slate 900 */
-      border-left: 1px solid #1E293B;
-      color: #E2E8F0;
+      background: #09090B; /* Deep Neutral Black */
+      border-left: 1px solid #222226;
+      color: #E4E4E7;
       z-index: 2147483647;
       transform: translateX(380px);
-      transition: transform 380ms cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 340ms cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       flex-direction: column;
-      box-shadow: -8px 0 32px rgba(0, 0, 0, 0.7);
+      box-shadow: -12px 0 36px rgba(0, 0, 0, 0.6);
       overflow: hidden;
     }
 
@@ -141,11 +140,11 @@
       transform: translateX(0);
     }
 
-    /* Telemetry Status Bar */
+    /* Top Header */
     .sm-header {
-      padding: 14px 16px;
-      background: #090E17;
-      border-bottom: 1px solid #1E293B;
+      padding: 14px 18px;
+      background: #0D0D10;
+      border-bottom: 1px solid #1E1E22;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -154,46 +153,55 @@
     .sm-header-brand {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .sm-header-logo {
       width: 22px;
       height: 22px;
-      border-radius: 4px;
-      background: linear-gradient(135deg, #2563EB, #38BDF8);
+      border-radius: 6px;
+      background: #18181B;
+      border: 1px solid #27272A;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #FFFFFF;
-      font-weight: 700;
+      color: #F4F4F5;
+      font-weight: 600;
       font-size: 11px;
     }
 
     .sm-header-title {
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
-      color: #F8FAFC;
-      letter-spacing: -0.01em;
+      color: #F4F4F5;
+      letter-spacing: -0.015em;
+      line-height: 1.2;
     }
 
     .sm-header-subtitle {
-      font-size: 10px;
-      color: #64748B;
-      letter-spacing: 0.02em;
+      font-size: 11px;
+      color: #71717A;
+      letter-spacing: -0.005em;
+      font-weight: 400;
+    }
+
+    .sm-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .sm-status-badge {
       display: flex;
       align-items: center;
       gap: 6px;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.25);
+      background: #121215;
+      border: 1px solid #222226;
       padding: 3px 8px;
       border-radius: 9999px;
-      font-size: 10px;
-      font-weight: 500;
-      color: #10B981;
+      font-size: 11px;
+      font-weight: 450;
+      color: #A1A1AA;
     }
 
     .sm-status-dot {
@@ -201,22 +209,15 @@
       height: 6px;
       border-radius: 50%;
       background: #10B981;
-      box-shadow: 0 0 6px #10B981;
-      animation: sm-pulse 2s infinite ease-in-out;
-    }
-
-    @keyframes sm-pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.85); }
     }
 
     .sm-close-btn {
       background: transparent;
-      border: none;
-      color: #64748B;
+      border: 1px solid transparent;
+      color: #71717A;
       cursor: pointer;
       padding: 4px;
-      border-radius: 4px;
+      border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -224,15 +225,16 @@
     }
 
     .sm-close-btn:hover {
-      color: #F8FAFC;
-      background: #1E293B;
+      color: #F4F4F5;
+      background: #18181B;
+      border-color: #27272A;
     }
 
     /* Scrollable Content Body */
     .sm-content-body {
       flex: 1;
       overflow-y: auto;
-      padding: 16px;
+      padding: 16px 18px;
       display: flex;
       flex-direction: column;
       gap: 14px;
@@ -243,48 +245,48 @@
     }
 
     .sm-content-body::-webkit-scrollbar-thumb {
-      background: #334155;
+      background: #27272A;
       border-radius: 4px;
     }
 
-    /* Card Surface */
+    /* Linear-Style Card Surface */
     .sm-card {
-      background: #141E33;
-      border: 1px solid #1E293B;
-      border-radius: 8px;
-      padding: 12px 14px;
+      background: #121214;
+      border: 1px solid #1E1E22;
+      border-radius: 10px;
+      padding: 14px 16px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
 
     /* Optimization Index Component */
     .sm-index-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: baseline;
     }
 
     .sm-index-label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: #94A3B8;
+      font-size: 12px;
+      font-weight: 500;
+      color: #A1A1AA;
+      letter-spacing: -0.01em;
     }
 
     .sm-index-score {
-      font-family: "JetBrains Mono", "SF Mono", Menlo, monospace;
-      font-size: 12px;
-      font-weight: 700;
-      color: #38BDF8;
+      font-size: 13px;
+      font-weight: 600;
+      color: #F4F4F5;
+      letter-spacing: -0.02em;
     }
 
     .sm-progress-bar-bg {
       width: 100%;
-      height: 6px;
-      background: #090E17;
-      border-radius: 3px;
+      height: 5px;
+      background: #1F1F23;
+      border-radius: 9999px;
       overflow: hidden;
       position: relative;
     }
@@ -292,10 +294,9 @@
     .sm-progress-bar-fill {
       height: 100%;
       width: 94.2%;
-      background: linear-gradient(90deg, #2563EB, #38BDF8, #10B981);
-      border-radius: 3px;
-      transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+      background: #3B82F6;
+      border-radius: 9999px;
+      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .sm-telemetry-row {
@@ -303,27 +304,25 @@
       align-items: center;
       justify-content: space-between;
       padding-top: 2px;
-      font-family: "JetBrains Mono", "SF Mono", Menlo, monospace;
-      font-size: 10px;
-      color: #64748B;
+      font-size: 11px;
+      color: #71717A;
     }
 
     .sm-telemetry-surge {
       color: #10B981;
-      font-weight: 600;
+      font-weight: 500;
     }
 
     .sm-telemetry-node {
-      color: #94A3B8;
+      color: #71717A;
     }
 
     /* Target Market Selector */
-    .sm-section-title {
-      font-size: 11px;
-      font-weight: 600;
-      color: #94A3B8;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
+    .sm-section-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #A1A1AA;
+      letter-spacing: -0.01em;
     }
 
     .sm-select-wrapper {
@@ -332,34 +331,40 @@
 
     .sm-select {
       width: 100%;
-      background: #090E17;
-      border: 1px solid #334155;
-      border-radius: 6px;
-      padding: 8px 28px 8px 10px;
-      color: #F8FAFC;
-      font-size: 12px;
-      font-weight: 500;
+      background: #18181B;
+      border: 1px solid #27272A;
+      border-radius: 8px;
+      padding: 8px 30px 8px 12px;
+      color: #F4F4F5;
+      font-size: 12.5px;
+      font-weight: 450;
       outline: none;
       appearance: none;
       cursor: pointer;
-      transition: border-color 0.15s ease;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .sm-select:hover {
+      background: #1C1C20;
+      border-color: #3F3F46;
     }
 
     .sm-select:focus {
-      border-color: #2563EB;
-      box-shadow: 0 0 0 1px #2563EB;
+      border-color: #3B82F6;
+      box-shadow: 0 0 0 1px #3B82F6;
     }
 
     .sm-select-chevron {
       position: absolute;
-      right: 10px;
+      right: 12px;
       top: 50%;
       transform: translateY(-50%);
       pointer-events: none;
-      color: #64748B;
-      font-size: 10px;
+      color: #71717A;
+      font-size: 9px;
     }
 
+    /* Segmented Filter Badges */
     .sm-badges-row {
       display: flex;
       gap: 6px;
@@ -370,103 +375,106 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      background: #090E17;
-      border: 1px solid #1E293B;
-      border-radius: 4px;
-      padding: 3px 8px;
-      font-size: 10px;
-      font-weight: 500;
-      color: #94A3B8;
+      background: #18181B;
+      border: 1px solid #27272A;
+      border-radius: 6px;
+      padding: 4px 9px;
+      font-size: 11px;
+      font-weight: 450;
+      color: #A1A1AA;
       cursor: pointer;
       user-select: none;
       transition: all 0.15s ease;
     }
 
     .sm-badge:hover {
-      background: #1E293B;
-      color: #F8FAFC;
-      border-color: #334155;
+      background: #202024;
+      color: #F4F4F5;
+      border-color: #3F3F46;
     }
 
     .sm-badge.active {
-      border-color: #2563EB;
-      color: #60A5FA;
-      background: rgba(37, 99, 235, 0.12);
+      background: #1E2433;
+      border-color: #2E4C7E;
+      color: #93C5FD;
     }
 
-    /* Mutation Tabs */
+    /* Segmented Tabs (Linear Style) */
     .sm-tabs-row {
       display: flex;
-      background: #090E17;
-      border-radius: 6px;
-      padding: 2px;
-      border: 1px solid #1E293B;
+      background: #141416;
+      border-radius: 8px;
+      padding: 3px;
+      border: 1px solid #222226;
     }
 
     .sm-tab-btn {
       flex: 1;
       background: transparent;
       border: none;
-      padding: 6px 4px;
-      font-size: 10px;
-      font-weight: 600;
-      color: #64748B;
+      padding: 6px 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #71717A;
       cursor: pointer;
-      border-radius: 4px;
+      border-radius: 6px;
       text-align: center;
       transition: all 0.15s ease;
     }
 
-    .sm-tab-btn.active {
-      background: #1E293B;
-      color: #F8FAFC;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    .sm-tab-btn:hover {
+      color: #D4D4D8;
     }
 
-    /* Script Production Terminal */
+    .sm-tab-btn.active {
+      background: #202024;
+      color: #FFFFFF;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Script Production Terminal (Clean Editor) */
     .sm-terminal-card {
-      background: #090E17;
-      border: 1px solid #1E293B;
-      border-radius: 8px;
+      background: #121214;
+      border: 1px solid #1E1E22;
+      border-radius: 10px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
 
     .sm-terminal-header {
-      padding: 8px 12px;
-      background: #0D1322;
-      border-bottom: 1px solid #1E293B;
+      padding: 9px 14px;
+      background: #151518;
+      border-bottom: 1px solid #1E1E22;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-family: "JetBrains Mono", "SF Mono", Menlo, monospace;
-      font-size: 10px;
-      color: #64748B;
+      font-size: 11px;
+      color: #71717A;
+      font-weight: 500;
     }
 
     .sm-terminal-content {
-      padding: 12px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      font-family: "JetBrains Mono", "SF Mono", Menlo, monospace;
-      font-size: 11px;
-      line-height: 1.6;
+      gap: 12px;
     }
 
     .sm-frame-block {
       display: flex;
       flex-direction: column;
-      gap: 3px;
-      background: rgba(15, 23, 42, 0.6);
-      border-left: 2px solid #2563EB;
-      padding: 6px 10px;
-      border-radius: 0 4px 4px 0;
+      gap: 4px;
+      background: #161619;
+      border: 1px solid #222226;
+      border-left: 3px solid #3B82F6;
+      padding: 10px 12px;
+      border-radius: 6px;
     }
 
     .sm-frame-block.thesis {
-      border-left-color: #38BDF8;
+      border-left-color: #60A5FA;
     }
 
     .sm-frame-block.cta {
@@ -474,26 +482,27 @@
     }
 
     .sm-frame-label {
-      font-size: 9px;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: #64748B;
-      letter-spacing: 0.05em;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #71717A;
+      letter-spacing: 0.01em;
     }
 
     .sm-frame-text {
-      color: #E2E8F0;
+      font-family: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+      font-size: 11.5px;
+      line-height: 1.6;
+      color: #D4D4D8;
       white-space: pre-wrap;
       word-break: break-word;
     }
 
     .sm-terminal-ribbon {
-      padding: 6px 12px;
-      background: #06090F;
-      border-top: 1px solid #1E293B;
-      font-family: "JetBrains Mono", "SF Mono", Menlo, monospace;
-      font-size: 9px;
-      color: #475569;
+      padding: 7px 14px;
+      background: #0E0E10;
+      border-top: 1px solid #1C1C1F;
+      font-size: 11px;
+      color: #52525B;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -501,13 +510,17 @@
 
     .sm-ribbon-tag {
       color: #10B981;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
     /* Bottom Action Zone */
     .sm-footer {
-      padding: 14px 16px;
-      background: #090E17;
-      border-top: 1px solid #1E293B;
+      padding: 16px 18px;
+      background: #0D0D10;
+      border-top: 1px solid #1E1E22;
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -516,25 +529,25 @@
     /* Primary Enterprise Button */
     .sm-btn-primary {
       width: 100%;
-      background: #2563EB; /* Secure Cobalt Blue */
+      background: #2563EB;
       color: #FFFFFF;
-      border: none;
-      border-radius: 6px;
-      padding: 11px 16px;
+      border: 1px solid #3B82F6;
+      border-radius: 8px;
+      padding: 10px 16px;
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 550;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
       transition: all 0.15s ease;
-      box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3), 0 0 12px rgba(37, 99, 235, 0.2);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
     }
 
     .sm-btn-primary:hover {
       background: #1D4ED8;
-      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+      border-color: #2563EB;
     }
 
     .sm-btn-primary:active {
@@ -543,17 +556,18 @@
 
     .sm-btn-primary.success {
       background: #059669;
+      border-color: #10B981;
     }
 
     /* Secondary Micro Actions */
     .sm-btn-secondary {
       width: 100%;
-      background: #1E293B;
-      color: #E2E8F0;
-      border: 1px solid #334155;
-      border-radius: 6px;
+      background: #18181B;
+      color: #D4D4D8;
+      border: 1px solid #27272A;
+      border-radius: 8px;
       padding: 8px 12px;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 500;
       cursor: pointer;
       display: flex;
@@ -564,8 +578,9 @@
     }
 
     .sm-btn-secondary:hover {
-      background: #334155;
+      background: #202024;
       color: #FFFFFF;
+      border-color: #3F3F46;
     }
 
     .sm-btn-grid {
@@ -605,12 +620,12 @@
             <div class="sm-header-subtitle">Enterprise Distribution Suite</div>
           </div>
         </div>
-        <div style="display: flex; align-items: center; gap: 8px;">
+        <div class="sm-header-actions">
           <div class="sm-status-badge">
             <span class="sm-status-dot"></span>
-            <span>API Secure / Sync Active</span>
+            <span>Live Sync</span>
           </div>
-          <button class="sm-close-btn" id="smCloseBtn" title="Close Studio (Esc)">
+          <button class="sm-close-btn" id="smCloseBtn" title="Close (Esc)">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -625,32 +640,32 @@
         <!-- 2. The Optimization Index Card -->
         <div class="sm-card">
           <div class="sm-index-header">
-            <span class="sm-index-label">System Alignment Index</span>
-            <span class="sm-index-score" id="smScoreVal">${cur.alignmentScore} Optimization Score</span>
+            <span class="sm-index-label">System Alignment</span>
+            <span class="sm-index-score" id="smScoreVal">${cur.alignmentScore} Score</span>
           </div>
           <div class="sm-progress-bar-bg">
             <div class="sm-progress-bar-fill" id="smProgressBar" style="width: ${cur.alignmentScore};"></div>
           </div>
           <div class="sm-telemetry-row">
-            <span class="sm-telemetry-surge">${cur.surge} DETECTED</span>
-            <span class="sm-telemetry-node">14ms • 48/48 NODES</span>
+            <span class="sm-telemetry-surge">${cur.surge}</span>
+            <span class="sm-telemetry-node">14ms latency · 48 nodes active</span>
           </div>
         </div>
 
         <!-- 3. Target Market Vector Dropdown -->
         <div class="sm-card">
-          <div class="sm-section-title">Target Market Vector</div>
+          <div class="sm-section-label">Target Market Vector</div>
           <div class="sm-select-wrapper">
             <select class="sm-select" id="smMarketSelect">
-              <option value="career" selected>Career / Tech Coach (High Conversion Vector)</option>
+              <option value="career" selected>Career & Tech Leadership (High Conversion)</option>
               <option value="saas">B2B SaaS Founder (Retention Matrix)</option>
-              <option value="fintech">Fintech & Wealth Ops (High Ticket Inbound)</option>
-              <option value="engineering">AI / Dev Tools Engineering (Algorithm Inbound)</option>
+              <option value="fintech">Fintech & Wealth Advisory (High Ticket)</option>
+              <option value="engineering">AI & Developer Tools (Organic Inbound)</option>
             </select>
             <span class="sm-select-chevron">▼</span>
           </div>
           <div class="sm-badges-row">
-            <div class="sm-badge active" id="smToneBadge">Tone: Aggressive Hook</div>
+            <div class="sm-badge active" id="smToneBadge">Tone: Direct Hook</div>
             <div class="sm-badge active" id="smLengthBadge">Length: 35s</div>
             <div class="sm-badge" id="smProofBadge">Proof: High Density</div>
           </div>
@@ -660,7 +675,7 @@
         <div class="sm-tabs-row">
           ${SCRIPT_MUTATIONS.map((m, idx) => `
             <button class="sm-tab-btn ${idx === currentMutationIndex ? 'active' : ''}" data-idx="${idx}">
-              ${idx === 0 ? 'Contrarian' : idx === 1 ? 'Tactical' : 'Teardown'}
+              ${m.tabLabel}
             </button>
           `).join('')}
         </div>
@@ -668,34 +683,37 @@
         <!-- 4. The Script Production Terminal -->
         <div class="sm-terminal-card">
           <div class="sm-terminal-header">
-            <span>PROMPT_MATRIX_CANVAS // v2.4</span>
-            <span style="color: #60A5FA;">MUTATION_${String.fromCharCode(65 + currentMutationIndex)}</span>
+            <span>Script Canvas</span>
+            <span style="color: #60A5FA;">Mutation ${String.fromCharCode(65 + currentMutationIndex)}</span>
           </div>
           
           <div class="sm-terminal-content">
             <!-- Frame 01: Hook -->
             <div class="sm-frame-block">
-              <span class="sm-frame-label">01 | Hook Element</span>
+              <span class="sm-frame-label">01. Hook Element</span>
               <div class="sm-frame-text" id="smHookText">${cur.hook}</div>
             </div>
 
             <!-- Frame 02: Core Thesis -->
             <div class="sm-frame-block thesis">
-              <span class="sm-frame-label">02 | Core Thesis</span>
+              <span class="sm-frame-label">02. Core Thesis</span>
               <div class="sm-frame-text" id="smThesisText">${cur.thesis}</div>
             </div>
 
             <!-- Frame 03: CTA -->
             <div class="sm-frame-block cta">
-              <span class="sm-frame-label">03 | Retentive Call-To-Action</span>
+              <span class="sm-frame-label">03. Call-to-Action</span>
               <div class="sm-frame-text" id="smCtaText">${cur.cta}</div>
             </div>
           </div>
 
           <!-- Bottom Metadata Ribbon -->
           <div class="sm-terminal-ribbon">
-            <span>• SYNTAX COMPILED: READY TO INJECT | UTF-8 | LF</span>
-            <span class="sm-ribbon-tag">HASH-OK #99014</span>
+            <span>Syntax compiled · UTF-8</span>
+            <span class="sm-ribbon-tag">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              Verified #99014
+            </span>
           </div>
         </div>
 
@@ -705,13 +723,13 @@
       <footer class="sm-footer">
         <button class="sm-btn-primary" id="smSyncGithubBtn">
           <!-- Clean Git branch vector graphic asset -->
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="6" y1="3" x2="6" y2="15"></line>
             <circle cx="18" cy="6" r="3"></circle>
             <circle cx="6" cy="18" r="3"></circle>
             <path d="M18 9a9 9 0 0 1-9 9"></path>
           </svg>
-          <span id="smSyncBtnText">Sync Assets to GitHub Repository</span>
+          <span id="smSyncBtnText">Sync Assets to GitHub</span>
         </button>
 
         <div class="sm-btn-grid">
@@ -729,7 +747,7 @@
               <polyline points="1 20 1 14 7 14"></polyline>
               <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
             </svg>
-            <span>Regenerate Hook</span>
+            <span>Regenerate</span>
           </button>
         </div>
       </footer>
@@ -755,7 +773,7 @@
     // Tone Badge toggle
     const toneBadge = sidebar.querySelector('#smToneBadge');
     if (toneBadge) {
-      const tones = ['Tone: Aggressive Hook', 'Tone: Data Breakdown', 'Tone: Story Paradox'];
+      const tones = ['Tone: Direct Hook', 'Tone: Data Breakdown', 'Tone: Story Paradox'];
       let toneIdx = 0;
       toneBadge.onclick = () => {
         toneIdx = (toneIdx + 1) % tones.length;
@@ -780,11 +798,10 @@
     if (syncBtn && syncText) {
       syncBtn.onclick = async () => {
         const originalText = syncText.textContent;
-        syncText.textContent = 'Syncing to humangeek77-star...';
+        syncText.textContent = 'Syncing...';
         syncBtn.style.opacity = '0.8';
 
         try {
-          // Attempt edge worker dispatch or fallback simulation
           const payload = {
             repo: 'humangeek77-star/stitchmatrix-social-virality-dashboard',
             scriptMutation: SCRIPT_MUTATIONS[currentMutationIndex],
@@ -792,28 +809,25 @@
             syncedAt: new Date().toISOString()
           };
           
-          let resData;
           try {
-            const res = await fetch('https://stitchmatrix-api.humangeek77-star.workers.dev/api/sync-github', {
+            await fetch('https://stitchmatrix-api.humangeek77-star.workers.dev/api/sync-github', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(payload)
             });
-            resData = await res.json();
           } catch (fetchErr) {
             // Local fallback simulation
-            resData = { success: true };
           }
 
           syncBtn.classList.add('success');
-          syncText.textContent = '✓ Synced to GitHub Repository';
+          syncText.textContent = '✓ Synced to GitHub';
           setTimeout(() => {
             syncBtn.classList.remove('success');
             syncText.textContent = originalText;
             syncBtn.style.opacity = '1';
-          }, 3000);
+          }, 2500);
         } catch (err) {
-          syncText.textContent = 'Sync Completed (Local)';
+          syncText.textContent = 'Synced Locally';
           setTimeout(() => { syncText.textContent = originalText; syncBtn.style.opacity = '1'; }, 2000);
         }
       };
@@ -829,7 +843,7 @@
         navigator.clipboard.writeText(formatted).then(() => {
           const original = copyText.textContent;
           copyText.textContent = '✓ Copied!';
-          setTimeout(() => { copyText.textContent = original; }, 2000);
+          setTimeout(() => { copyText.textContent = original; }, 1800);
         });
       };
     }
@@ -861,12 +875,10 @@
 
   // Keyboard shortcut listener
   window.addEventListener('keydown', (e) => {
-    // Alt+S or Ctrl+Shift+S to toggle
     if ((e.altKey && (e.key === 's' || e.key === 'S')) || (e.ctrlKey && e.shiftKey && (e.key === 's' || e.key === 'S'))) {
       e.preventDefault();
       toggleSidebar();
     }
-    // Escape to close
     if (e.key === 'Escape' && isOpen) {
       toggleSidebar();
     }
