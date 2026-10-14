@@ -1,0 +1,18 @@
+{
+  "name": "@stitchmatrix/workers",
+  "version": "1.0.0",
+  "description": "StitchMatrix Cloudflare Worker - Algorithmic Velocity & Script Synthesis Engine",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "node --test"
+  },
+  "keywords": ["cloudflare-workers", "virality-engine", "stitchmatrix", "growth-engineering"],
+  "author": "humangeek77-star",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.80.0"
+  }
+}

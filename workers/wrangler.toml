@@ -1,0 +1,9 @@
+name = "stitchmatrix-api"
+main = "src/index.js"
+compatibility_date = "2024-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+ENVIRONMENT = "production"
+DEFAULT_ALIGNMENT_SCORE = "94.2%"
+DEFAULT_CLUSTER_NODE = "cluster://us-east-viral.stitch.matrix:8080"
