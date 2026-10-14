@@ -12,38 +12,144 @@
   if (window.__STITCHMATRIX_INITIALIZED__) return;
   window.__STITCHMATRIX_INITIALIZED__ = true;
 
-  // Preset Script Mutation Library
-  const SCRIPT_MUTATIONS = [
-    {
-      id: 'mutation_alpha',
-      tabLabel: 'Contrarian',
-      alignmentScore: '95.8%',
-      surge: '+482% surge',
-      hook: "Stop updating your LinkedIn headline. If you're still relying on inbound recruiter DMs in 2026, you're already 8 months behind the curve.",
-      thesis: "The top 1% of tech earners don't apply to public listings. They build an asynchronous Proof-of-Work pipeline that triggers algorithmic inbound. Here is the exact 3-step architecture our cohort deployed last week to bypass the recruiter filter completely.",
-      cta: 'Drop the word "PIPELINE" below and I\'ll send you our unlisted high-density career framework doc before the open window closes tonight.'
-    },
-    {
-      id: 'mutation_beta',
-      tabLabel: 'Tactical',
-      alignmentScore: '94.2%',
-      surge: '+450% surge',
-      hook: "Most engineers think getting promoted requires 60-hour workweeks. Here is the exact spreadsheet matrix I used to double senior salary in 90 days.",
-      thesis: "Rule one: Quantify organizational leverage, not raw ticket output. Rule two: Replace status updates with asymmetric business KPI reports that reach VP-level visibility within 48 hours. Rule three: Own the deployment choke-points.",
-      cta: "Bookmark this breakdown before it's taken down. Full repository templates are pinned in the bio."
-    },
-    {
-      id: 'mutation_gamma',
-      tabLabel: 'Teardown',
-      alignmentScore: '92.7%',
-      surge: '+390% surge',
-      hook: "This one viral framework generated 4.2M impressions and $180K in organic pipeline with zero paid ad spend. Let's inspect the telemetry.",
-      thesis: "Notice how the first 1.8 seconds eliminates preamble? No intro animations, zero throat-clearing. You deliver the punchline in frame one, stack 3 high-contrast proof points, and deliver immediate utility before the 12-second retention cliff.",
-      cta: 'Run this exact prompt script through your own studio today. Comment "MATRIX" for the copy-paste prompt bundle.'
-    }
-  ];
+  // Real-time DOM context detector for social platforms
+  function detectVideoContext() {
+    const url = window.location.href;
+    let platform = 'Generic Video';
+    let title = 'Algorithmic Inbound Pattern';
+    let author = '@creator';
 
-  let currentMutationIndex = 1; // Default to Mutation B (Tactical 94.2%)
+    try {
+      if (url.includes('tiktok.com')) {
+        platform = 'TikTok Video';
+        const descEl = document.querySelector('[data-e2e="browse-video-desc"], [data-e2e="video-desc"], h1, .video-meta-title');
+        const authorEl = document.querySelector('[data-e2e="browser-nickname"], [data-e2e="user-title"], .author-uniqueId');
+        if (descEl?.textContent) title = descEl.textContent.trim().slice(0, 70);
+        if (authorEl?.textContent) author = authorEl.textContent.trim();
+      } else if (url.includes('youtube.com')) {
+        platform = 'YouTube Shorts';
+        const titleEl = document.querySelector('#title.ytd-reel-player-header-renderer, ytd-shorts-player-header-renderer #text');
+        const authorEl = document.querySelector('#channel-name, .ytd-channel-name');
+        if (titleEl?.textContent) title = titleEl.textContent.trim().slice(0, 70);
+        if (authorEl?.textContent) author = authorEl.textContent.trim();
+      } else if (url.includes('instagram.com')) {
+        platform = 'Instagram Reels';
+        const captionEl = document.querySelector('h1, article span._aacl, article div._a9zs');
+        const authorEl = document.querySelector('header a, span._ap3a');
+        if (captionEl?.textContent) title = captionEl.textContent.trim().slice(0, 70);
+        if (authorEl?.textContent) author = authorEl.textContent.trim();
+      }
+    } catch (e) {
+      // Fallback
+    }
+
+    return { platform, title, author, url };
+  }
+
+  // Multi-Vector Script Mutation Database
+  const SCRIPT_MUTATIONS = {
+    career: [
+      {
+        id: 'c_contrarian',
+        tabLabel: 'Contrarian',
+        alignmentScore: '95.8%',
+        surge: '+482% surge',
+        duration: '32s',
+        hook: "Stop updating your LinkedIn headline. If you're still relying on inbound recruiter DMs in 2026, you're already 8 months behind the curve.",
+        thesis: "The top 1% of tech earners don't apply to public listings. They build an asynchronous Proof-of-Work pipeline that triggers algorithmic inbound. Here is the exact 3-step architecture our cohort deployed last week to bypass the recruiter filter completely.",
+        cta: 'Drop the word "PIPELINE" below and I\'ll send you our unlisted high-density career framework doc before the open window closes tonight.'
+      },
+      {
+        id: 'c_tactical',
+        tabLabel: 'Tactical',
+        alignmentScore: '94.2%',
+        surge: '+450% surge',
+        duration: '35s',
+        hook: "Most engineers think getting promoted requires 60-hour workweeks. Here is the exact spreadsheet matrix I used to double senior salary in 90 days.",
+        thesis: "Rule one: Quantify organizational leverage, not raw ticket output. Rule two: Replace status updates with asymmetric business KPI reports that reach VP-level visibility within 48 hours. Rule three: Own the deployment choke-points.",
+        cta: "Bookmark this breakdown before it's taken down. Full repository templates are pinned in the bio."
+      },
+      {
+        id: 'c_teardown',
+        tabLabel: 'Teardown',
+        alignmentScore: '92.7%',
+        surge: '+390% surge',
+        duration: '28s',
+        hook: "This one viral framework generated 4.2M impressions and $180K in organic pipeline with zero paid ad spend. Let's inspect the telemetry.",
+        thesis: "Notice how the first 1.8 seconds eliminates preamble? No intro animations, zero throat-clearing. You deliver the punchline in frame one, stack 3 high-contrast proof points, and deliver immediate utility before the 12-second retention cliff.",
+        cta: 'Run this exact prompt script through your own studio today. Comment "MATRIX" for the copy-paste prompt bundle.'
+      }
+    ],
+    saas: [
+      {
+        id: 's_contrarian',
+        tabLabel: 'Contrarian',
+        alignmentScore: '96.4%',
+        surge: '+510% surge',
+        duration: '34s',
+        hook: "Your SaaS landing page isn't losing conversions because of your copy. It's leaking churn because you're pricing features instead of leverage.",
+        thesis: "When you tier users by seats, you penalize team adoption. When you tier users by programmatic throughput metrics, usage scales automatically with customer ARR. Here is how we flipped our billing model in 48 hours.",
+        cta: 'Comment "PRICING" and I will DM you the open-source monetization architecture.'
+      },
+      {
+        id: 's_tactical',
+        tabLabel: 'Tactical',
+        alignmentScore: '93.9%',
+        surge: '+430% surge',
+        duration: '36s',
+        hook: "Zero to $100K MRR in 6 months without cold email or paid ads. Here is the exact organic distribution flywheel we engineered.",
+        thesis: "Step one: Scrape viral industry anomalies every 4 hours. Step two: Repackage the data into high-contrast single-chart teardowns. Step three: Embed an interactive calculator link directly in the top pinned reply.",
+        cta: "Save this post. The Notion template and automation scripts are in the bio link."
+      },
+      {
+        id: 's_teardown',
+        tabLabel: 'Teardown',
+        alignmentScore: '91.5%',
+        surge: '+380% surge',
+        duration: '30s',
+        hook: "Here is why 90% of AI wrappers will be dead by Q4, and the 1 architectural moat that survives.",
+        thesis: "API wrappers compete on latency and cost margins to zero. Proprietary distribution layers that ingest and own user workflow state cannot be commoditized by base LLM releases.",
+        cta: 'Drop "MOAT" below to get the full enterprise retention audit checklist.'
+      }
+    ],
+    fintech: [
+      {
+        id: 'f_contrarian',
+        tabLabel: 'Contrarian',
+        alignmentScore: '95.1%',
+        surge: '+470% surge',
+        duration: '33s',
+        hook: "Stop locking your capital in generic index funds if your net worth is under $250K. Here is why high-earners pivot.",
+        thesis: "The math is simple: a 7% return on $50K is $3,500 a year. That won't buy your freedom. Reinvesting that same $50K into high-leverage distribution infrastructure yields 10x-50x enterprise equity in 24 months.",
+        cta: 'Comment "ALLOCATION" for our private wealth velocity spreadsheet.'
+      },
+      {
+        id: 'f_tactical',
+        tabLabel: 'Tactical',
+        alignmentScore: '94.6%',
+        surge: '+460% surge',
+        duration: '35s',
+        hook: "The 3 tax loopholes top tech executives use before exercising pre-IPO options in 2026.",
+        thesis: "First: Section 1202 QSBS exclusion. Second: 83(b) timely election within 30 days of grant. Third: Donor-advised fund transfers to offset short-term capital gains at peak valuation.",
+        cta: 'Bookmark this guide. Pinned link has our estate attorney vetting sheet.'
+      },
+      {
+        id: 'f_teardown',
+        tabLabel: 'Teardown',
+        alignmentScore: '93.2%',
+        surge: '+410% surge',
+        duration: '29s',
+        hook: "We audited 40 high-net-worth portfolios this quarter. Here is the #1 mistake costing operators six figures.",
+        thesis: "They leave cash in low-yield operational accounts instead of treasury sweep accounts generating risk-free 5.2% daily liquidity yield.",
+        cta: 'Comment "TREASURY" to receive our cash management SOP.'
+      }
+    ]
+  };
+
+  let activeMarket = 'career';
+  let currentMutationIndex = 1; // Default to Tactical (94.2%)
+  let activeTone = 'Direct Hook';
+  let activeLength = '35s';
   let isOpen = false;
 
   // Create Host Container
@@ -124,7 +230,7 @@
       right: 0;
       width: 380px;
       height: 100vh;
-      background: #09090B; /* Deep Neutral Black */
+      background: #09090B;
       border-left: 1px solid #222226;
       color: #E4E4E7;
       z-index: 2147483647;
@@ -228,6 +334,26 @@
       color: #F4F4F5;
       background: #18181B;
       border-color: #27272A;
+    }
+
+    /* Detected Source Strip */
+    .sm-source-strip {
+      padding: 6px 18px;
+      background: #111114;
+      border-bottom: 1px solid #1C1C1F;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #71717A;
+    }
+
+    .sm-source-platform {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #A1A1AA;
+      font-weight: 500;
     }
 
     /* Scrollable Content Body */
@@ -486,6 +612,9 @@
       font-weight: 600;
       color: #71717A;
       letter-spacing: 0.01em;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     .sm-frame-text {
@@ -495,6 +624,13 @@
       color: #D4D4D8;
       white-space: pre-wrap;
       word-break: break-word;
+      outline: none;
+      cursor: text;
+    }
+
+    .sm-frame-text:focus {
+      background: #1B1B20;
+      border-radius: 4px;
     }
 
     .sm-terminal-ribbon {
@@ -608,7 +744,9 @@
   sidebar.className = 'sm-sidebar-container';
 
   function renderSidebar() {
-    const cur = SCRIPT_MUTATIONS[currentMutationIndex];
+    const list = SCRIPT_MUTATIONS[activeMarket] || SCRIPT_MUTATIONS.career;
+    const cur = list[currentMutationIndex] || list[0];
+    const context = detectVideoContext();
 
     sidebar.innerHTML = `
       <!-- 1. The Telemetry Status Bar -->
@@ -634,6 +772,15 @@
         </div>
       </header>
 
+      <!-- Real-time Ingestion Strip -->
+      <div class="sm-source-strip">
+        <div class="sm-source-platform">
+          <span>Target:</span>
+          <strong style="color: #F4F4F5;">${context.platform}</strong>
+        </div>
+        <span>${context.author}</span>
+      </div>
+
       <!-- Scrollable Main Content -->
       <div class="sm-content-body">
         
@@ -657,23 +804,22 @@
           <div class="sm-section-label">Target Market Vector</div>
           <div class="sm-select-wrapper">
             <select class="sm-select" id="smMarketSelect">
-              <option value="career" selected>Career & Tech Leadership (High Conversion)</option>
-              <option value="saas">B2B SaaS Founder (Retention Matrix)</option>
-              <option value="fintech">Fintech & Wealth Advisory (High Ticket)</option>
-              <option value="engineering">AI & Developer Tools (Organic Inbound)</option>
+              <option value="career" ${activeMarket === 'career' ? 'selected' : ''}>Career & Tech Leadership (High Conversion)</option>
+              <option value="saas" ${activeMarket === 'saas' ? 'selected' : ''}>B2B SaaS Founder (Retention Matrix)</option>
+              <option value="fintech" ${activeMarket === 'fintech' ? 'selected' : ''}>Fintech & Wealth Advisory (High Ticket)</option>
             </select>
             <span class="sm-select-chevron">▼</span>
           </div>
           <div class="sm-badges-row">
-            <div class="sm-badge active" id="smToneBadge">Tone: Direct Hook</div>
-            <div class="sm-badge active" id="smLengthBadge">Length: 35s</div>
+            <div class="sm-badge active" id="smToneBadge">Tone: ${activeTone}</div>
+            <div class="sm-badge active" id="smLengthBadge">Length: ${activeLength}</div>
             <div class="sm-badge" id="smProofBadge">Proof: High Density</div>
           </div>
         </div>
 
         <!-- Mutation Switcher Tabs -->
         <div class="sm-tabs-row">
-          ${SCRIPT_MUTATIONS.map((m, idx) => `
+          ${list.map((m, idx) => `
             <button class="sm-tab-btn ${idx === currentMutationIndex ? 'active' : ''}" data-idx="${idx}">
               ${m.tabLabel}
             </button>
@@ -683,27 +829,36 @@
         <!-- 4. The Script Production Terminal -->
         <div class="sm-terminal-card">
           <div class="sm-terminal-header">
-            <span>Script Canvas</span>
-            <span style="color: #60A5FA;">Mutation ${String.fromCharCode(65 + currentMutationIndex)}</span>
+            <span>Script Canvas (Editable)</span>
+            <span style="color: #60A5FA;">Mutation ${String.fromCharCode(65 + currentMutationIndex)} · ~${cur.duration}</span>
           </div>
           
           <div class="sm-terminal-content">
             <!-- Frame 01: Hook -->
             <div class="sm-frame-block">
-              <span class="sm-frame-label">01. Hook Element</span>
-              <div class="sm-frame-text" id="smHookText">${cur.hook}</div>
+              <div class="sm-frame-label">
+                <span>01. Hook Element</span>
+                <span style="font-weight: 400; font-size: 10px; color: #52525B;">Click to edit</span>
+              </div>
+              <div class="sm-frame-text" id="smHookText" contenteditable="true" spellcheck="false">${cur.hook}</div>
             </div>
 
             <!-- Frame 02: Core Thesis -->
             <div class="sm-frame-block thesis">
-              <span class="sm-frame-label">02. Core Thesis</span>
-              <div class="sm-frame-text" id="smThesisText">${cur.thesis}</div>
+              <div class="sm-frame-label">
+                <span>02. Core Thesis</span>
+                <span style="font-weight: 400; font-size: 10px; color: #52525B;">Click to edit</span>
+              </div>
+              <div class="sm-frame-text" id="smThesisText" contenteditable="true" spellcheck="false">${cur.thesis}</div>
             </div>
 
             <!-- Frame 03: CTA -->
             <div class="sm-frame-block cta">
-              <span class="sm-frame-label">03. Call-to-Action</span>
-              <div class="sm-frame-text" id="smCtaText">${cur.cta}</div>
+              <div class="sm-frame-label">
+                <span>03. Call-to-Action</span>
+                <span style="font-weight: 400; font-size: 10px; color: #52525B;">Click to edit</span>
+              </div>
+              <div class="sm-frame-text" id="smCtaText" contenteditable="true" spellcheck="false">${cur.cta}</div>
             </div>
           </div>
 
@@ -761,6 +916,16 @@
     const closeBtn = sidebar.querySelector('#smCloseBtn');
     if (closeBtn) closeBtn.onclick = toggleSidebar;
 
+    // Market Vector select
+    const marketSelect = sidebar.querySelector('#smMarketSelect');
+    if (marketSelect) {
+      marketSelect.onchange = (e) => {
+        activeMarket = e.target.value;
+        currentMutationIndex = 0;
+        renderSidebar();
+      };
+    }
+
     // Mutation Tabs
     sidebar.querySelectorAll('.sm-tab-btn').forEach(btn => {
       btn.onclick = () => {
@@ -773,22 +938,22 @@
     // Tone Badge toggle
     const toneBadge = sidebar.querySelector('#smToneBadge');
     if (toneBadge) {
-      const tones = ['Tone: Direct Hook', 'Tone: Data Breakdown', 'Tone: Story Paradox'];
-      let toneIdx = 0;
+      const tones = ['Direct Hook', 'Data Breakdown', 'Story Paradox'];
       toneBadge.onclick = () => {
-        toneIdx = (toneIdx + 1) % tones.length;
-        toneBadge.textContent = tones[toneIdx];
+        const nextIdx = (tones.indexOf(activeTone) + 1) % tones.length;
+        activeTone = tones[nextIdx];
+        renderSidebar();
       };
     }
 
     // Length Badge toggle
     const lengthBadge = sidebar.querySelector('#smLengthBadge');
     if (lengthBadge) {
-      const lengths = ['Length: 35s', 'Length: 45s', 'Length: 60s'];
-      let lengthIdx = 0;
+      const lengths = ['35s', '45s', '60s'];
       lengthBadge.onclick = () => {
-        lengthIdx = (lengthIdx + 1) % lengths.length;
-        lengthBadge.textContent = lengths[lengthIdx];
+        const nextIdx = (lengths.indexOf(activeLength) + 1) % lengths.length;
+        activeLength = lengths[nextIdx];
+        renderSidebar();
       };
     }
 
@@ -802,9 +967,18 @@
         syncBtn.style.opacity = '0.8';
 
         try {
+          const list = SCRIPT_MUTATIONS[activeMarket] || SCRIPT_MUTATIONS.career;
+          const cur = list[currentMutationIndex];
+          const hookText = sidebar.querySelector('#smHookText')?.textContent || cur.hook;
+          const thesisText = sidebar.querySelector('#smThesisText')?.textContent || cur.thesis;
+          const ctaText = sidebar.querySelector('#smCtaText')?.textContent || cur.cta;
+
           const payload = {
             repo: 'humangeek77-star/stitchmatrix-social-virality-dashboard',
-            scriptMutation: SCRIPT_MUTATIONS[currentMutationIndex],
+            scriptMutation: { ...cur, hook: hookText, thesis: thesisText, cta: ctaText },
+            marketVector: activeMarket,
+            tone: activeTone,
+            length: activeLength,
             url: window.location.href,
             syncedAt: new Date().toISOString()
           };
@@ -838,8 +1012,10 @@
     const copyText = sidebar.querySelector('#smCopyBtnText');
     if (copyBtn && copyText) {
       copyBtn.onclick = () => {
-        const cur = SCRIPT_MUTATIONS[currentMutationIndex];
-        const formatted = `01 | Hook Element:\n${cur.hook}\n\n02 | Core Thesis:\n${cur.thesis}\n\n03 | Retentive Call-To-Action:\n${cur.cta}`;
+        const hookText = sidebar.querySelector('#smHookText')?.textContent || '';
+        const thesisText = sidebar.querySelector('#smThesisText')?.textContent || '';
+        const ctaText = sidebar.querySelector('#smCtaText')?.textContent || '';
+        const formatted = `01 | Hook Element:\n${hookText}\n\n02 | Core Thesis:\n${thesisText}\n\n03 | Retentive Call-To-Action:\n${ctaText}`;
         navigator.clipboard.writeText(formatted).then(() => {
           const original = copyText.textContent;
           copyText.textContent = '✓ Copied!';
@@ -852,7 +1028,8 @@
     const regenBtn = sidebar.querySelector('#smRegenerateBtn');
     if (regenBtn) {
       regenBtn.onclick = () => {
-        currentMutationIndex = (currentMutationIndex + 1) % SCRIPT_MUTATIONS.length;
+        const list = SCRIPT_MUTATIONS[activeMarket] || SCRIPT_MUTATIONS.career;
+        currentMutationIndex = (currentMutationIndex + 1) % list.length;
         renderSidebar();
       };
     }
@@ -894,5 +1071,5 @@
     });
   }
 
-  console.log('[StitchMatrix] Enterprise Studio Extension injected successfully.');
+  console.log('[StitchMatrix] Enterprise Studio Extension v2.4 initialized.');
 })();
