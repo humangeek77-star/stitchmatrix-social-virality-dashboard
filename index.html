@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"outline-variant":"#424754","surface-bright":"#39393c","primary-fixed":"#d8e2ff","on-tertiary-container":"#00311f","on-secondary-fixed":"#001c39","outline":"#8c909f","surface-container":"#1f1f22","secondary":"#a4c9ff","surface-container-low":"#1b1b1e","inverse-primary":"#005ac2","on-error-container":"#ffdad6","inverse-on-surface":"#303033","secondary-container":"#0267b8","tertiary-fixed-dim":"#4edea3","on-tertiary-fixed":"#002113","on-background":"#e4e1e6","primary-container":"#4d8eff","surface-variant":"#353438","on-primary-fixed":"#001a42","inverse-surface":"#e4e1e6","on-primary":"#002e6a","tertiary-fixed":"#6ffbbe","background":"#131316","primary-fixed-dim":"#adc6ff","surface-tint":"#adc6ff","on-secondary-fixed-variant":"#004883","on-secondary":"#00315d","tertiary":"#4edea3","surface-container-high":"#2a2a2d","surface-container-highest":"#353438","on-tertiary":"#003824","error":"#ffb4ab","on-surface":"#e4e1e6","primary":"#adc6ff","tertiary-container":"#00a572","surface-container-lowest":"#0e0e11","on-tertiary-fixed-variant":"#005236","on-surface-variant":"#c2c6d6","secondary-fixed":"#d4e3ff","on-primary-fixed-variant":"#004395","on-primary-container":"#00285d","surface":"#131316","on-secondary-container":"#d6e5ff","secondary-fixed-dim":"#a4c9ff","surface-dim":"#131316","error-container":"#93000a","on-error":"#690005"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem",full:"0.75rem"},spacing:{"margin-desktop":"2rem","space-xs":"0.25rem","space-lg":"1.25rem",gutter:"1rem","gutter-desktop":"1.5rem",margin:"1rem","space-md":"0.75rem","space-xl":"2rem","space-sm":"0.5rem"},fontFamily:{"headline-md":["Inter"],"headline-xl":["Inter"],"body-sm":["Inter"],"body-lg":["Inter"],"headline-lg":["Inter"],"label-sm":["JetBrains Mono"],"body-md":["Inter"],"code-md":["JetBrains Mono"],"headline-lg-mobile":["Inter"],"label-md":["JetBrains Mono"],"headline-xl-mobile":["Inter"],"code-sm":["JetBrains Mono"]},fontSize:{"headline-md":["18px",{lineHeight:"24px",letterSpacing:"-0.015em",fontWeight:"600"}],"headline-xl":["32px",{lineHeight:"40px",letterSpacing:"-0.025em",fontWeight:"700"}],"body-sm":["12px",{lineHeight:"16px",letterSpacing:"0",fontWeight:"400"}],"body-lg":["15px",{lineHeight:"22px",letterSpacing:"-0.01em",fontWeight:"400"}],"headline-lg":["24px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"600"}],"label-sm":["10px",{lineHeight:"14px",letterSpacing:"0.06em",fontWeight:"600"}],"body-md":["13px",{lineHeight:"18px",letterSpacing:"-0.005em",fontWeight:"400"}],"code-md":["13px",{lineHeight:"18px",letterSpacing:"-0.02em",fontWeight:"500"}],"headline-lg-mobile":["20px",{lineHeight:"28px",letterSpacing:"-0.015em",fontWeight:"600"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.04em",fontWeight:"600"}],"headline-xl-mobile":["24px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"700"}],"code-sm":["11px",{lineHeight:"16px",letterSpacing:"0",fontWeight:"500"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen"><aside class="fixed left-0 top-0 h-screen w-1/5 min-w-[280px] bg-surface-container-lowest z-50 flex flex-col justify-between py-space-lg px-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col gap-space-lg"><div class="px-space-sm flex flex-col gap-space-xs"><div class="flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="StitchMatrix Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WIhY5of-PcsSRudDcVNTMcJ6q-fmklodi41RzfrJX_vXTB5KgA2ZvvTcgkFQNouqIDdWWarUbWOgUf6jx2VT-8fte8M9PGYjPI5KsaJhl-nH2LLJ0jxadYlPgGVNXzaWHIVBMWWM_gAcMautalCsC157USFJ9QzPClQCJq1BGcthl4cHE9PKkNoPIL4THE_0J1vsz9hMsJOWLLgn5yc6SpfkT3hNp2KVCKxaM5P--Lxc4yQMGvaqPkTQwJ"/><span class="font-headline-md text-headline-md tracking-tight text-on-surface bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">StitchMatrix</span></div><div class="flex items-center gap-1.5 px-space-xs py-0.5 rounded-full bg-surface-container-high"><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary"></span></span></div></div><div class="flex items-center justify-between pt-1"><span class="font-label-sm text-label-sm text-outline uppercase">Engine Status</span><span class="font-code-sm text-code-sm text-secondary bg-surface-container px-space-xs py-0.5 rounded">v2.4-PROD</span></div></div><nav class="flex flex-col gap-space-xs" data-active-classes="bg-primary-container text-on-primary-container font-headline-md rounded-lg"><a aria-current="page" class="flex items-center justify-between px-space-md py-space-sm transition-colors bg-primary-container text-on-primary-container font-headline-md rounded-lg" data-path="dashboard-overview" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px]">space_dashboard</span><span class="font-body-md text-body-md">Dashboard Overview</span></div><span class="w-1.5 h-1.5 rounded-full bg-primary"></span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="velocity-monitor" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px]">monitoring</span><span class="font-body-md text-body-md">Velocity Monitor</span></div><span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-error-container text-on-error-container font-semibold animate-pulse">LIVE</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="ai-script-pipeline" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px]">neurology</span><span class="font-body-md text-body-md">AI Script Pipeline</span></div><span class="font-code-sm text-code-sm text-outline">4 RUN</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="connected-accounts" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px]">hub</span><span class="font-body-md text-body-md">Connected Accounts</span></div><div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-tertiary" title="TikTok"></span><span class="w-1.5 h-1.5 rounded-full bg-tertiary" title="Instagram"></span><span class="w-1.5 h-1.5 rounded-full bg-secondary" title="YouTube"></span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="settings-api-configuration" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px]">terminal</span><span class="font-body-md text-body-md">Settings / API Config</span></div><span class="material-symbols-outlined text-[14px] text-outline">tune</span></a></nav></div><div class="pt-space-md bg-surface-container-lowest"><div class="p-space-sm rounded-xl bg-surface-container-low flex flex-col gap-space-sm"><div class="flex items-center gap-space-sm"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_xpLrpbakO2CNeYJWlptejUR5syLcFNHN0wd_5u77PgIE6TrkepgV-Tsoaus8Pdn-S5WgvgXRxLu230HFjgo1dLCDCWcCT_HZR9G6OsTElbnNFwmn2Q3oahDFbfz1HypT9fXBjfSs70xIFvKHRB-9HZrobKkuMu2VbmWGjLKHno2D60ylQMsF9o18beSTEY27TOn6m-h52HXSlrK28RYlMbBtd81wqbmQLb_1HCOApsrmIcBEiGhgVQ"/><div class="flex flex-col min-w-0 flex-1"><span class="font-body-md text-body-md text-on-surface font-semibold truncate">Alex Rivera</span><span class="font-label-sm text-label-sm text-outline truncate">Lead Growth Eng</span></div></div><div class="flex items-center justify-between pt-space-xs"><span class="font-label-sm text-label-sm px-space-sm py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-semibold tracking-wider uppercase">Premium Tier</span><span class="material-symbols-outlined text-[16px] text-outline cursor-pointer hover:text-on-surface transition-colors">exit_to_app</span></div></div></div></aside><div class="pl-[20%]"><header class="fixed top-0 left-[20%] right-0 h-16 bg-surface/80 backdrop-blur-xl z-40 flex items-center justify-between px-gutter-desktop shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-sm bg-surface-container-low px-space-md py-space-xs rounded-lg"><span class="material-symbols-outlined text-[18px] text-outline">terminal</span><span class="font-code-sm text-code-sm text-on-surface-variant">cluster://us-east-viral.stitch.matrix:8080</span></div><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span><span class="font-label-sm text-label-sm text-tertiary uppercase">Real-Time Hijack Stream Active</span></div></div><div class="flex items-center gap-space-md"><nav class="hidden xl:flex items-center gap-space-md" data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded"><a aria-current="page" class="transition-colors bg-primary-container text-on-primary-container font-semibold rounded" data-path="dashboard-overview" href="#">Matrix Live</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="velocity-monitor" href="#">High-Frequency Feeds</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="ai-script-pipeline" href="#">Neural Synthesis</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="connected-accounts" href="#">Cluster Nodes</a></nav><div class="flex items-center gap-space-xs pl-space-md"><div class="p-space-xs text-on-surface-variant hover:text-on-surface rounded-lg hover:bg-surface-container-high transition-colors cursor-pointer"><span class="material-symbols-outlined text-[20px]">search</span></div><div class="relative p-space-xs text-on-surface-variant hover:text-on-surface rounded-lg hover:bg-surface-container-high transition-colors cursor-pointer"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-primary"></span></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_xpLrpbakO2CNeYJWlptejUR5syLcFNHN0wd_5u77PgIE6TrkepgV-Tsoaus8Pdn-S5WgvgXRxLu230HFjgo1dLCDCWcCT_HZR9G6OsTElbnNFwmn2Q3oahDFbfz1HypT9fXBjfSs70xIFvKHRB-9HZrobKkuMu2VbmWGjLKHno2D60ylQMsF9o18beSTEY27TOn6m-h52HXSlrK28RYlMbBtd81wqbmQLb_1HCOApsrmIcBEiGhgVQ"/></div></div></header><main class="w-full pt-16 min-h-screen bg-[#121214] bg-[radial-gradient(#1f1f22_1px,transparent_1px)] [background-size:16px_16px]"><div class="flex flex-col w-full p-gutter-desktop gap-space-lg text-on-surface">
+<!-- Top Real-Time Status Telemetry Bar -->
+<div class="w-full bg-surface-container-lowest rounded-xl p-space-md shadow-md flex flex-wrap items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-space-xs bg-surface-container-high px-space-sm py-1 rounded">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider">Matrix Live Telemetry</span>
+</div>
+<div class="h-4 w-[1px] bg-outline-variant/40 hidden sm:block"></div>
+<div class="flex items-center gap-space-xs font-code-sm text-code-sm text-on-surface-variant">
+<span class="text-outline">LATENCY:</span>
+<span class="text-tertiary">14ms</span>
+<span class="text-outline ml-space-xs">EDGE NODES:</span>
+<span class="text-secondary">48/48 ONLINE</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="flex items-center gap-1.5 font-code-sm text-code-sm bg-surface-container-low px-space-sm py-1 rounded text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-tertiary">electric_bolt</span>
+<span>VELOCITY ENGINE ACTIVE</span>
+</div>
+<div class="flex items-center gap-1 font-label-sm text-label-sm bg-primary/10 text-primary px-space-sm py-1 rounded">
+<span class="font-headline-md text-headline-md leading-none">•</span>
+<span>GLOBAL SCRAPE: 99.98%</span>
+</div>
+</div>
+</div>
+<!-- Main Grid (60/40 Split) -->
+<div class="w-full grid grid-cols-1 xl:grid-cols-12 gap-gutter-desktop items-start">
+<!-- LEFT COLUMN (60%): The Velocity Monitor Feed -->
+<section class="xl:col-span-7 flex flex-col gap-space-lg">
+<!-- Section Header -->
+<div class="bg-surface-container-low rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex flex-wrap items-center justify-between gap-space-md">
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-space-sm">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Real-Time Algorithmic Velocity Tracker</h2>
+</div>
+<p class="font-body-sm text-body-sm text-outline pl-space-md">High-frequency social video anomalies detected across global graph APIs.</p>
+</div>
+<div class="flex items-center gap-space-xs bg-surface-container-lowest px-space-sm py-1.5 rounded-lg">
+<span class="material-symbols-outlined text-primary text-[16px] animate-pulse">radar</span>
+<span class="font-code-sm text-code-sm text-primary uppercase font-bold tracking-wider">STREAMING 124 OPS/S</span>
+</div>
+</div>
+<!-- Metric / Filter Pills Row -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm pt-space-xs">
+<div class="flex flex-wrap items-center gap-space-xs">
+<button class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-surface-container text-on-surface font-label-sm text-label-sm hover:bg-surface-container-high transition-colors">
+<span class="text-tertiary material-symbols-outlined text-[14px]">bolt</span>
+<span>Spike Threshold: <strong class="text-primary">>300%</strong></span>
+<span class="material-symbols-outlined text-[12px] text-outline">expand_more</span>
+</button>
+<button class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-surface-container text-on-surface font-label-sm text-label-sm hover:bg-surface-container-high transition-colors">
+<span class="text-secondary material-symbols-outlined text-[14px]">stream</span>
+<span>Platform: <strong class="text-on-surface">All Channels</strong></span>
+<span class="material-symbols-outlined text-[12px] text-outline">expand_more</span>
+</button>
+<button class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-surface-container text-on-surface font-label-sm text-label-sm hover:bg-surface-container-high transition-colors">
+<span class="text-outline material-symbols-outlined text-[14px]">schedule</span>
+<span>Timeframe: <strong class="text-on-surface">Past 4 Hours</strong></span>
+<span class="material-symbols-outlined text-[12px] text-outline">expand_more</span>
+</button>
+</div>
+<div class="flex items-center gap-space-xs text-outline font-label-sm text-label-sm">
+<span>SORT:</span>
+<span class="text-primary cursor-pointer hover:underline">VIRALITY ACCEL ↓</span>
+</div>
+</div>
+</div>
+<!-- 2-Column Responsive Card Grid (9:16 Video Proportions) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<!-- CARD 1 (SELECTED / ACTIVE STATE) -->
+<div class="relative bg-surface-container-lowest rounded-xl p-space-sm shadow-xl flex flex-col gap-space-sm group cursor-pointer transition-all duration-200">
+<!-- Selection Glow Overlay -->
+<div class="absolute inset-0 rounded-xl pointer-events-none shadow-[0_0_24px_rgba(77,142,255,0.35)]"></div>
+<!-- Video Mockup Frame (9:16 approx) -->
+<div class="relative w-full aspect-[9/14] bg-surface-container-high rounded-lg overflow-hidden flex flex-col justify-between p-space-sm">
+<img class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-500" data-alt="A futuristic tech entrepreneur coding at a neon-lit cyberpunk workstation in dark mode with holographic code lines reflecting off his face and high-contrast blue rim lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBs2rDwT5O0paz6n-uho57Of40JYTjvFwUIYf3Eq3NILPb6KtG5sUIKu6aBHURt1ye6F4HHCiCX535xvnQ2zQDvaD__BN-2utyP5hZM-MWpR53eng2fUigLrFG76yFRetihm7cBNgfo9kTkwMWPoYvWelGgs1TnU6eDMT_6Fq3Sc4jWhscBkus_F_LOCEmTVEBZBhHYZAt8GgSh_47h_1hGI6CkBKur-yy--RY1LjwkCWQILSZevvWwZg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/30 to-black/60"></div>
+<!-- Top Overlay Badge -->
+<div class="relative z-10 flex items-start justify-between">
+<div class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-primary text-on-primary font-label-sm text-label-sm shadow-lg">
+<span class="material-symbols-outlined text-[14px] animate-pulse">local_fire_department</span>
+<span>+450% views/hr | Velocity Spike Alpha</span>
+</div>
+<span class="font-code-sm text-code-sm bg-black/70 backdrop-blur-md px-1.5 py-0.5 rounded text-on-surface">00:28</span>
+</div>
+<!-- Center Play Indicator -->
+<div class="relative z-10 self-center w-12 h-12 rounded-full bg-primary/90 flex items-center justify-center text-on-primary shadow-lg shadow-primary/30 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+<!-- Bottom Video Scrub Mini -->
+<div class="relative z-10 flex flex-col gap-1 w-full">
+<div class="w-full bg-white/20 h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[35%]"></div>
+</div>
+<div class="flex items-center justify-between font-code-sm text-code-sm text-on-surface/90">
+<span>00:03.42 [HOOK REGION]</span>
+<span class="text-tertiary">VIRAL DROP: 2.1%</span>
+</div>
+</div>
+</div>
+<!-- Metadata & Control Strip -->
+<div class="flex flex-col gap-space-xs p-1">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface font-semibold truncate">@growth_dev_marcus</span>
+<span class="material-symbols-outlined text-[16px] text-primary" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-primary/20 text-primary font-bold tracking-wide">SELECTED FOR HIJACK</span>
+</div>
+<div class="flex items-center justify-between text-outline font-label-sm text-label-sm pt-1">
+<div class="flex items-center gap-1 text-on-surface">
+<span class="material-symbols-outlined text-[15px] text-tertiary">trending_up</span>
+<span class="font-bold">1.4M views</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">share</span>
+<span>84.2k shares</span>
+</div>
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-[14px]">alt_route</span>
+<span>12 Clones</span>
+</div>
+</div>
+</div>
+</div>
+<!-- CARD 2 -->
+<div class="relative bg-surface-container-low rounded-xl p-space-sm shadow-md flex flex-col gap-space-sm group cursor-pointer hover:bg-surface-container transition-all">
+<div class="relative w-full aspect-[9/14] bg-surface-container-high rounded-lg overflow-hidden flex flex-col justify-between p-space-sm">
+<img class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-500" data-alt="A sleek minimalist tech presenter speaking into a broadcast microphone in a dim studio with blue ambient edge backlighting and software terminal screen blurred behind" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWZXjmryrilIYovytzh413eHwkv8IGSUrW2gkzF49aGj5nEstZq7fCpr0SZfXmPXGniPRdGMbMtS1PUyJYd1xuktHBfxi2FApcw7EI1fr8kiPpDMCi2thP5-_TplI-9L0I-p-NFCcm_QBpr4jWHSAqZu9CARxpnBzxAFP9mVUkArdGT-LLwymLzH6k9J1dMHFjr57JqiZRvI1dtBHUG9Ns8C6GWqhu_tjLgkfuseISPDhh7v93XyQOHg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-low via-surface-container-low/30 to-black/60"></div>
+<div class="relative z-10 flex items-start justify-between">
+<div class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-surface-container-highest/80 backdrop-blur-md text-secondary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px] text-secondary">trending_up</span>
+<span>+380% views/hr | Retention Glitch</span>
+</div>
+<span class="font-code-sm text-code-sm bg-black/70 backdrop-blur-md px-1.5 py-0.5 rounded text-on-surface">00:41</span>
+</div>
+<div class="relative z-10 self-center w-10 h-10 rounded-full bg-surface-container-highest/90 flex items-center justify-center text-on-surface group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+<div class="relative z-10 flex flex-col gap-1 w-full">
+<div class="w-full bg-white/20 h-1 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[15%]"></div>
+</div>
+<div class="flex items-center justify-between font-code-sm text-code-sm text-on-surface/70">
+<span>00:04.10 [INTRO]</span>
+<span class="text-secondary">ACCEL: +2.8x</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs p-1">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 min-w-0">
+<span class="font-body-lg text-body-lg text-on-surface font-semibold truncate">@techlead.kai</span>
+<span class="material-symbols-outlined text-[15px] text-outline">verified</span>
+</div>
+<button class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-bright transition-colors">INSPECT</button>
+</div>
+<div class="flex items-center justify-between text-outline font-label-sm text-label-sm pt-1">
+<div class="flex items-center gap-1 text-on-surface">
+<span class="material-symbols-outlined text-[15px] text-tertiary">trending_up</span>
+<span class="font-bold">920k views</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">share</span>
+<span>62k shares</span>
+</div>
+<div class="flex items-center gap-1 text-tertiary">
+<span class="material-symbols-outlined text-[14px]">bolt</span>
+<span>Tier 1 Hook</span>
+</div>
+</div>
+</div>
+</div>
+<!-- CARD 3 -->
+<div class="relative bg-surface-container-low rounded-xl p-space-sm shadow-md flex flex-col gap-space-sm group cursor-pointer hover:bg-surface-container transition-all">
+<div class="relative w-full aspect-[9/14] bg-surface-container-high rounded-lg overflow-hidden flex flex-col justify-between p-space-sm">
+<img class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-500" data-alt="Stock trading multi-display terminal with green and electric blue candlestick charts fluctuating rapidly in an ultra modern trading floor atmosphere" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFlWfHos1SBOf7-TJnbzldgbKH-_3OPm9-Txr_h8Uw_eslHPJLXXsuB0ugKtxFHzQsxjmRyGiC8RBP_wgKLA4RTlK-7GODT9SVxulcPC0vl315zaGN8LQcw1e_yWz4XMVJ-mU2mRuw5F04TKAnU9sReSU8MXkwNZ8ZAEg-T0Ihucie0G8bxuG0v8zxfIt4sODpggNUO48KBGq_5PL0YY2GuMExMQN0HGf8TgJMNv7GxCTIjrOvPm0jkA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-low via-surface-container-low/30 to-black/60"></div>
+<div class="relative z-10 flex items-start justify-between">
+<div class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-surface-container-highest/80 backdrop-blur-md text-tertiary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px] text-tertiary">repeat</span>
+<span>+510% views/hr | Algorithmic Loop</span>
+</div>
+<span class="font-code-sm text-code-sm bg-black/70 backdrop-blur-md px-1.5 py-0.5 rounded text-on-surface">00:19</span>
+</div>
+<div class="relative z-10 self-center w-10 h-10 rounded-full bg-surface-container-highest/90 flex items-center justify-center text-on-surface group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+<div class="relative z-10 flex flex-col gap-1 w-full">
+<div class="w-full bg-white/20 h-1 rounded-full overflow-hidden">
+<div class="bg-tertiary h-full w-[65%]"></div>
+</div>
+<div class="flex items-center justify-between font-code-sm text-code-sm text-on-surface/70">
+<span>00:02.15 [LOOP SYNC]</span>
+<span class="text-tertiary">RE-WATCH: 92%</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs p-1">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 min-w-0">
+<span class="font-body-lg text-body-lg text-on-surface font-semibold truncate">@finance_unfiltered</span>
+<span class="material-symbols-outlined text-[15px] text-primary" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<button class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-bright transition-colors">INSPECT</button>
+</div>
+<div class="flex items-center justify-between text-outline font-label-sm text-label-sm pt-1">
+<div class="flex items-center gap-1 text-on-surface">
+<span class="material-symbols-outlined text-[15px] text-tertiary">trending_up</span>
+<span class="font-bold">2.8M views</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">share</span>
+<span>140k shares</span>
+</div>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[14px]">sync</span>
+<span>Loop Glitch</span>
+</div>
+</div>
+</div>
+</div>
+<!-- CARD 4 -->
+<div class="relative bg-surface-container-low rounded-xl p-space-sm shadow-md flex flex-col gap-space-sm group cursor-pointer hover:bg-surface-container transition-all">
+<div class="relative w-full aspect-[9/14] bg-surface-container-high rounded-lg overflow-hidden flex flex-col justify-between p-space-sm">
+<img class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-500" data-alt="Female software developer brainstorming on a glass whiteboard covered in system architecture diagrams with dramatic deep blue illumination and glowing neon markers" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAaDYsueG-nGpSTofGPbrnm3Nky67MAXPS6uJcmQCtJagLTyQwUMtkAO48yDOTTWlMlFk_CuD3VJr99CrbRjL17kfnnlGfw7hfnzG6IqEnV1YCcnslweQ2dncEIv8U29eRIWwdbGSTvgHBeMME7aUR2x6kyJtJjO1FVR57ZOSavszjSfVWopOXqCW5XkCcSf4-ip3YLUrADvWsv4AbXHbW4APF-KLPkWvOOUh8Ry_POHa3vhtoJemzUA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-low via-surface-container-low/30 to-black/60"></div>
+<div class="relative z-10 flex items-start justify-between">
+<div class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-surface-container-highest/80 backdrop-blur-md text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px] text-primary">graphic_eq</span>
+<span>+295% views/hr | Audio Trend Surge</span>
+</div>
+<span class="font-code-sm text-code-sm bg-black/70 backdrop-blur-md px-1.5 py-0.5 rounded text-on-surface">00:34</span>
+</div>
+<div class="relative z-10 self-center w-10 h-10 rounded-full bg-surface-container-highest/90 flex items-center justify-center text-on-surface group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+<div class="relative z-10 flex flex-col gap-1 w-full">
+<div class="w-full bg-white/20 h-1 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full w-[45%]"></div>
+</div>
+<div class="flex items-center justify-between font-code-sm text-code-sm text-on-surface/70">
+<span>00:03.90 [AUDIO SYNC]</span>
+<span class="text-primary">AUDIO: VIRAL #4</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs p-1">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 min-w-0">
+<span class="font-body-lg text-body-lg text-on-surface font-semibold truncate">@saas.builder.zoe</span>
+<span class="material-symbols-outlined text-[15px] text-outline">verified</span>
+</div>
+<button class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-bright transition-colors">INSPECT</button>
+</div>
+<div class="flex items-center justify-between text-outline font-label-sm text-label-sm pt-1">
+<div class="flex items-center gap-1 text-on-surface">
+<span class="material-symbols-outlined text-[15px] text-tertiary">trending_up</span>
+<span class="font-bold">680k views</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">share</span>
+<span>41k shares</span>
+</div>
+<div class="flex items-center gap-1 text-outline">
+<span class="material-symbols-outlined text-[14px]">queue_music</span>
+<span>Original Beat</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Feed Pagination / Load Telemetry -->
+<div class="w-full bg-surface-container-lowest rounded-lg p-space-sm flex items-center justify-between text-outline font-label-sm text-label-sm">
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span>4 VIRAL ANOMALIES BUFFERED</span>
+</div>
+<div class="flex items-center gap-space-sm font-code-sm text-code-sm">
+<span>PAGE 01 / 18</span>
+<button class="px-space-sm py-1 bg-surface-container rounded text-on-surface hover:bg-surface-container-high transition-colors">LOAD 10 NEXT NODES →</button>
+</div>
+</div>
+</section>
+<!-- RIGHT COLUMN (40%): The Script Matrix Context Window -->
+<aside class="xl:col-span-5 flex flex-col gap-space-md">
+<!-- Context Window Root Card -->
+<div class="bg-surface-container-low rounded-xl p-space-lg shadow-xl flex flex-col gap-space-md">
+<!-- 1. Context Header -->
+<div class="flex flex-col gap-space-xs pb-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">psychology</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Script Matrix Context Window</h3>
+</div>
+<span class="font-label-sm text-label-sm bg-tertiary/10 text-tertiary px-space-xs py-0.5 rounded uppercase">Neural Synced</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="font-code-sm text-code-sm text-outline">Target Node:</span>
+<div class="flex items-center gap-1 px-space-sm py-0.5 rounded bg-surface-container-highest text-secondary font-code-sm text-code-sm">
+<span class="font-bold">@growth_dev_marcus</span>
+<span class="text-outline-variant font-normal">(ID #VX-9982)</span>
+</div>
+</div>
+</div>
+<!-- 2. Video Detail Zone (Split Preview Panel) -->
+<div class="flex flex-col gap-space-xs">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Hook Dissection Telemetry</span>
+<div class="grid grid-cols-2 gap-space-sm">
+<!-- Left Side: Viral Snippet Thumbnail & Spectrogram -->
+<div class="relative bg-surface-container-lowest rounded-lg p-space-xs flex flex-col justify-between overflow-hidden">
+<div class="relative w-full h-24 rounded bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close up dynamic face of tech speaker gesturing urgently with hand towards camera with neon cyan blue backlit rim in a high resolution viral video frame" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcEl6FeZpHPdSpTRcjzjmBcsDV0wCahPqyONXk-FiX31MDGLA1pg5PpOinIgN34pjEL_smwffV32x0LrvbJsBgNOFd-cYBvIZQGbuDF7gQJ0PqswFbRvrTBF2eZe5xl1tOJq_gfu9uT55wuVNQA_1jtdpBraaQuYxJ5gorfadoLeCCTIPoIM2S4LccdKZNZNygpU3IOdraPWawUZXNYdjGZi_fBG_M2xrFNtr385V19ccPErLrQnKDXw"/>
+<div class="absolute bottom-1 right-1 px-1 py-0.5 bg-black/80 rounded font-code-sm text-[10px] text-on-surface">00:03.42</div>
+<div class="absolute top-1 left-1 px-1 py-0.5 bg-primary/80 rounded font-label-sm text-[9px] text-on-primary">VIRAL APEX</div>
+</div>
+<!-- Audio Wave Spectrogram SVG -->
+<div class="pt-space-xs flex flex-col gap-1">
+<div class="flex items-center justify-between font-label-sm text-label-sm text-outline">
+<span>AUDIO FREQ</span>
+<span class="text-tertiary font-code-sm">PEAK: +4.2dB</span>
+</div>
+<svg class="w-full h-6 text-primary" fill="none" viewbox="0 0 200 24">
+<path d="M0 12 L10 12 L15 3 L20 21 L25 8 L30 16 L35 12 L45 12 L50 2 L55 22 L60 6 L65 18 L70 12 L85 12 L90 1 L95 23 L100 4 L105 20 L110 12 L125 12 L130 5 L135 19 L140 12 L155 12 L160 3 L165 21 L170 8 L175 16 L180 12 L200 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+</svg>
+</div>
+</div>
+<!-- Right Side: Isolated Cliffhanger Frame -->
+<div class="relative bg-surface-container-lowest rounded-lg p-space-sm flex flex-col justify-between overflow-hidden shadow-[inset_0_0_12px_rgba(77,142,255,0.15)]">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-primary font-bold">CLIFFHANGER CAPTURE</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
+</div>
+<div class="my-space-xs p-space-xs bg-surface-container/60 rounded flex flex-col gap-0.5">
+<span class="font-code-sm text-code-sm text-on-surface font-semibold">[00:03.42s] Drop-off Hook</span>
+<p class="font-body-sm text-[11px] text-on-surface-variant line-clamp-2">"Here's the exact matrix script they don't want you cloning..."</p>
+</div>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-outline">
+<span>AI RETENTION PREDICT</span>
+<span class="text-tertiary font-bold">88.4% KEEP</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 3. Niche Dropdown Filter & Generation Parameters -->
+<div class="flex flex-col gap-space-sm bg-surface-container-lowest p-space-md rounded-lg">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Target Niche Adaptation</label>
+<div class="relative">
+<select class="w-full bg-surface-container-high text-on-surface px-space-md py-space-sm rounded font-body-md text-body-md appearance-none cursor-pointer focus:outline-none">
+<option selected="" value="career-tech">Career / Tech Coach (High Conversion Vector)</option>
+<option value="real-estate">Real Estate Agent (Local Market Arbitrage)</option>
+<option value="finance-wealth">Finance / Wealth (Algorithmic Trading Angle)</option>
+<option value="custom">Custom Niche Calibration...</option>
+</select>
+<span class="material-symbols-outlined text-[18px] text-outline absolute right-3 top-2.5 pointer-events-none">unfold_more</span>
+</div>
+</div>
+<!-- Parameter Badges Strip -->
+<div class="flex flex-wrap items-center gap-space-xs pt-1">
+<span class="flex items-center gap-1 px-space-sm py-0.5 bg-surface-container text-on-surface-variant font-label-sm text-label-sm rounded">
+<span class="text-primary material-symbols-outlined text-[13px]">adjust</span>
+<span>Tone: <strong>Aggressive Hook</strong></span>
+</span>
+<span class="flex items-center gap-1 px-space-sm py-0.5 bg-surface-container text-on-surface-variant font-label-sm text-label-sm rounded">
+<span class="text-secondary material-symbols-outlined text-[13px]">timer</span>
+<span>Length: <strong>35s</strong></span>
+</span>
+<span class="flex items-center gap-1 px-space-sm py-0.5 bg-surface-container text-tertiary font-label-sm text-label-sm rounded">
+<span class="material-symbols-outlined text-[13px]">neurology</span>
+<span>Model: <strong>GPT-4o Virality Matrix</strong></span>
+</span>
+</div>
+</div>
+<!-- 4. AI Script Output Box (Terminal Style) -->
+<div class="flex flex-col rounded-lg overflow-hidden bg-[#0E0E11] shadow-2xl">
+<!-- Terminal Header Bar -->
+<div class="bg-surface-container px-space-md py-space-xs flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[15px]">code</span>
+<span class="font-code-sm text-code-sm text-on-surface font-semibold">generated_hijack_script.md</span>
+</div>
+<div class="flex items-center gap-space-sm font-label-sm text-label-sm text-outline">
+<span>Tokens: <strong class="text-on-surface">382</strong></span>
+<span class="text-outline-variant">•</span>
+<span>Est. CTR: <strong class="text-tertiary">8.4%</strong></span>
+<span class="text-outline-variant">•</span>
+<span>Virality Index: <strong class="text-primary font-bold">94/100</strong></span>
+</div>
+</div>
+<!-- Script Content Area with Line Numbers -->
+<div class="p-space-md font-code-md text-code-md text-on-surface flex gap-space-md overflow-x-auto leading-relaxed selection:bg-primary-container selection:text-on-primary-container">
+<!-- Gutter Line Numbers -->
+<div class="flex flex-col text-outline-variant select-none text-right font-code-sm pr-space-xs">
+<span>01</span>
+<span>02</span>
+<span>03</span>
+<span>04</span>
+<span>05</span>
+<span>06</span>
+<span>07</span>
+<span>08</span>
+<span>09</span>
+<span>10</span>
+<span>11</span>
+<span>12</span>
+<span>13</span>
+<span>14</span>
+</div>
+<!-- Monospace Code Payload -->
+<div class="flex flex-col gap-1 w-full min-w-[280px]">
+<div>
+<span class="text-primary font-bold">[HOOK - 00:00 to 00:03]</span>
+<span class="text-outline text-label-sm ml-2">(Matches Cliffhanger Frame)</span>
+</div>
+<p class="text-on-surface pl-space-sm italic">
+                “Most engineers think high-velocity traffic is luck. Here's the exact matrix script they don't want you cloning...”
+              </p>
+<div class="pt-space-xs">
+<span class="text-secondary font-bold">[BODY - 00:03 to 00:22]</span>
+<span class="text-outline text-label-sm ml-2">(Algorithmic Transition)</span>
+</div>
+<div class="text-on-surface-variant pl-space-sm flex flex-col gap-0.5">
+<p><span class="text-tertiary">Step 1:</span> Intercept the 3-second cliffhanger dropoff.</p>
+<p><span class="text-tertiary">Step 2:</span> Re-frame the technical insight for tech job seekers.</p>
+<p><span class="text-tertiary">Step 3:</span> Deploy the dynamic hook variable & run latency test.</p>
+</div>
+<div class="pt-space-xs">
+<span class="text-tertiary-fixed font-bold">[CALL TO ACTION - 00:22 to 00:30]</span>
+</div>
+<p class="text-on-surface pl-space-sm">
+                “Grab the open-source script pipeline in my GitHub repo right now. Link in bio.”
+              </p>
+</div>
+</div>
+<!-- Terminal Status Footer -->
+<div class="px-space-md py-1 bg-surface-container-lowest flex items-center justify-between font-label-sm text-label-sm text-outline">
+<span class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+<span>SYNTAX COMPILED: READY TO INJECT</span>
+</span>
+<span class="font-code-sm text-outline-variant">UTF-8 // LF</span>
+</div>
+</div>
+<!-- 5. Primary CTA Action Zone -->
+<div class="flex flex-col gap-space-sm pt-space-xs">
+<!-- Primary Deploy CTA -->
+<button class="w-full bg-primary text-on-primary py-space-sm px-space-md rounded font-headline-md text-headline-md flex items-center justify-center gap-space-sm shadow-lg shadow-primary/25 hover:bg-primary-container transition-all active:scale-[0.99] cursor-pointer">
+<span class="material-symbols-outlined text-[20px]">terminal</span>
+<span>Export to GitHub Repo Assets</span>
+</button>
+<!-- Secondary Clipboard CTA -->
+<button class="w-full bg-surface-container-high text-on-surface py-space-sm px-space-md rounded font-body-lg text-body-lg flex items-center justify-center gap-space-sm hover:bg-surface-bright transition-colors cursor-pointer" id="copyScriptBtn">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+<span>Copy Optimized Prompt Script to Clipboard</span>
+</button>
+<!-- Auxiliary Micro Actions -->
+<div class="grid grid-cols-2 gap-space-sm pt-1">
+<button class="flex items-center justify-center gap-1.5 px-space-sm py-1.5 bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm rounded hover:text-on-surface hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[14px] text-secondary">autorenew</span>
+<span>Regenerate Hook Variation</span>
+</button>
+<button class="flex items-center justify-center gap-1.5 px-space-sm py-1.5 bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm rounded hover:text-on-surface hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[14px] text-tertiary">send</span>
+<span>Send to Buffer / Later API</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Quick Telemetry Footnote Widget -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md flex items-center justify-between text-outline font-label-sm text-label-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-outline text-[18px]">security</span>
+<span>ANTIDETECT FINGERPRINT: <strong>HASH-OK #99014</strong></span>
+</div>
+<span class="text-primary font-code-sm">ZERO SHADOWBAN DETECTED</span>
+</div>
+</aside>
+</div>
+<!-- Interactive script for copy action feedback -->
+<script>
+    (function() {
+      const copyBtn = document.getElementById('copyScriptBtn');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', function() {
+          const originalText = copyBtn.innerHTML;
+          copyBtn.innerHTML = '<span class="material-symbols-outlined text-[18px] text-tertiary">check_circle</span><span class="text-tertiary font-bold">Script Copied to Clipboard!</span>';
+          setTimeout(() => {
+            copyBtn.innerHTML = originalText;
+          }, 2400);
+        });
+      }
+    })();
+  </script>
+</div></main></div></body></html>
