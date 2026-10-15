@@ -24,27 +24,210 @@
   const WORKER_BASE = 'https://stitchmatrix-api.humangeek77.workers.dev';
 
   // Real-time DOM Context Detector for Social Video Players
+  // Universal Active Video & Context Detector for TikTok, Instagram Reels, and YouTube Shorts
   function detectVideoContext() {
-    const url = window.location.href;
-    let platform = 'YouTube Shorts';
+    let url = window.location.href;
+    let platform = 'Social Video';
     let title = '';
     let author = '';
+    let videoId = '';
 
     try {
+      // =======================================================================
+      // 1. TIKTOK DETECTION ENGINE
+      // =======================================================================
       if (url.includes('tiktok.com')) {
         platform = 'TikTok';
-        const descEl = document.querySelector('[data-e2e="browse-video-desc"], [data-e2e="video-desc"], h1, .video-meta-title');
-        const authorEl = document.querySelector('[data-e2e="browser-nickname"], [data-e2e="user-title"], .author-uniqueId');
-        if (descEl?.textContent?.trim()) title = descEl.textContent.trim();
-        if (authorEl?.textContent?.trim()) author = authorEl.textContent.trim();
-      } else if (url.includes('youtube.com')) {
+
+        const videos = Array.from(document.querySelectorAll('video'));
+        let activeVideo = null;
+
+        // 1a. Playing video
+        activeVideo = videos.find(v => !v.paused && v.currentTime > 0);
+
+        // 1b. Video fully visible within viewport
+        if (!activeVideo && videos.length > 0) {
+          activeVideo = videos.find(v => {
+            const rect = v.getBoundingClientRect();
+            return rect.top >= 0 && rect.bottom <= window.innerHeight && rect.height > 60;
+          });
+        }
+
+        // 1c. Video closest to viewport center
+        if (!activeVideo && videos.length > 0) {
+          const midY = window.innerHeight / 2;
+          let bestDist = Infinity;
+          for (const v of videos) {
+            const rect = v.getBoundingClientRect();
+            if (rect.height > 60) {
+              const dist = Math.abs(rect.top + rect.height / 2 - midY);
+              if (dist < bestDist) {
+                bestDist = dist;
+                activeVideo = v;
+              }
+            }
+          }
+        }
+
+        if (activeVideo) {
+          const container = activeVideo.closest('[data-e2e="recommend-list-item-container"]')
+            || activeVideo.closest('div[class*="DivItemContainer"]')
+            || activeVideo.closest('div[class*="DivVideoFeedList"] > div')
+            || activeVideo.closest('div[class*="DivBrowserModeContainer"]')
+            || activeVideo.closest('[data-e2e="user-post-item"]')
+            || activeVideo.closest('[data-e2e="browse-video"]')
+            || activeVideo.closest('article')
+            || activeVideo.parentElement?.parentElement?.parentElement;
+
+          if (container) {
+            const descEl = container.querySelector(
+              '[data-e2e="video-desc"], [data-e2e="browse-video-desc"], [class*="DivDescription"], [class*="SpanText"], [class*="desc"], h1, h2, div[data-e2e="search-card-video-caption"]'
+            );
+            const authorEl = container.querySelector(
+              '[data-e2e="video-author-uniqueid"], [data-e2e="browse-username"], [data-e2e="user-title"], [data-e2e="author-uniqueId"], [class*="AuthorTitle"], [class*="author"], a[href*="/@"]'
+            );
+            const linkEl = container.querySelector('a[href*="/video/"]');
+
+            if (descEl?.textContent?.trim()) title = descEl.textContent.trim();
+            if (authorEl?.textContent?.trim()) author = authorEl.textContent.trim();
+            if (linkEl?.href) {
+              url = linkEl.href;
+              const m = url.match(/\/video\/(\d+)/);
+              if (m) videoId = m[1];
+            }
+          }
+        }
+
+        // Fallbacks for TikTok single video view / modal
+        if (!title) {
+          const descEl = document.querySelector(
+            '[data-e2e="browse-video-desc"], [data-e2e="video-desc"], [class*="H1VideoTitle"], [class*="DivDescription"], h1, .video-meta-title'
+          );
+          if (descEl?.textContent?.trim()) title = descEl.textContent.trim();
+        }
+
+        if (!author) {
+          const authorEl = document.querySelector(
+            '[data-e2e="browse-username"], [data-e2e="video-author-uniqueid"], [data-e2e="user-title"], [data-e2e="browser-nickname"], [data-e2e="author-uniqueId"], .author-uniqueId'
+          );
+          if (authorEl?.textContent?.trim()) author = authorEl.textContent.trim();
+        }
+
+        if (!videoId) {
+          const m = url.match(/\/video\/(\d+)/);
+          if (m) videoId = m[1];
+        }
+
+        // Title parsing from document.title if empty
+        if (!title && document.title && document.title.includes('TikTok')) {
+          const quoteMatch = document.title.match(/["“](.*?)["”]/);
+          if (quoteMatch && quoteMatch[1].length > 2) {
+            title = quoteMatch[1];
+          } else {
+            title = document.title.replace(/\s*\|\s*TikTok.*/i, '').replace(/.*on TikTok:\s*/i, '').trim();
+          }
+        }
+      }
+
+      // =======================================================================
+      // 2. INSTAGRAM REELS DETECTION ENGINE
+      // =======================================================================
+      else if (url.includes('instagram.com')) {
+        platform = 'Instagram Reels';
+
+        const videos = Array.from(document.querySelectorAll('video'));
+        let activeVideo = null;
+
+        // 2a. Playing video
+        activeVideo = videos.find(v => !v.paused && v.currentTime > 0);
+
+        // 2b. Video fully visible within viewport
+        if (!activeVideo && videos.length > 0) {
+          activeVideo = videos.find(v => {
+            const rect = v.getBoundingClientRect();
+            return rect.top >= 0 && rect.bottom <= window.innerHeight && rect.height > 80;
+          });
+        }
+
+        // 2c. Video closest to viewport center
+        if (!activeVideo && videos.length > 0) {
+          const midY = window.innerHeight / 2;
+          let bestDist = Infinity;
+          for (const v of videos) {
+            const rect = v.getBoundingClientRect();
+            if (rect.height > 80) {
+              const dist = Math.abs(rect.top + rect.height / 2 - midY);
+              if (dist < bestDist) {
+                bestDist = dist;
+                activeVideo = v;
+              }
+            }
+          }
+        }
+
+        if (activeVideo) {
+          const container = activeVideo.closest('article')
+            || activeVideo.closest('div[role="presentation"]')
+            || activeVideo.closest('div[class*="x1qjc9v5"]')
+            || activeVideo.closest('div[class*="x1n2onr6"]')
+            || activeVideo.closest('section')
+            || activeVideo.parentElement?.parentElement?.parentElement;
+
+          if (container) {
+            const captionEl = container.querySelector(
+              'h1, span._aacl, div._a9zs, span._aaco, span[class*="x193iq5w"], div[class*="x1lliihq"] span'
+            );
+            const authorEl = container.querySelector(
+              'header a, span._ap3a, a[role="link"][href^="/"], a[class*="x1i10hfl"][href*="/"]'
+            );
+            const linkEl = container.querySelector('a[href*="/reel/"], a[href*="/reels/"], a[href*="/p/"]');
+
+            if (captionEl?.textContent?.trim()) title = captionEl.textContent.trim();
+            if (authorEl?.textContent?.trim()) author = authorEl.textContent.trim();
+            if (linkEl?.href) {
+              url = linkEl.href;
+              const m = url.match(/\/(reels?|p)\/([a-zA-Z0-9_-]+)/);
+              if (m) videoId = m[2];
+            }
+          }
+        }
+
+        // Fallbacks for Instagram single reel / explore modal
+        if (!title) {
+          const captionEl = document.querySelector('article h1, article span._aacl, article div._a9zs, h1');
+          if (captionEl?.textContent?.trim()) title = captionEl.textContent.trim();
+        }
+
+        if (!author) {
+          const authorEl = document.querySelector('header a, span._ap3a, article header a');
+          if (authorEl?.textContent?.trim()) author = authorEl.textContent.trim();
+        }
+
+        if (!videoId) {
+          const m = url.match(/\/(reels?|p)\/([a-zA-Z0-9_-]+)/);
+          if (m) videoId = m[2];
+        }
+
+        // Instagram document.title parsing
+        if (!title && document.title && document.title.includes('Instagram')) {
+          const quoteMatch = document.title.match(/["“](.*?)["”]/);
+          if (quoteMatch && quoteMatch[1].length > 2) {
+            title = quoteMatch[1];
+          } else {
+            title = document.title.replace(/\s*•\s*Instagram photos and videos.*/i, '').replace(/.*on Instagram:\s*/i, '').trim();
+          }
+        }
+      }
+
+      // =======================================================================
+      // 3. YOUTUBE SHORTS DETECTION ENGINE
+      // =======================================================================
+      else if (url.includes('youtube.com')) {
         platform = 'YouTube Shorts';
 
-        // 1. Look for currently active reel video renderer in YouTube Shorts
         const reels = Array.from(document.querySelectorAll('ytd-reel-video-renderer'));
         let activeReel = reels.find(r => r.hasAttribute('is-active'));
 
-        // If not flagged with is-active, check which reel has a currently playing video
         if (!activeReel && reels.length > 0) {
           activeReel = reels.find(r => {
             const v = r.querySelector('video');
@@ -52,7 +235,6 @@
           });
         }
 
-        // If still not found, pick the one closest to screen center
         if (!activeReel && reels.length > 0) {
           const midY = window.innerHeight / 2;
           let bestDist = Infinity;
@@ -79,7 +261,6 @@
           if (aEl?.textContent?.trim()) author = aEl.textContent.trim();
         }
 
-        // 2. Fallback selectors in Shorts header
         if (!title) {
           const headerTitle = document.querySelector(
             'ytd-shorts-player-header-renderer #text, #title.ytd-reel-player-header-renderer, .ytReelMetamodelViewModelHostTitle, h1.title, h2.title'
@@ -87,7 +268,6 @@
           if (headerTitle?.textContent?.trim()) title = headerTitle.textContent.trim();
         }
 
-        // 3. Fallback to document title
         if (!title && document.title && !document.title.includes('YouTube Shorts')) {
           title = document.title.replace(' - YouTube', '').trim();
         }
@@ -96,44 +276,44 @@
           const genericAuthor = document.querySelector('#channel-name, .ytd-channel-name, #text.ytd-channel-name');
           if (genericAuthor?.textContent?.trim()) author = genericAuthor.textContent.trim();
         }
-      } else if (url.includes('instagram.com')) {
-        platform = 'Instagram Reels';
-        const captionEl = document.querySelector('article h1, article span._aacl, article div._a9zs');
-        const authorEl = document.querySelector('header a, span._ap3a');
-        if (captionEl?.textContent?.trim()) title = captionEl.textContent.trim();
-        if (authorEl?.textContent?.trim()) author = authorEl.textContent.trim();
+
+        const m = url.match(/\/shorts\/([a-zA-Z0-9_-]+)/);
+        if (m) videoId = m[1];
       }
     } catch (e) {
-      // Graceful fallback
+      // Graceful error recovery
     }
 
     if (!title) title = 'Active Viral Video';
     if (!author) author = '@creator';
+    if (!author.startsWith('@') && !author.includes(' ')) author = '@' + author;
 
     let displayTitle = title;
     if (displayTitle.length > 68) displayTitle = displayTitle.slice(0, 65) + '...';
 
-    return { platform, title, displayTitle, author, url };
+    return { platform, title, displayTitle, author, url, videoId };
   }
 
   function extractSubject(rawTitle) {
     if (!rawTitle || rawTitle === 'Active Viral Video') return 'this viral moment';
     let clean = rawTitle
-      .replace(/#\w+/g, '')
+      .replace(/#[\p{L}\p{N}_]+/gu, '') // Unicode-aware hashtag stripping
       .replace(/\|.*$/g, '')
       .replace(/\[.*?\]/g, '')
       .replace(/\(.*?\)/g, '')
       .replace(/[-–—].*$/g, '')
       .replace(/\b(official trailer|episode \d+|reimagined|shorts|viral|4k|hd|part \d+)\b/gi, '')
-      .replace(/[^\w\s'&]/gi, '')
+      .replace(/[^\p{L}\p{N}\s'&.,!?-]/gu, '') // Preserve all international letters
       .trim();
-    if (clean.length < 3) clean = rawTitle.slice(0, 40).trim();
+    if (clean.length < 3) clean = rawTitle.replace(/#[\p{L}\p{N}_]+/gu, '').slice(0, 40).trim();
+    if (clean.length < 2) clean = 'this viral moment';
     return clean;
   }
 
   function generateDynamicHashtags(rawTitle) {
     const words = rawTitle
-      .replace(/[^\w\s]/gi, '')
+      .replace(/#[\p{L}\p{N}_]+/gu, '')
+      .replace(/[^\p{L}\p{N}\s]/gu, '')
       .split(/\s+/)
       .filter(w => w.length > 3 && !['this', 'that', 'with', 'from', 'have', 'were', 'what', 'epic', 'part', 'episode'].includes(w.toLowerCase()));
     
@@ -1164,6 +1344,16 @@
       bannerEl.classList.add('pulse-active');
       setTimeout(() => bannerEl.classList.remove('pulse-active'), 500);
     }
+
+    // Also update QR modal if currently open
+    const phoneModal = sidebar.querySelector('#smPhoneModal');
+    const qrImage = sidebar.querySelector('#smQrImage');
+    const mobileLinkInput = sidebar.querySelector('#smMobileLinkInput');
+    if (phoneModal && phoneModal.classList.contains('active') && qrImage && mobileLinkInput) {
+      const mobileUrl = getMobileCompanionUrl();
+      qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=2&data=${encodeURIComponent(mobileUrl)}`;
+      mobileLinkInput.value = mobileUrl;
+    }
   }
 
   function checkAndAutoUpdate() {
@@ -1171,7 +1361,13 @@
 
     const newContext = detectVideoContext();
 
-    if (newContext.title && newContext.title !== currentContext.title && newContext.title !== 'Active Viral Video') {
+    const titleChanged = newContext.title && newContext.title !== currentContext.title && newContext.title !== 'Active Viral Video';
+    const idChanged = newContext.videoId && newContext.videoId !== currentContext.videoId;
+    const urlChanged = newContext.url && newContext.url !== currentContext.url;
+    const authorChanged = newContext.author && newContext.author !== currentContext.author && newContext.author !== '@creator';
+    const wasPlaceholder = currentContext.title === 'Active Viral Video' && newContext.title && newContext.title !== 'Active Viral Video';
+
+    if (titleChanged || idChanged || wasPlaceholder || (urlChanged && (authorChanged || newContext.title !== 'Active Viral Video'))) {
       const activeEl = shadow.activeElement;
       if (activeEl && activeEl.isContentEditable) return;
 
@@ -1179,7 +1375,7 @@
       generatedScripts = buildViralScripts(currentContext);
 
       updateLiveContent(true);
-      showToast(`⚡ Remixed for: "${currentContext.displayTitle.slice(0, 26)}..."`);
+      showToast(`⚡ Remixed: "${currentContext.displayTitle.slice(0, 26)}..."`);
     }
   }
 
@@ -1740,26 +1936,67 @@
   shadow.appendChild(sidebar);
 
   // AUTOMATED REAL-TIME VIDEO DETECTION & LIVE RE-SYNC ENGINE
-  document.addEventListener('play', () => {
+  // 1. Intercept SPA URL routing for TikTok, Instagram Reels, and YouTube
+  try {
+    const origPush = history.pushState;
+    history.pushState = function (...args) {
+      const res = origPush.apply(this, args);
+      setTimeout(checkAndAutoUpdate, 120);
+      setTimeout(checkAndAutoUpdate, 450);
+      return res;
+    };
+
+    const origReplace = history.replaceState;
+    history.replaceState = function (...args) {
+      const res = origReplace.apply(this, args);
+      setTimeout(checkAndAutoUpdate, 120);
+      setTimeout(checkAndAutoUpdate, 450);
+      return res;
+    };
+  } catch (e) {}
+
+  window.addEventListener('popstate', () => {
+    setTimeout(checkAndAutoUpdate, 120);
+  });
+
+  // 2. User Clicks (advancing feed, clicking video, clicking next arrow, clicking comments/feed)
+  document.addEventListener('click', (e) => {
+    if (host.contains(e.target)) return;
     setTimeout(checkAndAutoUpdate, 150);
+    setTimeout(checkAndAutoUpdate, 500);
   }, true);
 
+  // 3. Media Playback Events
+  document.addEventListener('play', () => {
+    setTimeout(checkAndAutoUpdate, 120);
+  }, true);
+
+  document.addEventListener('playing', () => {
+    setTimeout(checkAndAutoUpdate, 100);
+  }, true);
+
+  // 4. Platform-Specific SPA Events
   window.addEventListener('yt-navigate-finish', () => {
-    setTimeout(checkAndAutoUpdate, 200);
+    setTimeout(checkAndAutoUpdate, 150);
   });
   window.addEventListener('yt-page-data-updated', () => {
-    setTimeout(checkAndAutoUpdate, 200);
+    setTimeout(checkAndAutoUpdate, 150);
   });
 
-  let wheelTimer = null;
-  window.addEventListener('wheel', () => {
-    if (wheelTimer) clearTimeout(wheelTimer);
-    wheelTimer = setTimeout(checkAndAutoUpdate, 250);
-  }, { passive: true });
+  // 5. Wheel and Scroll Navigation
+  let scrollDebounce = null;
+  const onUserScroll = () => {
+    if (scrollDebounce) clearTimeout(scrollDebounce);
+    scrollDebounce = setTimeout(checkAndAutoUpdate, 180);
+  };
+  window.addEventListener('wheel', onUserScroll, { passive: true });
+  window.addEventListener('scroll', onUserScroll, { passive: true });
 
+  // 6. Keyboard feed advance (Down/Up arrow, PageDown, J, K, Space)
   window.addEventListener('keydown', (e) => {
-    if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'j', 'k', 'J', 'K'].includes(e.key)) {
-      setTimeout(checkAndAutoUpdate, 300);
+    if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'j', 'k', 'J', 'K', ' '].includes(e.key)) {
+      setTimeout(checkAndAutoUpdate, 220);
+      setTimeout(checkAndAutoUpdate, 550);
     }
     if ((e.altKey && (e.key === 's' || e.key === 'S')) || (e.ctrlKey && e.shiftKey && (e.key === 's' || e.key === 'S'))) {
       e.preventDefault();
@@ -1774,11 +2011,12 @@
     }
   });
 
+  // 7. Active Heartbeat Poller (250ms when sidebar is open)
   setInterval(() => {
     if (isOpen) {
       checkAndAutoUpdate();
     }
-  }, 300);
+  }, 250);
 
   if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -1789,5 +2027,5 @@
     });
   }
 
-  console.log('[StitchMatrix] Qubora Emerald Obsidian Studio v3.6 loaded.');
+  console.log('[StitchMatrix] Multi-Platform Real-Time Studio v3.6.2 loaded.');
 })();
