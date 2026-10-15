@@ -1,5 +1,5 @@
 /**
- * StitchMatrix — Script Matrix Studio
+ * StitchMatrix — Script Matrix Studio v2.5
  * Chrome Extension Manifest V3 In-DOM Sidebar Engine
  * Design DNA: Linear / Stripe Minimalist Dark Theme (#09090B / #121214 / #18181B / #27272A)
  * Injected on: TikTok, YouTube Shorts, and Instagram Reels
@@ -8,35 +8,41 @@
 (function () {
   'use strict';
 
-  // Prevent multiple initializations in the same frame
-  if (window.__STITCHMATRIX_INITIALIZED__) return;
-  window.__STITCHMATRIX_INITIALIZED__ = true;
+  // Always remove any previous instance to guarantee fresh UI update
+  const previousHost = document.getElementById('stitchmatrix-extension-root');
+  if (previousHost) {
+    try {
+      previousHost.remove();
+    } catch (e) {
+      // Ignore
+    }
+  }
 
   // Real-time DOM context detector for social platforms
   function detectVideoContext() {
     const url = window.location.href;
-    let platform = 'Generic Video';
+    let platform = 'Social Video';
     let title = 'Algorithmic Inbound Pattern';
     let author = '@creator';
 
     try {
       if (url.includes('tiktok.com')) {
-        platform = 'TikTok Video';
+        platform = 'TikTok';
         const descEl = document.querySelector('[data-e2e="browse-video-desc"], [data-e2e="video-desc"], h1, .video-meta-title');
         const authorEl = document.querySelector('[data-e2e="browser-nickname"], [data-e2e="user-title"], .author-uniqueId');
-        if (descEl?.textContent) title = descEl.textContent.trim().slice(0, 70);
+        if (descEl?.textContent) title = descEl.textContent.trim().slice(0, 60);
         if (authorEl?.textContent) author = authorEl.textContent.trim();
       } else if (url.includes('youtube.com')) {
         platform = 'YouTube Shorts';
         const titleEl = document.querySelector('#title.ytd-reel-player-header-renderer, ytd-shorts-player-header-renderer #text');
         const authorEl = document.querySelector('#channel-name, .ytd-channel-name');
-        if (titleEl?.textContent) title = titleEl.textContent.trim().slice(0, 70);
+        if (titleEl?.textContent) title = titleEl.textContent.trim().slice(0, 60);
         if (authorEl?.textContent) author = authorEl.textContent.trim();
       } else if (url.includes('instagram.com')) {
         platform = 'Instagram Reels';
         const captionEl = document.querySelector('h1, article span._aacl, article div._a9zs');
         const authorEl = document.querySelector('header a, span._ap3a');
-        if (captionEl?.textContent) title = captionEl.textContent.trim().slice(0, 70);
+        if (captionEl?.textContent) title = captionEl.textContent.trim().slice(0, 60);
         if (authorEl?.textContent) author = authorEl.textContent.trim();
       }
     } catch (e) {
@@ -46,7 +52,7 @@
     return { platform, title, author, url };
   }
 
-  // Multi-Vector Script Mutation Database
+  // Multi-Vector Script Mutation Library
   const SCRIPT_MUTATIONS = {
     career: [
       {
@@ -157,10 +163,10 @@
   host.id = 'stitchmatrix-extension-root';
   document.documentElement.appendChild(host);
 
-  // Attach Shadow DOM for strict CSS isolation
+  // Attach Shadow DOM for complete CSS encapsulation
   const shadow = host.attachShadow({ mode: 'open' });
 
-  // Load Styles into Shadow DOM
+  // Inject Scoped Styles into Shadow DOM
   const styleEl = document.createElement('style');
   styleEl.textContent = `
     :host {
@@ -198,7 +204,7 @@
       gap: 8px;
       cursor: pointer;
       z-index: 2147483646;
-      box-shadow: -4px 0 16px rgba(0, 0, 0, 0.35);
+      box-shadow: -4px 0 16px rgba(0, 0, 0, 0.4);
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
@@ -230,7 +236,7 @@
       right: 0;
       width: 380px;
       height: 100vh;
-      background: #09090B;
+      background: #09090B !important;
       border-left: 1px solid #222226;
       color: #E4E4E7;
       z-index: 2147483647;
@@ -238,7 +244,7 @@
       transition: transform 340ms cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       flex-direction: column;
-      box-shadow: -12px 0 36px rgba(0, 0, 0, 0.6);
+      box-shadow: -12px 0 36px rgba(0, 0, 0, 0.7);
       overflow: hidden;
     }
 
@@ -377,8 +383,8 @@
 
     /* Linear-Style Card Surface */
     .sm-card {
-      background: #121214;
-      border: 1px solid #1E1E22;
+      background: #121214 !important;
+      border: 1px solid #1E1E22 !important;
       border-radius: 10px;
       padding: 14px 16px;
       display: flex;
@@ -420,7 +426,7 @@
     .sm-progress-bar-fill {
       height: 100%;
       width: 94.2%;
-      background: #3B82F6;
+      background: #3B82F6 !important;
       border-radius: 9999px;
       transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -560,8 +566,8 @@
 
     /* Script Production Terminal (Clean Editor) */
     .sm-terminal-card {
-      background: #121214;
-      border: 1px solid #1E1E22;
+      background: #121214 !important;
+      border: 1px solid #1E1E22 !important;
       border-radius: 10px;
       display: flex;
       flex-direction: column;
@@ -755,7 +761,7 @@
           <div class="sm-header-logo">S</div>
           <div>
             <div class="sm-header-title">StitchMatrix</div>
-            <div class="sm-header-subtitle">Enterprise Distribution Suite</div>
+            <div class="sm-header-subtitle">Enterprise Distribution Suite <span style="font-size: 9px; padding: 1px 4px; background: #27272A; border-radius: 3px; color: #93C5FD; margin-left: 4px;">v2.5</span></div>
           </div>
         </div>
         <div class="sm-header-actions">
@@ -1071,5 +1077,5 @@
     });
   }
 
-  console.log('[StitchMatrix] Enterprise Studio Extension v2.4 initialized.');
+  console.log('[StitchMatrix] Enterprise Studio Extension v2.5 loaded.');
 })();

@@ -41,7 +41,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'GET_STATUS') {
     sendResponse({
       active: true,
-      version: '2.4.0',
+      version: '2.5.0',
       clusterNode: 'cluster://us-east-viral.stitch.matrix:8080'
     });
     return true;
