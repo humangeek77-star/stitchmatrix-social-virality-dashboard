@@ -1,14 +1,14 @@
-/* StitchMatrix — Qubora Emerald Obsidian Studio v3.6 Design System
-   Design DNA: Qubora Deep Obsidian Void & Ethereal Emerald Glow
-   Void Canvas: #060806
-   Header Surface: #080C09
-   Card Surface: #0A0E0B
-   Borders: #141E17 / #1C2B20
-   Core Emerald Accent: #10B981
-   Bright Green Glow: #34D399
-   Soft Sage Mint: #8CE4B0
+/* StitchMatrix — Blendr Cyber-Cobalt Obsidian Studio v3.9.0 Design System
+   Design DNA: Blendr Cyber-Cobalt & Electric Sapphire / Deep Obsidian Void
+   Void Canvas: #020408 (with volumetric sapphire radial ambient lighting)
+   Header & Modal Surface: #070B16
+   Card Surface: #0A1122 / #0D1730
+   Borders: #15223C / #1D2D50 / rgba(59, 130, 246, 0.25)
+   Primary Electric Blue: linear-gradient(135deg, #1E40AF 0%, #2563EB 50%, #3B82F6 100%)
+   Bright Sapphire Glow: #60A5FA
+   Ice Cyan Diode Pin: #38BDF8 / #93C5FD
    High-Contrast Lead: #FFFFFF
-   Smoke Gray Body: #9CA3AF / #6B7280
+   Smoke Slate Body: #CBD5E1 / #94A3B8 / #64748B
 */
 
 :host {
@@ -17,7 +17,7 @@
   font-size: 13.5px;
   line-height: 1.5;
   color: #F8FAFC;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.025em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

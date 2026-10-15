@@ -1,5 +1,5 @@
 /**
- * StitchMatrix — Qubora Emerald Obsidian Studio v3.8.2
+ * StitchMatrix — Blendr Cyber-Cobalt Obsidian Studio v3.9.0
  * Chrome Extension Manifest V3 In-DOM Sidebar Engine
  * Features:
  * - Viral Video Snipper & Hook Clipper (Snip 5s/10s hooks directly from playing videos for faceless shorts)
@@ -8,7 +8,7 @@
  * - Built-in Webcam Teleprompter Studio & In-Browser Video Recorder (Face Mode)
  * - Send-to-Phone Companion Link & High-Resolution QR Code
  * - Multi-Platform Real-Time Active Video Auto-Detection (YouTube Shorts, TikTok, Instagram Reels)
- * - Deep Obsidian Void (#060806) & Glowing Emerald Design System
+ * - Blendr Cyber-Cobalt & Electric Sapphire / Deep Obsidian Void (#020408) Design System
  */
 
 (function () {
@@ -621,7 +621,7 @@
   // Attach Shadow DOM for complete CSS encapsulation
   const shadow = host.attachShadow({ mode: 'open' });
 
-  // Inject Qubora-Inspired Scoped Styles into Shadow DOM
+  // Inject Blendr-Inspired Scoped Styles into Shadow DOM
   const styleEl = document.createElement('style');
   styleEl.textContent = `
     :host {
@@ -630,6 +630,7 @@
       font-size: 13.5px;
       line-height: 1.5;
       color: #F8FAFC;
+      letter-spacing: -0.025em;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
@@ -640,7 +641,7 @@
       padding: 0;
     }
 
-    /* Floating Edge Tab Trigger (Qubora Glowing Pill) */
+    /* Floating Edge Tab Trigger (Blendr Cyber Glowing Pill) */
     .sm-floating-trigger {
       position: fixed;
       top: 50%;
@@ -648,8 +649,8 @@
       transform: translateY(-50%);
       width: 38px;
       height: 92px;
-      background: #060806;
-      border: 1px solid #16241A;
+      background: #020408;
+      border: 1px solid #15223C;
       border-right: none;
       border-radius: 12px 0 0 12px;
       display: flex;
@@ -659,22 +660,22 @@
       gap: 8px;
       cursor: pointer;
       z-index: 2147483646;
-      box-shadow: -4px 0 24px rgba(16, 185, 129, 0.15);
+      box-shadow: -4px 0 24px rgba(37, 99, 235, 0.25);
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .sm-floating-trigger:hover {
-      background: #0B110D;
+      background: #070B16;
       width: 42px;
-      border-color: #10B981;
-      box-shadow: -6px 0 28px rgba(16, 185, 129, 0.3);
+      border-color: #3B82F6;
+      box-shadow: -6px 0 28px rgba(37, 99, 235, 0.45);
     }
 
     .sm-floating-trigger svg {
       width: 17px;
       height: 17px;
       fill: none;
-      stroke: #34D399;
+      stroke: #38BDF8;
       stroke-width: 2;
     }
 
@@ -682,26 +683,29 @@
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: #34D399;
-      box-shadow: 0 0 10px #34D399;
+      background: #38BDF8;
+      box-shadow: 0 0 10px #38BDF8;
     }
 
-    /* Main Sidebar Drawer (Qubora Deep Obsidian Void) */
+    /* Main Sidebar Drawer (Blendr Cyber-Cobalt Deep Obsidian Void) */
     .sm-sidebar-container {
       position: fixed;
       top: 0;
       right: 0;
       width: 418px;
       height: 100vh;
-      background: #060806 !important;
-      border-left: 1px solid #141E17;
+      background: #020408 !important;
+      background-image: 
+        radial-gradient(circle at 100% 0%, rgba(37, 99, 235, 0.22) 0%, transparent 60%),
+        radial-gradient(circle at 0% 100%, rgba(29, 78, 216, 0.12) 0%, transparent 60%) !important;
+      border-left: 1px solid #15223C;
       color: #F8FAFC;
       z-index: 2147483647;
       transform: translateX(418px);
       transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       flex-direction: column;
-      box-shadow: -16px 0 50px rgba(0, 0, 0, 0.85);
+      box-shadow: -16px 0 50px rgba(0, 0, 0, 0.9);
       overflow: hidden;
       user-select: text;
     }
@@ -710,11 +714,11 @@
       transform: translateX(0);
     }
 
-    /* 1. Header (Qubora Glass Header) */
+    /* 1. Header (Blendr Cyber Glass Header) */
     .sm-header {
       padding: 13px 18px;
-      background: #080C09;
-      border-bottom: 1px solid #141E17;
+      background: #070B16;
+      border-bottom: 1px solid #15223C;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -727,7 +731,7 @@
       gap: 10px;
     }
 
-    /* Qubora Organic Glowing Ring Icon */
+    /* Blendr Silicon Microchip Icon */
     .sm-qubora-logo {
       width: 26px;
       height: 26px;
@@ -740,18 +744,18 @@
     .sm-qubora-logo svg {
       width: 24px;
       height: 24px;
-      filter: drop-shadow(0 0 6px rgba(52, 211, 153, 0.6));
+      filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.7));
     }
 
     .sm-header-title {
       font-size: 14px;
       font-weight: 700;
       color: #FFFFFF;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.03em;
     }
 
     .sm-header-title span {
-      color: #34D399;
+      color: #60A5FA;
     }
 
     .sm-header-actions {
@@ -763,22 +767,23 @@
     .sm-auto-badge {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
       font-size: 10px;
-      color: #34D399;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.25);
-      padding: 2px 7px;
+      color: #93C5FD;
+      background: rgba(37, 99, 235, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      padding: 2px 8px;
       border-radius: 9999px;
       font-weight: 600;
+      letter-spacing: -0.01em;
     }
 
     .sm-pulse-dot {
       width: 5px;
       height: 5px;
       border-radius: 50%;
-      background: #34D399;
-      box-shadow: 0 0 8px #34D399;
+      background: #38BDF8;
+      box-shadow: 0 0 8px #38BDF8;
       animation: smBeaconPulse 2s infinite ease-in-out;
     }
 
@@ -788,9 +793,9 @@
     }
 
     .sm-close-btn {
-      background: #0E1410;
-      border: 1px solid #1C2B20;
-      color: #6B7280;
+      background: #0A101D;
+      border: 1px solid #1E2E4E;
+      color: #94A3B8;
       cursor: pointer;
       width: 26px;
       height: 26px;
@@ -802,16 +807,16 @@
     }
 
     .sm-close-btn:hover {
-      background: #141E17;
+      background: #10192E;
       color: #FFFFFF;
-      border-color: #34D399;
+      border-color: #3B82F6;
     }
 
-    /* 2. Active Video Ingestion Banner with Ambient Green Glow */
+    /* 2. Active Video Ingestion Banner with Ambient Cobalt Glow */
     .sm-video-banner {
       padding: 12px 18px;
-      background: radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.08) 0%, rgba(6, 8, 6, 0.95) 75%);
-      border-bottom: 1px solid #141E17;
+      background: radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.12) 0%, rgba(2, 4, 8, 0.95) 75%);
+      border-bottom: 1px solid #15223C;
       display: flex;
       flex-direction: column;
       gap: 6px;
@@ -820,7 +825,7 @@
     }
 
     .sm-video-banner.pulse-active {
-      background: radial-gradient(circle at 20% 20%, rgba(52, 211, 153, 0.16) 0%, rgba(6, 8, 6, 0.95) 85%);
+      background: radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.22) 0%, rgba(2, 4, 8, 0.95) 85%);
     }
 
     .sm-video-status-row {
@@ -834,16 +839,16 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      color: #34D399;
+      color: #60A5FA;
       font-weight: 600;
       font-size: 10.5px;
-      letter-spacing: 0.01em;
+      letter-spacing: -0.01em;
     }
 
     .sm-rescan-btn {
-      background: #0E1410;
-      border: 1px solid #1C2B20;
-      color: #8CE4B0;
+      background: #0A101D;
+      border: 1px solid #1E2E4E;
+      color: #93C5FD;
       border-radius: 5px;
       padding: 2px 8px;
       font-size: 10.5px;
@@ -856,9 +861,9 @@
     }
 
     .sm-rescan-btn:hover {
-      background: #141E17;
+      background: #10192E;
       color: #FFFFFF;
-      border-color: #34D399;
+      border-color: #3B82F6;
     }
 
     .sm-video-title {
@@ -868,7 +873,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.025em;
       line-height: 1.3;
     }
 
@@ -877,66 +882,66 @@
       align-items: center;
       gap: 8px;
       font-size: 11px;
-      color: #6B7280;
+      color: #94A3B8;
       flex-wrap: wrap;
     }
 
     .sm-video-meta span strong {
-      color: #A1A1AA;
+      color: #CBD5E1;
     }
 
     .sm-meta-views-pill {
       display: inline-flex;
       align-items: center;
       gap: 3px;
-      color: #34D399;
+      color: #38BDF8;
       font-weight: 600;
     }
 
     .sm-meta-views-pill strong {
-      color: #6EE7B7 !important;
+      color: #93C5FD !important;
       font-weight: 750 !important;
     }
 
-    /* 3. Fast Angle Tabs (Qubora Glass Pills) */
+    /* 3. Fast Angle Tabs (Blendr Glass Pills) */
     .sm-angle-deck {
       padding: 9px 16px;
-      background: #070A08;
-      border-bottom: 1px solid #141E17;
+      background: #070B16;
+      border-bottom: 1px solid #15223C;
       display: flex;
       gap: 6px;
     }
 
     .sm-angle-tab {
       flex: 1;
-      background: #0B100D;
-      border: 1px solid #16241A;
+      background: #0A101D;
+      border: 1px solid #1E2E4E;
       border-radius: 8px;
       padding: 6px 8px;
       font-size: 11.5px;
       font-weight: 600;
-      color: #71717A;
+      color: #94A3B8;
       cursor: pointer;
       text-align: center;
       transition: all 0.15s ease;
       white-space: nowrap;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.015em;
     }
 
     .sm-angle-tab:hover {
       color: #F8FAFC;
-      border-color: #22C55E44;
+      border-color: rgba(59, 130, 246, 0.4);
     }
 
     .sm-angle-tab.active {
-      background: #0F1711;
-      color: #34D399;
+      background: rgba(37, 99, 235, 0.22);
+      color: #60A5FA;
       font-weight: 700;
-      border: 1px solid #10B981;
-      box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
+      border: 1px solid #3B82F6;
+      box-shadow: 0 0 12px rgba(37, 99, 235, 0.3);
     }
 
-    /* 4. Scrollable Script Canvas with Qubora 3-Tone Typography */
+    /* 4. Scrollable Script Canvas with Blendr High-Contrast Typography */
     .sm-canvas-area {
       flex: 1;
       overflow-y: auto;
@@ -951,30 +956,30 @@
     }
 
     .sm-canvas-area::-webkit-scrollbar-thumb {
-      background: #1C2B20;
+      background: #1D2D50;
       border-radius: 4px;
     }
 
-    /* Script Block Card (Qubora Card Surface) */
+    /* Script Block Card (Blendr Deep Cobalt Surface) */
     .sm-frame-card {
-      background: #0A0E0B;
-      border: 1px solid #16221A;
+      background: #070B16;
+      border: 1px solid #15223C;
       border-radius: 12px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
       transition: border-color 0.15s ease;
     }
 
     .sm-frame-card:hover {
-      border-color: #22C55E44;
+      border-color: rgba(59, 130, 246, 0.4);
     }
 
     .sm-frame-header {
       padding: 8px 12px;
-      background: #0C120D;
-      border-bottom: 1px solid #141E17;
+      background: #0A1122;
+      border-bottom: 1px solid #15223C;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -990,14 +995,14 @@
       text-transform: uppercase;
     }
 
-    .sm-title-hook { color: #34D399; }
-    .sm-title-body { color: #8CE4B0; }
-    .sm-title-cta  { color: #34D399; }
+    .sm-title-hook { color: #60A5FA; }
+    .sm-title-body { color: #93C5FD; }
+    .sm-title-cta  { color: #38BDF8; }
 
     .sm-copy-part-btn {
-      background: #0E1410;
-      border: 1px solid #1C2B20;
-      color: #8CE4B0;
+      background: #0A101D;
+      border: 1px solid #1E2E4E;
+      color: #93C5FD;
       cursor: pointer;
       padding: 2px 7px;
       border-radius: 5px;
@@ -1010,12 +1015,12 @@
     }
 
     .sm-copy-part-btn:hover {
-      background: #141E17;
+      background: #10192E;
       color: #FFFFFF;
-      border-color: #34D399;
+      border-color: #3B82F6;
     }
 
-    /* Qubora 3-Tone Typography in Action */
+    /* Blendr High-Contrast Typography */
     .sm-frame-editor {
       padding: 12px 14px;
       font-size: 13.5px;
@@ -1025,6 +1030,7 @@
       white-space: pre-wrap;
       word-break: break-word;
       min-height: 52px;
+      letter-spacing: -0.015em;
     }
 
     .sm-hook-lead {
@@ -1033,23 +1039,23 @@
     }
 
     .sm-hook-highlight {
-      color: #34D399;
+      color: #60A5FA;
       font-weight: 700;
-      text-shadow: 0 0 12px rgba(52, 211, 153, 0.4);
+      text-shadow: 0 0 12px rgba(96, 165, 250, 0.45);
     }
 
     .sm-hook-tail {
-      color: #9CA3AF;
+      color: #CBD5E1;
       font-weight: 450;
     }
 
     .sm-body-text {
-      color: #9CA3AF;
+      color: #CBD5E1;
       font-weight: 450;
     }
 
     .sm-cta-text {
-      color: #8CE4B0;
+      color: #93C5FD;
       font-weight: 600;
     }
 
@@ -1058,8 +1064,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: #0A0E0B;
-      border: 1px solid #16221A;
+      background: #070B16;
+      border: 1px solid #15223C;
       border-radius: 8px;
       padding: 8px 12px;
       gap: 8px;
@@ -1067,7 +1073,7 @@
 
     .sm-hashtags-text {
       font-size: 11px;
-      color: #34D399;
+      color: #60A5FA;
       font-weight: 600;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -1075,9 +1081,9 @@
     }
 
     .sm-copy-tags-btn {
-      background: #0E1410;
-      border: 1px solid #1C2B20;
-      color: #8CE4B0;
+      background: #0A101D;
+      border: 1px solid #1E2E4E;
+      color: #93C5FD;
       border-radius: 5px;
       padding: 3px 8px;
       font-size: 10.5px;
@@ -1088,26 +1094,26 @@
     }
 
     .sm-copy-tags-btn:hover {
-      background: #141E17;
+      background: #10192E;
       color: #FFFFFF;
-      border-color: #34D399;
+      border-color: #3B82F6;
     }
 
-    /* 5. Qubora Action Deck (Glowing Emerald Studio Controls) */
+    /* 5. Blendr Action Deck (Electric Sapphire Studio Controls) */
     .sm-footer {
       padding: 14px 16px;
-      background: #080C09;
-      border-top: 1px solid #141E17;
+      background: #070B16;
+      border-top: 1px solid #15223C;
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
 
-    /* Option 1: 1-Click AI Voiceover (.mp3) - Radiant Qubora Emerald */
+    /* Option 1: 1-Click AI Voiceover (.mp3) - Radiant Blendr Sapphire */
     .sm-btn-voiceover {
       width: 100%;
-      background: linear-gradient(135deg, #059669 0%, #10B981 50%, #34D399 100%);
-      color: #040805;
+      background: linear-gradient(135deg, #1E40AF 0%, #2563EB 50%, #3B82F6 100%);
+      color: #FFFFFF;
       border: none;
       border-radius: 10px;
       padding: 12px 16px;
@@ -1119,28 +1125,28 @@
       justify-content: center;
       gap: 8px;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 4px 22px rgba(16, 185, 129, 0.45);
-      letter-spacing: -0.01em;
+      box-shadow: 0 4px 22px rgba(37, 99, 235, 0.45);
+      letter-spacing: -0.02em;
     }
 
     .sm-btn-voiceover:hover {
-      background: linear-gradient(135deg, #10B981 0%, #34D399 50%, #6EE7B7 100%);
+      background: linear-gradient(135deg, #2563EB 0%, #3B82F6 50%, #60A5FA 100%);
       transform: translateY(-1px);
-      box-shadow: 0 6px 28px rgba(52, 211, 153, 0.6);
-      color: #020402;
+      box-shadow: 0 6px 28px rgba(59, 130, 246, 0.6);
+      color: #FFFFFF;
     }
 
     .sm-btn-voiceover:active {
       transform: translateY(0);
-      box-shadow: 0 2px 14px rgba(16, 185, 129, 0.4);
+      box-shadow: 0 2px 14px rgba(37, 99, 235, 0.4);
     }
 
-    /* Option 2: Record Short with Webcam */
+    /* Option 2: Record / Snip Short */
     .sm-btn-record {
       width: 100%;
-      background: #0C120E;
-      color: #D1FAE5;
-      border: 1px solid rgba(16, 185, 129, 0.35);
+      background: #0A1122;
+      color: #DBEAFE;
+      border: 1px solid rgba(59, 130, 246, 0.35);
       border-radius: 10px;
       padding: 10px 14px;
       font-size: 12.5px;
@@ -1151,13 +1157,14 @@
       justify-content: center;
       gap: 7px;
       transition: all 0.2s ease;
+      letter-spacing: -0.015em;
     }
 
     .sm-btn-record:hover {
-      background: #121A15;
+      background: #0F1A33;
       color: #FFFFFF;
-      border-color: #34D399;
-      box-shadow: 0 2px 16px rgba(16, 185, 129, 0.25);
+      border-color: #60A5FA;
+      box-shadow: 0 2px 16px rgba(37, 99, 235, 0.25);
       transform: translateY(-1px);
     }
 
@@ -1168,9 +1175,9 @@
     }
 
     .sm-btn-phone {
-      background: #0C110E;
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      color: #8CE4B0;
+      background: #0A1122;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #93C5FD;
       border-radius: 8px;
       padding: 9px 12px;
       font-size: 12px;
@@ -1181,18 +1188,19 @@
       justify-content: center;
       gap: 5px;
       transition: all 0.15s ease;
+      letter-spacing: -0.015em;
     }
 
     .sm-btn-phone:hover {
-      background: #101712;
+      background: #0F1A33;
       color: #FFFFFF;
-      border-color: #34D399;
+      border-color: #60A5FA;
     }
 
     .sm-btn-copy {
-      background: #0C110E;
-      border: 1px solid #16221A;
-      color: #9CA3AF;
+      background: #0A1122;
+      border: 1px solid #15223C;
+      color: #94A3B8;
       border-radius: 8px;
       padding: 9px 12px;
       font-size: 12px;
@@ -1203,17 +1211,18 @@
       justify-content: center;
       gap: 5px;
       transition: all 0.15s ease;
+      letter-spacing: -0.015em;
     }
 
     .sm-btn-copy:hover {
-      background: #101712;
+      background: #0F1A33;
       color: #FFFFFF;
-      border-color: #22C55E44;
+      border-color: rgba(59, 130, 246, 0.4);
     }
 
     .sm-btn-copy.copied {
-      background: #059669 !important;
-      border-color: #10B981 !important;
+      background: #1E40AF !important;
+      border-color: #2563EB !important;
       color: #FFFFFF !important;
     }
 
@@ -1224,7 +1233,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(6, 8, 6, 0.97);
+      background: rgba(2, 4, 8, 0.97);
       backdrop-filter: blur(10px);
       z-index: 500;
       display: none;
@@ -1238,8 +1247,8 @@
 
     .sm-modal-header {
       padding: 13px 18px;
-      background: #080C09;
-      border-bottom: 1px solid #141E17;
+      background: #070B16;
+      border-bottom: 1px solid #15223C;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -1252,6 +1261,7 @@
       display: flex;
       align-items: center;
       gap: 7px;
+      letter-spacing: -0.02em;
     }
 
     /* CREATOR STUDIO VIEW (VIRAL CLIP SNIP & WEBCAM) */
@@ -1260,14 +1270,14 @@
       grid-template-columns: 1fr 1fr;
       gap: 6px;
       padding: 10px 16px 4px 16px;
-      background: #080C09;
-      border-bottom: 1px solid #141E17;
+      background: #070B16;
+      border-bottom: 1px solid #15223C;
     }
 
     .sm-rec-mode-tab {
-      background: #0C120E;
-      border: 1px solid #16241A;
-      color: #9CA3AF;
+      background: #0A1122;
+      border: 1px solid #1E2E4E;
+      color: #94A3B8;
       border-radius: 8px;
       padding: 8px 10px;
       font-size: 11.5px;
@@ -1278,18 +1288,19 @@
       justify-content: center;
       gap: 5px;
       transition: all 0.15s ease;
+      letter-spacing: -0.015em;
     }
 
     .sm-rec-mode-tab:hover {
       color: #FFFFFF;
-      border-color: #34D399;
+      border-color: #60A5FA;
     }
 
     .sm-rec-mode-tab.active {
-      background: rgba(16, 185, 129, 0.16);
-      border-color: #10B981;
-      color: #34D399;
-      box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+      background: rgba(37, 99, 235, 0.22);
+      border-color: #3B82F6;
+      color: #60A5FA;
+      box-shadow: 0 0 12px rgba(37, 99, 235, 0.25);
     }
 
     .sm-webcam-body {
@@ -1308,7 +1319,7 @@
       background: #000000;
       border-radius: 12px;
       overflow: hidden;
-      border: 1px solid #16241A;
+      border: 1px solid #15223C;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1326,7 +1337,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: radial-gradient(circle at center, rgba(16, 185, 129, 0.08) 0%, rgba(0, 0, 0, 0.88) 100%);
+      background: radial-gradient(circle at center, rgba(37, 99, 235, 0.12) 0%, rgba(0, 0, 0, 0.9) 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -1341,9 +1352,9 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.4);
-      color: #34D399;
+      background: rgba(37, 99, 235, 0.18);
+      border: 1px solid rgba(59, 130, 246, 0.45);
+      color: #93C5FD;
       font-size: 10px;
       font-weight: 700;
       padding: 3px 9px;
@@ -1361,11 +1372,12 @@
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
+      letter-spacing: -0.02em;
     }
 
     .sm-snip-helper-sub {
       font-size: 11px;
-      color: #9CA3AF;
+      color: #94A3B8;
       max-width: 260px;
       line-height: 1.4;
     }
@@ -1394,21 +1406,21 @@
       position: absolute;
       top: 10px;
       right: 10px;
-      background: rgba(0, 0, 0, 0.75);
-      color: #34D399;
+      background: rgba(0, 0, 0, 0.8);
+      color: #38BDF8;
       font-size: 11px;
       font-weight: 700;
       padding: 3px 8px;
       border-radius: 6px;
       font-variant-numeric: tabular-nums;
       z-index: 10;
-      border: 1px solid rgba(16, 185, 129, 0.3);
+      border: 1px solid rgba(59, 130, 246, 0.35);
     }
 
     /* Scrolling Teleprompter Inside Camera Studio */
     .sm-teleprompter-glass {
-      background: #0A0E0B;
-      border: 1px solid #16221A;
+      background: #070B16;
+      border: 1px solid #15223C;
       border-radius: 10px;
       padding: 12px 14px;
       max-height: 120px;
@@ -1418,6 +1430,7 @@
       color: #F8FAFC;
       text-align: center;
       font-weight: 500;
+      letter-spacing: -0.015em;
     }
 
     .sm-teleprompter-glass::-webkit-scrollbar {
@@ -1439,8 +1452,8 @@
     }
 
     .sm-btn-snip-preset {
-      background: linear-gradient(135deg, #059669 0%, #10B981 100%);
-      color: #040805;
+      background: linear-gradient(135deg, #1E40AF 0%, #2563EB 50%, #3B82F6 100%);
+      color: #FFFFFF;
       border: none;
       border-radius: 8px;
       padding: 10px 4px;
@@ -1451,18 +1464,19 @@
       align-items: center;
       justify-content: center;
       transition: all 0.15s ease;
-      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+      box-shadow: 0 2px 10px rgba(37, 99, 235, 0.35);
+      letter-spacing: -0.015em;
     }
 
     .sm-btn-snip-preset:hover {
-      background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+      background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
       transform: translateY(-1px);
     }
 
     .sm-btn-snip-custom {
-      background: #0C120E;
+      background: #0A1122;
       color: #E2E8F0;
-      border: 1px solid rgba(16, 185, 129, 0.4);
+      border: 1px solid rgba(59, 130, 246, 0.4);
       border-radius: 8px;
       padding: 10px 4px;
       font-size: 11.5px;
@@ -1472,12 +1486,13 @@
       align-items: center;
       justify-content: center;
       transition: all 0.15s ease;
+      letter-spacing: -0.015em;
     }
 
     .sm-btn-snip-custom:hover {
-      background: #141E17;
+      background: #0F1A33;
       color: #FFFFFF;
-      border-color: #34D399;
+      border-color: #60A5FA;
     }
 
     .sm-snip-audio-row {
@@ -1492,13 +1507,13 @@
       align-items: center;
       gap: 6px;
       font-size: 11px;
-      color: #9CA3AF;
+      color: #94A3B8;
       cursor: pointer;
       user-select: none;
     }
 
     .sm-checkbox-label input[type="checkbox"] {
-      accent-color: #10B981;
+      accent-color: #2563EB;
       cursor: pointer;
       width: 13px;
       height: 13px;
@@ -1514,8 +1529,8 @@
 
     .sm-btn-review-syncplay {
       width: 100%;
-      background: linear-gradient(135deg, #059669 0%, #10B981 50%, #34D399 100%);
-      color: #040805;
+      background: linear-gradient(135deg, #1E40AF 0%, #2563EB 50%, #3B82F6 100%);
+      color: #FFFFFF;
       border: none;
       border-radius: 9px;
       padding: 11px 14px;
@@ -1526,12 +1541,13 @@
       align-items: center;
       justify-content: center;
       gap: 7px;
-      box-shadow: 0 4px 18px rgba(16, 185, 129, 0.45);
+      box-shadow: 0 4px 18px rgba(37, 99, 235, 0.45);
       transition: all 0.2s ease;
+      letter-spacing: -0.015em;
     }
 
     .sm-btn-review-syncplay:hover {
-      background: linear-gradient(135deg, #10B981 0%, #34D399 50%, #6EE7B7 100%);
+      background: linear-gradient(135deg, #2563EB 0%, #3B82F6 50%, #60A5FA 100%);
       transform: translateY(-1px);
     }
 
@@ -1542,9 +1558,9 @@
     }
 
     .sm-btn-download-clip {
-      background: #0C110E;
-      border: 1px solid rgba(16, 185, 129, 0.45);
-      color: #34D399;
+      background: #0A1122;
+      border: 1px solid rgba(59, 130, 246, 0.45);
+      color: #60A5FA;
       border-radius: 8px;
       padding: 10px 8px;
       font-size: 11.5px;
@@ -1558,15 +1574,15 @@
     }
 
     .sm-btn-download-clip:hover {
-      background: #141E17;
+      background: #0F1A33;
       color: #FFFFFF;
-      border-color: #34D399;
+      border-color: #60A5FA;
     }
 
     .sm-btn-download-voice-fast {
-      background: #0C110E;
-      border: 1px solid rgba(16, 185, 129, 0.45);
-      color: #8CE4B0;
+      background: #0A1122;
+      border: 1px solid rgba(59, 130, 246, 0.45);
+      color: #93C5FD;
       border-radius: 8px;
       padding: 10px 8px;
       font-size: 11.5px;
@@ -1580,15 +1596,15 @@
     }
 
     .sm-btn-download-voice-fast:hover {
-      background: #141E17;
+      background: #0F1A33;
       color: #FFFFFF;
-      border-color: #34D399;
+      border-color: #38BDF8;
     }
 
     .sm-btn-resnip {
       background: transparent;
-      border: 1px solid #1A261E;
-      color: #71717A;
+      border: 1px solid #1E2E4E;
+      color: #94A3B8;
       border-radius: 8px;
       padding: 7px;
       font-size: 11px;
@@ -1603,7 +1619,7 @@
 
     .sm-btn-resnip:hover {
       color: #E2E8F0;
-      border-color: #34D399;
+      border-color: #60A5FA;
     }
 
     /* Webcam Controls */
@@ -1616,7 +1632,7 @@
 
     .sm-btn-start-rec {
       width: 100%;
-      background: linear-gradient(135deg, #059669 0%, #10B981 100%);
+      background: linear-gradient(135deg, #1E40AF 0%, #2563EB 100%);
       color: #FFFFFF;
       border: none;
       border-radius: 10px;
@@ -1628,16 +1644,16 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
     }
 
     .sm-btn-start-rec:hover {
-      background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+      background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
     }
 
     .sm-btn-stop-rec {
       width: 100%;
-      background: #27272A;
+      background: #1E293B;
       color: #FFFFFF;
       border: none;
       border-radius: 10px;
@@ -1653,7 +1669,7 @@
 
     .sm-btn-download-video {
       width: 100%;
-      background: linear-gradient(135deg, #059669 0%, #10B981 100%);
+      background: linear-gradient(135deg, #1E40AF 0%, #2563EB 100%);
       color: #FFFFFF;
       border: none;
       border-radius: 10px;
@@ -1665,7 +1681,7 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
     }
 
     /* QR CODE MODAL VIEW */
@@ -1684,7 +1700,7 @@
       background: #FFFFFF;
       padding: 10px;
       border-radius: 14px;
-      box-shadow: 0 0 32px rgba(52, 211, 153, 0.35);
+      box-shadow: 0 0 32px rgba(59, 130, 246, 0.35);
       width: 212px;
       height: 212px;
       display: flex;
@@ -1702,7 +1718,7 @@
 
     .sm-qr-instructions {
       font-size: 12.5px;
-      color: #9CA3AF;
+      color: #94A3B8;
       max-width: 320px;
       line-height: 1.5;
     }
@@ -1716,7 +1732,7 @@
 
     .sm-btn-open-direct {
       flex: 1;
-      background: linear-gradient(135deg, #059669 0%, #10B981 100%);
+      background: linear-gradient(135deg, #1E40AF 0%, #2563EB 100%);
       color: #FFFFFF;
       border: none;
       padding: 10px 14px;
@@ -1728,19 +1744,19 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      box-shadow: 0 2px 14px rgba(16, 185, 129, 0.35);
+      box-shadow: 0 2px 14px rgba(37, 99, 235, 0.35);
       transition: all 0.15s ease;
     }
 
     .sm-btn-open-direct:hover {
-      background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+      background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
     }
 
     .sm-btn-copy-link {
       flex: 1;
-      background: #0C110E;
-      border: 1px solid rgba(16, 185, 129, 0.35);
-      color: #34D399;
+      background: #0A1122;
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      color: #60A5FA;
       padding: 10px 14px;
       border-radius: 8px;
       font-size: 12.5px;
@@ -1754,9 +1770,9 @@
     }
 
     .sm-btn-copy-link:hover {
-      background: #141E17;
+      background: #0F1A33;
       color: #FFFFFF;
-      border-color: #34D399;
+      border-color: #60A5FA;
     }
 
     .sm-qr-link-box {
@@ -1765,9 +1781,9 @@
 
     .sm-qr-link-box input {
       width: 100%;
-      background: #0A0E0B;
-      border: 1px solid #16221A;
-      color: #71717A;
+      background: #070B16;
+      border: 1px solid #15223C;
+      color: #94A3B8;
       border-radius: 6px;
       padding: 6px 10px;
       font-size: 10.5px;
@@ -1778,8 +1794,8 @@
     }
 
     .sm-qr-link-box input:focus {
-      color: #8CE4B0;
-      border-color: #10B981;
+      color: #93C5FD;
+      border-color: #2563EB;
     }
 
     /* AI VOICEOVER MODAL VIEW (FACELESS CREATOR STUDIO) */
@@ -1794,7 +1810,7 @@
 
     .sm-voice-hero {
       background: #000000;
-      border: 1px solid #16241A;
+      border: 1px solid #15223C;
       border-radius: 12px;
       padding: 22px 16px;
       display: flex;
@@ -1803,7 +1819,7 @@
       justify-content: center;
       text-align: center;
       position: relative;
-      box-shadow: inset 0 0 24px rgba(16, 185, 129, 0.08);
+      box-shadow: inset 0 0 24px rgba(37, 99, 235, 0.12);
     }
 
     .sm-soundwaves {
@@ -1818,7 +1834,7 @@
     .sm-soundwaves .bar {
       width: 4px;
       height: 12px;
-      background: #10B981;
+      background: #2563EB;
       border-radius: 4px;
       transition: height 0.15s ease, background 0.15s ease;
     }
@@ -1833,13 +1849,13 @@
 
     @keyframes soundwaveBounce {
       0% { height: 8px; opacity: 0.4; }
-      50% { height: 44px; opacity: 1; background: #34D399; }
+      50% { height: 44px; opacity: 1; background: #60A5FA; }
       100% { height: 14px; opacity: 0.6; }
     }
 
     @keyframes soundwavePulse {
       0% { height: 6px; opacity: 0.3; }
-      100% { height: 28px; opacity: 0.9; background: #10B981; }
+      100% { height: 28px; opacity: 0.9; background: #2563EB; }
     }
 
     .sm-soundwaves .bar:nth-child(1) { animation-delay: 0.05s; }
@@ -1860,19 +1876,19 @@
       font-weight: 700;
       color: #FFFFFF;
       margin-bottom: 3px;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.02em;
     }
 
     .sm-voice-substatus {
       font-size: 11.5px;
-      color: #9CA3AF;
+      color: #94A3B8;
       max-width: 290px;
       line-height: 1.45;
     }
 
     .sm-voice-script-box {
-      background: #0A0E0B;
-      border: 1px solid #16221A;
+      background: #070B16;
+      border: 1px solid #15223C;
       border-radius: 10px;
       padding: 12px 14px;
       max-height: 130px;
@@ -1890,14 +1906,14 @@
       font-size: 10px;
       font-weight: 700;
       letter-spacing: 0.08em;
-      color: #34D399;
+      color: #60A5FA;
       text-transform: uppercase;
     }
 
     .sm-voice-script-text {
       font-size: 12.5px;
       line-height: 1.55;
-      color: #E2E8F0;
+      color: #CBD5E1;
       user-select: text;
     }
 
@@ -1910,7 +1926,7 @@
 
     .sm-btn-generate-voice {
       width: 100%;
-      background: linear-gradient(135deg, #059669 0%, #10B981 100%);
+      background: linear-gradient(135deg, #1E40AF 0%, #2563EB 100%);
       color: #FFFFFF;
       border: none;
       border-radius: 10px;
@@ -1922,12 +1938,13 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      box-shadow: 0 4px 18px rgba(16, 185, 129, 0.4);
+      box-shadow: 0 4px 18px rgba(37, 99, 235, 0.4);
       transition: all 0.2s ease;
+      letter-spacing: -0.015em;
     }
 
     .sm-btn-generate-voice:hover {
-      background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+      background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
     }
 
     .sm-btn-generate-voice:disabled {
@@ -1942,9 +1959,9 @@
     }
 
     .sm-btn-voice-play {
-      background: #0C110E;
-      border: 1px solid rgba(16, 185, 129, 0.4);
-      color: #34D399;
+      background: #0A1122;
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      color: #60A5FA;
       border-radius: 8px;
       padding: 11px 12px;
       font-size: 12.5px;
@@ -1958,13 +1975,13 @@
     }
 
     .sm-btn-voice-play:hover {
-      background: #141E17;
+      background: #0F1A33;
       color: #FFFFFF;
-      border-color: #34D399;
+      border-color: #60A5FA;
     }
 
     .sm-btn-voice-download {
-      background: linear-gradient(135deg, #059669 0%, #10B981 100%);
+      background: linear-gradient(135deg, #1E40AF 0%, #2563EB 100%);
       border: none;
       color: #FFFFFF;
       border-radius: 8px;
@@ -1976,18 +1993,18 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      box-shadow: 0 2px 14px rgba(16, 185, 129, 0.35);
+      box-shadow: 0 2px 14px rgba(37, 99, 235, 0.35);
       transition: all 0.15s ease;
     }
 
     .sm-btn-voice-download:hover {
-      background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+      background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
     }
 
     /* Voice Selection & Volume Controls */
     .sm-voice-select-card {
-      background: #090E0B;
-      border: 1px solid #16241B;
+      background: #070B16;
+      border: 1px solid #15223C;
       border-radius: 10px;
       padding: 10px 12px;
       display: flex;
@@ -2005,7 +2022,7 @@
     .sm-voice-select-title {
       font-size: 11px;
       font-weight: 700;
-      color: #34D399;
+      color: #60A5FA;
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
@@ -2013,17 +2030,17 @@
     .sm-voice-chip {
       font-size: 9.5px;
       font-weight: 600;
-      color: #6EE7B7;
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.25);
+      color: #93C5FD;
+      background: rgba(37, 99, 235, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
       padding: 2px 7px;
       border-radius: 9999px;
     }
 
     .sm-voice-dropdown {
       width: 100%;
-      background: #040604;
-      border: 1px solid #1E3324;
+      background: #03060C;
+      border: 1px solid #1A2B4D;
       border-radius: 7px;
       padding: 8px 10px;
       color: #FFFFFF;
@@ -2036,19 +2053,19 @@
     }
 
     .sm-voice-dropdown:focus {
-      border-color: #10B981;
-      box-shadow: 0 0 10px rgba(16, 185, 129, 0.35);
+      border-color: #2563EB;
+      box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
     }
 
     .sm-voice-dropdown optgroup {
-      background: #060907;
-      color: #34D399;
+      background: #070B16;
+      color: #60A5FA;
       font-weight: 700;
     }
 
     .sm-voice-dropdown option {
-      background: #080D09;
-      color: #E2E8F0;
+      background: #0A1122;
+      color: #CBD5E1;
       padding: 6px 10px;
     }
 
@@ -2057,8 +2074,8 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      background: #070B08;
-      border: 1px solid #142018;
+      background: #070B16;
+      border: 1px solid #15223C;
       border-radius: 8px;
       padding: 7px 12px;
     }
@@ -2066,7 +2083,7 @@
     .sm-vol-icon-btn {
       background: transparent;
       border: none;
-      color: #34D399;
+      color: #60A5FA;
       cursor: pointer;
       font-size: 14px;
       display: flex;
@@ -2092,7 +2109,7 @@
       appearance: none;
       width: 100%;
       height: 5px;
-      background: #142217;
+      background: #15223C;
       border-radius: 9999px;
       outline: none;
       cursor: pointer;
@@ -2105,8 +2122,8 @@
       width: 14px;
       height: 14px;
       border-radius: 50%;
-      background: #10B981;
-      box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
+      background: #2563EB;
+      box-shadow: 0 0 8px rgba(37, 99, 235, 0.8);
       cursor: pointer;
       border: 2px solid #FFFFFF;
       transition: all 0.15s ease;
@@ -2114,13 +2131,13 @@
 
     .sm-volume-slider::-webkit-slider-thumb:hover {
       transform: scale(1.2);
-      background: #34D399;
+      background: #3B82F6;
     }
 
     .sm-vol-number {
       font-size: 11px;
       font-weight: 700;
-      color: #9CA3AF;
+      color: #94A3B8;
       min-width: 34px;
       text-align: right;
       font-variant-numeric: tabular-nums;
@@ -2128,8 +2145,8 @@
 
     /* Snipper Dual-Track Volume Matrix */
     .sm-snip-volume-matrix {
-      background: #070A08;
-      border: 1px solid #141F17;
+      background: #070B16;
+      border: 1px solid #15223C;
       border-radius: 8px;
       padding: 8px 11px;
       display: flex;
@@ -2164,7 +2181,7 @@
     .sm-snip-vol-val {
       font-size: 10px;
       font-weight: 700;
-      color: #34D399;
+      color: #60A5FA;
       min-width: 36px;
       text-align: right;
     }
@@ -2175,14 +2192,14 @@
       bottom: 88px;
       left: 50%;
       transform: translateX(-50%) translateY(10px);
-      background: #0A0E0B;
-      border: 1px solid #10B981;
+      background: #070B16;
+      border: 1px solid #2563EB;
       color: #FFFFFF;
       padding: 7px 16px;
       border-radius: 9999px;
       font-size: 11.5px;
       font-weight: 650;
-      box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+      box-shadow: 0 0 20px rgba(37, 99, 235, 0.45);
       opacity: 0;
       pointer-events: none;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -2204,9 +2221,13 @@
   triggerTab.className = 'sm-floating-trigger';
   triggerTab.title = 'Open StitchMatrix Script Studio (Alt+S)';
   triggerTab.innerHTML = `
-    <svg viewBox="0 0 24 24">
-      <circle cx="12" cy="12" r="9"></circle>
-      <path d="M12 7v5l3 3"></path>
+    <svg viewBox="0 0 24 24" fill="none">
+      <rect x="4" y="4" width="16" height="16" rx="3" stroke="#38BDF8" stroke-width="1.8"/>
+      <circle cx="12" cy="12" r="2.5" fill="#38BDF8"/>
+      <line x1="12" y1="1" x2="12" y2="4" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="12" y1="20" x2="12" y2="23" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="1" y1="12" x2="4" y2="12" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="20" y1="12" x2="23" y2="12" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
     <div class="trigger-dot"></div>
   `;
@@ -2223,7 +2244,7 @@
 
   function showToast(msg) {
     toastEl.innerHTML = `
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
       <span>${msg}</span>
     `;
     toastEl.classList.add('show');
@@ -2388,15 +2409,33 @@
     const curScript = generatedScripts[activeStyleIndex] || generatedScripts[0];
 
     sidebar.innerHTML = `
-      <!-- 1. Sleek Qubora Header -->
+      <!-- 1. Sleek Blendr Header -->
       <header class="sm-header">
         <div class="sm-header-brand">
           <div class="sm-qubora-logo">
-            <!-- Qubora Inspired Organic Emerald Ring SVG -->
+            <!-- Blendr Inspired Cyber Silicon Microchip SVG -->
             <svg viewBox="0 0 28 28" fill="none">
-              <circle cx="14" cy="14" r="10" stroke="#10B981" stroke-width="2" stroke-dasharray="32 18" stroke-linecap="round"/>
-              <circle cx="14" cy="14" r="6" stroke="#34D399" stroke-width="1.5" stroke-dasharray="18 12" stroke-linecap="round" transform="rotate(45 14 14)"/>
-              <circle cx="14" cy="14" r="2.5" fill="#4EFA94"/>
+              <rect x="5" y="5" width="18" height="18" rx="4" fill="#070B16" stroke="#2563EB" stroke-width="1.6"/>
+              <rect x="9" y="9" width="10" height="10" rx="2" fill="url(#smChipGrad)" stroke="#60A5FA" stroke-width="1.2"/>
+              <circle cx="14" cy="14" r="2" fill="#38BDF8"/>
+              <line x1="9" y1="2" x2="9" y2="5" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="14" y1="2" x2="14" y2="5" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="19" y1="2" x2="19" y2="5" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="9" y1="23" x2="9" y2="26" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="14" y1="23" x2="14" y2="26" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="19" y1="23" x2="19" y2="26" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="2" y1="9" x2="5" y2="9" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="2" y1="14" x2="5" y2="14" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="2" y1="19" x2="5" y2="19" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="23" y1="9" x2="26" y2="9" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="23" y1="14" x2="26" y2="14" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="23" y1="19" x2="26" y2="19" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
+              <defs>
+                <linearGradient id="smChipGrad" x1="9" y1="9" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#1E40AF"/>
+                  <stop offset="1" stop-color="#2563EB"/>
+                </linearGradient>
+              </defs>
             </svg>
           </div>
           <div>
@@ -2417,7 +2456,7 @@
         </div>
       </header>
 
-      <!-- 2. Active Video Ingestion Card with Ambient Green Glow -->
+      <!-- 2. Active Video Ingestion Card with Ambient Cobalt Glow -->
       <div class="sm-video-banner" id="smVideoBanner">
         <div class="sm-video-status-row">
           <span class="sm-live-badge">
@@ -2438,7 +2477,7 @@
           <span>•</span>
           <span class="sm-meta-views-pill">Views: <strong id="smMetaViews">${currentContext.views || 'Trending'}</strong></span>
           <span>•</span>
-          <span style="color: #34D399;">Viral Potential: <strong id="smMetaScore">${curScript.viralScore}</strong></span>
+          <span style="color: #60A5FA;">Viral Potential: <strong id="smMetaScore">${curScript.viralScore}</strong></span>
         </div>
       </div>
 
@@ -2556,7 +2595,7 @@
       <div class="sm-modal-overlay" id="smWebcamModal">
         <div class="sm-modal-header">
           <div class="sm-modal-title">
-            <span class="sm-pulse-dot" style="background:#10B981;"></span>
+            <span class="sm-pulse-dot" style="background:#38BDF8;"></span>
             <span id="smRecordModalTitle">Viral Clip Snip & Recording Studio</span>
           </div>
           <button class="sm-close-btn" id="smCloseWebcamBtn">✕</button>
@@ -2606,13 +2645,13 @@
           </div>
 
           <div class="sm-teleprompter-glass" id="smTeleprompterText">
-            <strong style="color: #34D399; display: block; margin-bottom: 4px;">Part 1 (The Hook):</strong>
+            <strong style="color: #60A5FA; display: block; margin-bottom: 4px;">Part 1 (The Hook):</strong>
             <span id="smCamHook">${curScript.hookLead}${curScript.hookHighlight}${curScript.hookTail}</span>
             <br><br>
-            <strong style="color: #8CE4B0; display: block; margin-bottom: 4px;">Part 2 (The Story):</strong>
+            <strong style="color: #93C5FD; display: block; margin-bottom: 4px;">Part 2 (The Story):</strong>
             <span id="smCamBody">${curScript.body}</span>
             <br><br>
-            <strong style="color: #34D399; display: block; margin-bottom: 4px;">Part 3 (Call-to-Action):</strong>
+            <strong style="color: #38BDF8; display: block; margin-bottom: 4px;">Part 3 (Call-to-Action):</strong>
             <span id="smCamCta">${curScript.cta}</span>
           </div>
 
@@ -2725,7 +2764,7 @@
       <div class="sm-modal-overlay" id="smVoiceoverModal">
         <div class="sm-modal-header">
           <div class="sm-modal-title">
-            <span class="sm-pulse-dot" style="background:#10B981;"></span>
+            <span class="sm-pulse-dot" style="background:#38BDF8;"></span>
             <span>AI Voiceover Studio (Faceless Creator)</span>
           </div>
           <button class="sm-close-btn" id="smCloseVoiceoverBtn">✕</button>
@@ -3645,7 +3684,7 @@
         if (voiceBadge) {
           if (['orion', 'asteria', 'luna', 'stella', 'perseus', 'arcas', 'athena', 'angus', 'orpheus', 'hera'].includes(selectedVoiceId)) {
             voiceBadge.textContent = 'Neural AI • Ultra-Realistic';
-            voiceBadge.style.color = '#6EE7B7';
+            voiceBadge.style.color = '#93C5FD';
           } else {
             voiceBadge.textContent = 'International Dialect';
             voiceBadge.style.color = '#38BDF8';
@@ -3878,5 +3917,5 @@
     });
   }
 
-  console.log('[StitchMatrix] Multi-Platform Real-Time Studio v3.8.2 loaded.');
+  console.log('[StitchMatrix] Blendr Cyber-Cobalt Obsidian Studio v3.9.0 loaded.');
 })();
