@@ -1,10 +1,11 @@
 /**
- * StitchMatrix — Viral Script Studio v3.5
+ * StitchMatrix — Qubora Emerald Obsidian Studio v3.6
  * Chrome Extension Manifest V3 In-DOM Sidebar Engine
- * Complete 1-Click Publishing Suite:
- * - Built-in Webcam Studio: Record yourself with live scrolling teleprompter right in Chrome
- * - Send to Phone: QR Code companion opens script & YouTube video on your phone in 1 second
- * - Zero-Dropdown Hands-Free Tracking: Auto-detects videos as you scroll
+ * Design DNA: Qubora Dark Aesthetic
+ * - Deep obsidian void (#060806) with luminous Emerald & Sage Mint accents (#10B981 / #34D399 / #8CE4B0)
+ * - Precision SF Pro / Neo-Grotesque typography with multi-tone contrast formatting
+ * - Glowing aura ring visuals & glowing organic emerald beacons
+ * - Complete 1-click publishing suite: Built-in Webcam Teleprompter + Send-to-Phone QR + Live Auto-Tracking
  */
 
 (function () {
@@ -110,7 +111,7 @@
     if (!author) author = '@creator';
 
     let displayTitle = title;
-    if (displayTitle.length > 72) displayTitle = displayTitle.slice(0, 69) + '...';
+    if (displayTitle.length > 68) displayTitle = displayTitle.slice(0, 65) + '...';
 
     return { platform, title, displayTitle, author, url };
   }
@@ -148,36 +149,39 @@
     return [
       {
         id: 'curiosity',
-        title: '🔥 Curiosity Gap',
+        title: 'Curiosity Gap',
         subtitle: 'High Intrigue & Instant Hook',
-        badge: 'High Views',
         duration: '30s',
         viralScore: '97/100',
-        hook: `Nobody realized this secret about ${subject} until now. The real story behind what you're watching is blowing everyone's mind.`,
+        hookLead: `Nobody realized this secret about `,
+        hookHighlight: `${subject}`,
+        hookTail: ` until now. The real story behind what you're watching is blowing everyone's mind.`,
         body: `While 99% of people scrolled right past this, there's a crazy detail hidden in plain sight. If you look closely at how this was constructed, everything changes. The creators specifically engineered this exact moment to trigger the algorithm and keep you glued to your screen.`,
         cta: `Did you catch that detail on your first watch? Drop your theory in the comments and save this before it's taken down.`,
         hashtags: hashtags
       },
       {
         id: 'hot_take',
-        title: '⚡ Hot Take & Debate',
+        title: 'Hot Take',
         subtitle: 'Controversial Angle for Comments',
-        badge: 'High Debate',
         duration: '34s',
         viralScore: '95/100',
-        hook: `Everyone is talking about ${subject}, but everyone is getting the entire story completely backwards. Here is the uncomfortable truth.`,
+        hookLead: `Everyone is talking about `,
+        hookHighlight: `${subject}`,
+        hookTail: `, but everyone is getting the entire story completely backwards. Here is the uncomfortable truth.`,
         body: `People think this succeeded by luck. But look at the pattern: the first 2 seconds drops you directly into peak tension without a single second wasted on introductions. That single psychological trick is why this is generating millions of views right now.`,
         cta: `Do you agree with this take or do you see it differently? Sound off in the comments below right now.`,
         hashtags: hashtags
       },
       {
         id: 'teardown',
-        title: '🎬 Behind-The-Scenes',
+        title: 'Teardown',
         subtitle: 'Breakdown of Why It Worked',
-        badge: 'High Authority',
         duration: '32s',
         viralScore: '94/100',
-        hook: `This video about ${subject} is currently breaking the algorithm. Let's break down the exact formula in 30 seconds.`,
+        hookLead: `This video about `,
+        hookHighlight: `${subject}`,
+        hookTail: ` is currently breaking the algorithm. Let's break down the exact formula in 30 seconds.`,
         body: `Notice how frame one gives you an immediate emotional punchline? Then they immediately stack 3 high-contrast visual cuts before the 8-second retention drop-off. If you're a creator trying to hit millions of views, steal this exact pacing.`,
         cta: `Bookmark this breakdown to copy for your next upload. Hit follow for daily algorithmic teardowns.`,
         hashtags: hashtags
@@ -209,15 +213,15 @@
   // Attach Shadow DOM for complete CSS encapsulation
   const shadow = host.attachShadow({ mode: 'open' });
 
-  // Inject Styles into Shadow DOM
+  // Inject Qubora-Inspired Scoped Styles into Shadow DOM
   const styleEl = document.createElement('style');
   styleEl.textContent = `
     :host {
       all: initial;
-      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      font-size: 13px;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Plus Jakarta Sans", "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 13.5px;
       line-height: 1.5;
-      color: #F1F5F9;
+      color: #F8FAFC;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
@@ -228,40 +232,41 @@
       padding: 0;
     }
 
-    /* Floating Edge Tab Trigger */
+    /* Floating Edge Tab Trigger (Qubora Glowing Pill) */
     .sm-floating-trigger {
       position: fixed;
       top: 50%;
       right: 0;
       transform: translateY(-50%);
-      width: 36px;
-      height: 88px;
-      background: #101726;
-      border: 1px solid #1E2D47;
+      width: 38px;
+      height: 92px;
+      background: #060806;
+      border: 1px solid #16241A;
       border-right: none;
-      border-radius: 10px 0 0 10px;
+      border-radius: 12px 0 0 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 7px;
+      gap: 8px;
       cursor: pointer;
       z-index: 2147483646;
-      box-shadow: -4px 0 20px rgba(0, 0, 0, 0.45);
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: -4px 0 24px rgba(16, 185, 129, 0.15);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .sm-floating-trigger:hover {
-      background: #162035;
-      width: 40px;
-      border-color: #3B82F6;
+      background: #0B110D;
+      width: 42px;
+      border-color: #10B981;
+      box-shadow: -6px 0 28px rgba(16, 185, 129, 0.3);
     }
 
     .sm-floating-trigger svg {
-      width: 16px;
-      height: 16px;
+      width: 17px;
+      height: 17px;
       fill: none;
-      stroke: #60A5FA;
+      stroke: #34D399;
       stroke-width: 2;
     }
 
@@ -269,26 +274,26 @@
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: #10B981;
-      box-shadow: 0 0 8px #10B981;
+      background: #34D399;
+      box-shadow: 0 0 10px #34D399;
     }
 
-    /* Main Sidebar Drawer */
+    /* Main Sidebar Drawer (Qubora Deep Obsidian Void) */
     .sm-sidebar-container {
       position: fixed;
       top: 0;
       right: 0;
-      width: 415px;
+      width: 418px;
       height: 100vh;
-      background: #0B0F17 !important;
-      border-left: 1px solid #1E293D;
-      color: #F1F5F9;
+      background: #060806 !important;
+      border-left: 1px solid #141E17;
+      color: #F8FAFC;
       z-index: 2147483647;
-      transform: translateX(415px);
-      transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateX(418px);
+      transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       flex-direction: column;
-      box-shadow: -14px 0 40px rgba(0, 0, 0, 0.7);
+      box-shadow: -16px 0 50px rgba(0, 0, 0, 0.85);
       overflow: hidden;
       user-select: text;
     }
@@ -297,47 +302,54 @@
       transform: translateX(0);
     }
 
-    /* Top Header */
+    /* 1. Header (Qubora Glass Header) */
     .sm-header {
-      padding: 11px 16px;
-      background: #101726;
-      border-bottom: 1px solid #1C273C;
+      padding: 13px 18px;
+      background: #080C09;
+      border-bottom: 1px solid #141E17;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      position: relative;
     }
 
     .sm-header-brand {
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 10px;
     }
 
-    .sm-logo-icon {
-      width: 24px;
-      height: 24px;
-      border-radius: 6px;
-      background: linear-gradient(135deg, #2563EB, #4F46E5);
+    /* Qubora Organic Glowing Ring Icon */
+    .sm-qubora-logo {
+      width: 26px;
+      height: 26px;
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #FFFFFF;
-      font-weight: 750;
-      font-size: 12px;
-      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
+    }
+
+    .sm-qubora-logo svg {
+      width: 24px;
+      height: 24px;
+      filter: drop-shadow(0 0 6px rgba(52, 211, 153, 0.6));
     }
 
     .sm-header-title {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
-      color: #F8FAFC;
-      letter-spacing: -0.01em;
+      color: #FFFFFF;
+      letter-spacing: -0.02em;
+    }
+
+    .sm-header-title span {
+      color: #34D399;
     }
 
     .sm-header-actions {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
     }
 
     .sm-auto-badge {
@@ -346,9 +358,9 @@
       gap: 4px;
       font-size: 10px;
       color: #34D399;
-      background: rgba(16, 185, 129, 0.12);
+      background: rgba(16, 185, 129, 0.1);
       border: 1px solid rgba(16, 185, 129, 0.25);
-      padding: 2px 6px;
+      padding: 2px 7px;
       border-radius: 9999px;
       font-weight: 600;
     }
@@ -357,20 +369,20 @@
       width: 5px;
       height: 5px;
       border-radius: 50%;
-      background: #10B981;
-      box-shadow: 0 0 6px #10B981;
+      background: #34D399;
+      box-shadow: 0 0 8px #34D399;
       animation: smBeaconPulse 2s infinite ease-in-out;
     }
 
     @keyframes smBeaconPulse {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.85); }
+      50% { opacity: 0.35; transform: scale(0.85); }
     }
 
     .sm-close-btn {
-      background: #162035;
-      border: 1px solid #23314B;
-      color: #94A3B8;
+      background: #0E1410;
+      border: 1px solid #1C2B20;
+      color: #6B7280;
       cursor: pointer;
       width: 26px;
       height: 26px;
@@ -382,24 +394,25 @@
     }
 
     .sm-close-btn:hover {
-      background: #202D47;
+      background: #141E17;
       color: #FFFFFF;
-      border-color: #3B82F6;
+      border-color: #34D399;
     }
 
-    /* Video Ingestion Banner */
+    /* 2. Active Video Ingestion Banner with Ambient Green Glow */
     .sm-video-banner {
-      padding: 10px 16px;
-      background: linear-gradient(180deg, #131D2E 0%, #0E1624 100%);
-      border-bottom: 1px solid #1E2D47;
+      padding: 12px 18px;
+      background: radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.08) 0%, rgba(6, 8, 6, 0.95) 75%);
+      border-bottom: 1px solid #141E17;
       display: flex;
       flex-direction: column;
       gap: 6px;
+      position: relative;
       transition: background 0.4s ease;
     }
 
     .sm-video-banner.pulse-active {
-      background: linear-gradient(180deg, #1D3557 0%, #10223D 100%);
+      background: radial-gradient(circle at 20% 20%, rgba(52, 211, 153, 0.16) 0%, rgba(6, 8, 6, 0.95) 85%);
     }
 
     .sm-video-status-row {
@@ -416,20 +429,17 @@
       color: #34D399;
       font-weight: 600;
       font-size: 10.5px;
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.25);
-      padding: 2px 8px;
-      border-radius: 9999px;
+      letter-spacing: 0.01em;
     }
 
     .sm-rescan-btn {
-      background: transparent;
-      border: 1px solid #23314B;
-      color: #94A3B8;
+      background: #0E1410;
+      border: 1px solid #1C2B20;
+      color: #8CE4B0;
       border-radius: 5px;
       padding: 2px 8px;
       font-size: 10.5px;
-      font-weight: 500;
+      font-weight: 550;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -438,78 +448,80 @@
     }
 
     .sm-rescan-btn:hover {
-      background: #1E2D47;
-      color: #F8FAFC;
-      border-color: #3B82F6;
+      background: #141E17;
+      color: #FFFFFF;
+      border-color: #34D399;
     }
 
     .sm-video-title {
-      font-size: 12.5px;
-      font-weight: 650;
-      color: #F8FAFC;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #FFFFFF;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
     }
 
     .sm-video-meta {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 10.5px;
-      color: #64748B;
+      font-size: 11px;
+      color: #6B7280;
     }
 
     .sm-video-meta span strong {
-      color: #94A3B8;
+      color: #A1A1AA;
     }
 
-    /* 3 Fast Angle Tabs */
+    /* 3. Fast Angle Tabs (Qubora Glass Pills) */
     .sm-angle-deck {
-      padding: 8px 14px;
-      background: #0D121D;
-      border-bottom: 1px solid #1A2436;
+      padding: 9px 16px;
+      background: #070A08;
+      border-bottom: 1px solid #141E17;
       display: flex;
       gap: 6px;
     }
 
     .sm-angle-tab {
       flex: 1;
-      background: #111724;
-      border: 1px solid #1E2B42;
-      border-radius: 7px;
+      background: #0B100D;
+      border: 1px solid #16241A;
+      border-radius: 8px;
       padding: 6px 8px;
-      font-size: 11px;
+      font-size: 11.5px;
       font-weight: 600;
-      color: #8B98AD;
+      color: #71717A;
       cursor: pointer;
       text-align: center;
       transition: all 0.15s ease;
       white-space: nowrap;
+      letter-spacing: -0.01em;
     }
 
     .sm-angle-tab:hover {
-      color: #F1F5F9;
-      border-color: #2D3E5E;
+      color: #F8FAFC;
+      border-color: #22C55E44;
     }
 
     .sm-angle-tab.active {
-      background: #1C283C;
-      color: #60A5FA;
+      background: #0F1711;
+      color: #34D399;
       font-weight: 700;
-      border: 1px solid #3B82F6;
-      box-shadow: 0 1px 4px rgba(59, 130, 246, 0.2);
+      border: 1px solid #10B981;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
     }
 
-    /* Scrollable Script Canvas */
+    /* 4. Scrollable Script Canvas with Qubora 3-Tone Typography */
     .sm-canvas-area {
       flex: 1;
       overflow-y: auto;
-      padding: 12px 14px;
+      padding: 14px 16px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
 
     .sm-canvas-area::-webkit-scrollbar {
@@ -517,30 +529,30 @@
     }
 
     .sm-canvas-area::-webkit-scrollbar-thumb {
-      background: #23314B;
+      background: #1C2B20;
       border-radius: 4px;
     }
 
-    /* Script Block Card */
+    /* Script Block Card (Qubora Card Surface) */
     .sm-frame-card {
-      background: #131C2B;
-      border: 1px solid #1F2C44;
-      border-radius: 8px;
+      background: #0A0E0B;
+      border: 1px solid #16221A;
+      border-radius: 12px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
       transition: border-color 0.15s ease;
     }
 
     .sm-frame-card:hover {
-      border-color: #2D3E5E;
+      border-color: #22C55E44;
     }
 
     .sm-frame-header {
-      padding: 6px 10px;
-      background: #111826;
-      border-bottom: 1px solid #1A2538;
+      padding: 8px 12px;
+      background: #0C120D;
+      border-bottom: 1px solid #141E17;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -552,29 +564,22 @@
       display: flex;
       align-items: center;
       gap: 6px;
-    }
-
-    .sm-part-badge {
-      font-size: 9.5px;
-      font-weight: 750;
-      padding: 1px 5px;
-      border-radius: 4px;
+      letter-spacing: 0.02em;
       text-transform: uppercase;
-      letter-spacing: 0.03em;
     }
 
-    .sm-badge-hook { background: rgba(59, 130, 246, 0.18); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.3); }
-    .sm-badge-body { background: rgba(99, 102, 241, 0.18); color: #A5B4FC; border: 1px solid rgba(99, 102, 241, 0.3); }
-    .sm-badge-cta  { background: rgba(16, 185, 129, 0.18); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .sm-title-hook { color: #34D399; }
+    .sm-title-body { color: #8CE4B0; }
+    .sm-title-cta  { color: #34D399; }
 
     .sm-copy-part-btn {
-      background: #162035;
-      border: 1px solid #23314B;
-      color: #94A3B8;
+      background: #0E1410;
+      border: 1px solid #1C2B20;
+      color: #8CE4B0;
       cursor: pointer;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 10.5px;
       font-weight: 600;
       display: flex;
       align-items: center;
@@ -583,52 +588,77 @@
     }
 
     .sm-copy-part-btn:hover {
-      background: #202D47;
-      color: #F8FAFC;
-      border-color: #3B82F6;
+      background: #141E17;
+      color: #FFFFFF;
+      border-color: #34D399;
     }
 
+    /* Qubora 3-Tone Typography in Action */
     .sm-frame-editor {
-      padding: 10px 12px;
-      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
-      font-size: 12.5px;
-      line-height: 1.55;
-      color: #F1F5F9;
+      padding: 12px 14px;
+      font-size: 13.5px;
+      line-height: 1.6;
       outline: none;
       cursor: text;
       white-space: pre-wrap;
       word-break: break-word;
-      min-height: 48px;
+      min-height: 52px;
     }
 
-    /* Tags Row */
+    .sm-hook-lead {
+      color: #FFFFFF;
+      font-weight: 700;
+    }
+
+    .sm-hook-highlight {
+      color: #34D399;
+      font-weight: 700;
+      text-shadow: 0 0 12px rgba(52, 211, 153, 0.4);
+    }
+
+    .sm-hook-tail {
+      color: #9CA3AF;
+      font-weight: 450;
+    }
+
+    .sm-body-text {
+      color: #9CA3AF;
+      font-weight: 450;
+    }
+
+    .sm-cta-text {
+      color: #8CE4B0;
+      font-weight: 600;
+    }
+
+    /* Hashtags Box */
     .sm-hashtags-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: #0E1624;
-      border: 1px solid #1A2436;
-      border-radius: 6px;
-      padding: 6px 10px;
+      background: #0A0E0B;
+      border: 1px solid #16221A;
+      border-radius: 8px;
+      padding: 8px 12px;
       gap: 8px;
     }
 
     .sm-hashtags-text {
-      font-size: 10.5px;
-      color: #60A5FA;
-      font-weight: 550;
+      font-size: 11px;
+      color: #34D399;
+      font-weight: 600;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
     .sm-copy-tags-btn {
-      background: #162035;
-      border: 1px solid #23314B;
-      color: #CBD5E1;
-      border-radius: 4px;
-      padding: 3px 7px;
-      font-size: 10px;
+      background: #0E1410;
+      border: 1px solid #1C2B20;
+      color: #8CE4B0;
+      border-radius: 5px;
+      padding: 3px 8px;
+      font-size: 10.5px;
       font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
@@ -636,58 +666,60 @@
     }
 
     .sm-copy-tags-btn:hover {
-      background: #202D47;
+      background: #141E17;
       color: #FFFFFF;
-      border-color: #3B82F6;
+      border-color: #34D399;
     }
 
-    /* Action Deck in Footer (The 3 Super-Simple Buttons) */
+    /* 5. Qubora Action Deck (Glowing Emerald Studio Controls) */
     .sm-footer {
-      padding: 12px 14px;
-      background: #101726;
-      border-top: 1px solid #1C273C;
+      padding: 14px 16px;
+      background: #080C09;
+      border-top: 1px solid #141E17;
       display: flex;
       flex-direction: column;
-      gap: 7px;
+      gap: 8px;
     }
 
+    /* Option 1: Record Short with Webcam (Emerald Gradient Glow) */
     .sm-btn-record {
       width: 100%;
-      background: linear-gradient(135deg, #DC2626, #B91C1C);
+      background: linear-gradient(135deg, #059669 0%, #10B981 100%);
       color: #FFFFFF;
-      border: 1px solid #EF4444;
-      border-radius: 8px;
-      padding: 11px 14px;
-      font-size: 13px;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 13.5px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: all 0.15s ease;
-      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
+      letter-spacing: -0.01em;
     }
 
     .sm-btn-record:hover {
-      background: linear-gradient(135deg, #EF4444, #DC2626);
+      background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.5);
+      box-shadow: 0 6px 26px rgba(52, 211, 153, 0.45);
     }
 
     .sm-btn-row-split {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 6px;
+      gap: 8px;
     }
 
     .sm-btn-phone {
-      background: #131C2B;
-      border: 1px solid #2563EB;
-      color: #93C5FD;
-      border-radius: 7px;
-      padding: 8px 10px;
-      font-size: 11.5px;
+      background: #0C110E;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #8CE4B0;
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 12px;
       font-weight: 650;
       cursor: pointer;
       display: flex;
@@ -698,18 +730,18 @@
     }
 
     .sm-btn-phone:hover {
-      background: #1E293B;
+      background: #101712;
       color: #FFFFFF;
-      border-color: #3B82F6;
+      border-color: #34D399;
     }
 
     .sm-btn-copy {
-      background: #131C2B;
-      border: 1px solid #1F2C44;
-      color: #CBD5E1;
-      border-radius: 7px;
-      padding: 8px 10px;
-      font-size: 11.5px;
+      background: #0C110E;
+      border: 1px solid #16221A;
+      color: #9CA3AF;
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       display: flex;
@@ -720,9 +752,9 @@
     }
 
     .sm-btn-copy:hover {
-      background: #1E293B;
+      background: #101712;
       color: #FFFFFF;
-      border-color: #2D3E5E;
+      border-color: #22C55E44;
     }
 
     .sm-btn-copy.copied {
@@ -738,8 +770,8 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(11, 15, 23, 0.96);
-      backdrop-filter: blur(8px);
+      background: rgba(6, 8, 6, 0.97);
+      backdrop-filter: blur(10px);
       z-index: 500;
       display: none;
       flex-direction: column;
@@ -751,21 +783,21 @@
     }
 
     .sm-modal-header {
-      padding: 12px 16px;
-      background: #101726;
-      border-bottom: 1px solid #1C273C;
+      padding: 13px 18px;
+      background: #080C09;
+      border-bottom: 1px solid #141E17;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
     .sm-modal-title {
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 700;
       color: #FFFFFF;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
     }
 
     /* WEBCAM STUDIO VIEW */
@@ -773,7 +805,7 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      padding: 14px;
+      padding: 16px;
       gap: 12px;
       overflow-y: auto;
     }
@@ -781,11 +813,11 @@
     .sm-camera-box {
       position: relative;
       width: 100%;
-      height: 240px;
+      height: 230px;
       background: #000000;
       border-radius: 12px;
       overflow: hidden;
-      border: 1px solid #1E2D47;
+      border: 1px solid #16241A;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -821,7 +853,7 @@
       top: 10px;
       right: 10px;
       background: rgba(0, 0, 0, 0.7);
-      color: #FFFFFF;
+      color: #34D399;
       font-size: 11px;
       font-weight: 700;
       padding: 3px 8px;
@@ -831,17 +863,17 @@
 
     /* Scrolling Teleprompter Inside Camera Studio */
     .sm-teleprompter-glass {
-      background: rgba(19, 28, 43, 0.85);
-      border: 1px solid #1E2D47;
+      background: #0A0E0B;
+      border: 1px solid #16221A;
       border-radius: 10px;
-      padding: 12px;
-      max-height: 140px;
+      padding: 14px;
+      max-height: 150px;
       overflow-y: auto;
       font-size: 13.5px;
       line-height: 1.6;
       color: #F8FAFC;
       text-align: center;
-      font-weight: 550;
+      font-weight: 500;
     }
 
     .sm-teleprompter-glass::-webkit-scrollbar {
@@ -857,10 +889,10 @@
 
     .sm-btn-start-rec {
       width: 100%;
-      background: #DC2626;
+      background: linear-gradient(135deg, #059669 0%, #10B981 100%);
       color: #FFFFFF;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 12px;
       font-size: 14px;
       font-weight: 700;
@@ -869,17 +901,19 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4);
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
     }
 
-    .sm-btn-start-rec:hover { background: #EF4444; }
+    .sm-btn-start-rec:hover {
+      background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+    }
 
     .sm-btn-stop-rec {
       width: 100%;
-      background: #475569;
+      background: #27272A;
       color: #FFFFFF;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 12px;
       font-size: 14px;
       font-weight: 700;
@@ -892,10 +926,10 @@
 
     .sm-btn-download-video {
       width: 100%;
-      background: #10B981;
+      background: linear-gradient(135deg, #059669 0%, #10B981 100%);
       color: #FFFFFF;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 12px;
       font-size: 14px;
       font-weight: 700;
@@ -904,7 +938,7 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
     }
 
     /* QR CODE MODAL VIEW */
@@ -916,14 +950,14 @@
       justify-content: center;
       padding: 24px;
       text-align: center;
-      gap: 14px;
+      gap: 16px;
     }
 
     .sm-qr-frame {
       background: #FFFFFF;
       padding: 12px;
-      border-radius: 12px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+      border-radius: 14px;
+      box-shadow: 0 0 30px rgba(52, 211, 153, 0.25);
       width: 190px;
       height: 190px;
       display: flex;
@@ -938,48 +972,50 @@
     }
 
     .sm-qr-instructions {
-      font-size: 12.5px;
-      color: #94A3B8;
-      max-width: 280px;
+      font-size: 13px;
+      color: #9CA3AF;
+      max-width: 290px;
       line-height: 1.5;
     }
 
     .sm-btn-copy-link {
-      background: #162035;
-      border: 1px solid #23314B;
-      color: #60A5FA;
-      padding: 8px 14px;
-      border-radius: 6px;
-      font-size: 11.5px;
-      font-weight: 600;
+      background: #0C110E;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34D399;
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 650;
       cursor: pointer;
+      transition: all 0.15s ease;
     }
 
     .sm-btn-copy-link:hover {
-      background: #1E2D47;
+      background: #141E17;
       color: #FFFFFF;
+      border-color: #34D399;
     }
 
     /* Toast Notification */
     .sm-toast {
       position: absolute;
-      bottom: 84px;
+      bottom: 88px;
       left: 50%;
       transform: translateX(-50%) translateY(10px);
-      background: #131D2E;
-      border: 1px solid #3B82F6;
+      background: #0A0E0B;
+      border: 1px solid #10B981;
       color: #FFFFFF;
-      padding: 6px 14px;
+      padding: 7px 16px;
       border-radius: 9999px;
-      font-size: 11px;
-      font-weight: 600;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      font-size: 11.5px;
+      font-weight: 650;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
       opacity: 0;
       pointer-events: none;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
       z-index: 600;
     }
 
@@ -996,7 +1032,8 @@
   triggerTab.title = 'Open StitchMatrix Script Studio (Alt+S)';
   triggerTab.innerHTML = `
     <svg viewBox="0 0 24 24">
-      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+      <circle cx="12" cy="12" r="9"></circle>
+      <path d="M12 7v5l3 3"></path>
     </svg>
     <div class="trigger-dot"></div>
   `;
@@ -1024,9 +1061,10 @@
 
   function getMobileCompanionUrl() {
     const curScript = generatedScripts[activeStyleIndex] || generatedScripts[0];
+    const fullHook = `${curScript.hookLead}${curScript.hookHighlight}${curScript.hookTail}`;
     const params = new URLSearchParams({
       title: currentContext.title,
-      hook: curScript.hook,
+      hook: fullHook,
       body: curScript.body,
       cta: curScript.cta,
       tags: curScript.hashtags,
@@ -1056,7 +1094,14 @@
     if (targetEl) targetEl.textContent = currentContext.platform;
     if (authorEl) authorEl.textContent = currentContext.author;
     if (scoreEl) scoreEl.textContent = curScript.viralScore;
-    if (hookEl) hookEl.textContent = curScript.hook;
+
+    if (hookEl) {
+      hookEl.innerHTML = `
+        <span class="sm-hook-lead">${curScript.hookLead}</span>
+        <span class="sm-hook-highlight">${curScript.hookHighlight}</span>
+        <span class="sm-hook-tail">${curScript.hookTail}</span>
+      `;
+    }
     if (bodyEl) bodyEl.textContent = curScript.body;
     if (ctaEl) ctaEl.textContent = curScript.cta;
     if (tagsEl) tagsEl.textContent = curScript.hashtags;
@@ -1088,18 +1133,25 @@
     const curScript = generatedScripts[activeStyleIndex] || generatedScripts[0];
 
     sidebar.innerHTML = `
-      <!-- 1. Sleek Top Header -->
+      <!-- 1. Sleek Qubora Header -->
       <header class="sm-header">
         <div class="sm-header-brand">
-          <div class="sm-logo-icon">S</div>
+          <div class="sm-qubora-logo">
+            <!-- Qubora Inspired Organic Emerald Ring SVG -->
+            <svg viewBox="0 0 28 28" fill="none">
+              <circle cx="14" cy="14" r="10" stroke="#10B981" stroke-width="2" stroke-dasharray="32 18" stroke-linecap="round"/>
+              <circle cx="14" cy="14" r="6" stroke="#34D399" stroke-width="1.5" stroke-dasharray="18 12" stroke-linecap="round" transform="rotate(45 14 14)"/>
+              <circle cx="14" cy="14" r="2.5" fill="#4EFA94"/>
+            </svg>
+          </div>
           <div>
-            <div class="sm-header-title">StitchMatrix Viral Studio</div>
+            <div class="sm-header-title">Stitch<span>Matrix</span></div>
           </div>
         </div>
         <div class="sm-header-actions">
           <span class="sm-auto-badge" title="Live automatic video tracking active">
             <span class="sm-pulse-dot"></span>
-            <span>Auto-Sync</span>
+            <span>Live Sync</span>
           </span>
           <button class="sm-close-btn" id="smCloseBtn" title="Close Studio (Esc)">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -1110,7 +1162,7 @@
         </div>
       </header>
 
-      <!-- 2. Active Video Ingestion Card -->
+      <!-- 2. Active Video Ingestion Card with Ambient Green Glow -->
       <div class="sm-video-banner" id="smVideoBanner">
         <div class="sm-video-status-row">
           <span class="sm-live-badge">
@@ -1142,52 +1194,53 @@
         `).join('')}
       </div>
 
-      <!-- 4. Scrollable Script Canvas -->
+      <!-- 4. Scrollable Script Canvas with 3-Tone Typography -->
       <div class="sm-canvas-area">
         
         <!-- Part 1: The Hook -->
         <div class="sm-frame-card">
           <div class="sm-frame-header">
-            <div class="sm-frame-title">
-              <span class="sm-part-badge sm-badge-hook">Part 1</span>
-              <span>The Viral Hook (0–3s)</span>
+            <div class="sm-frame-title sm-title-hook">
+              <span>01 · The Viral Hook (0–3s)</span>
             </div>
             <button class="sm-copy-part-btn" id="smCopyHookBtn" title="Copy hook only">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
               <span>Copy</span>
             </button>
           </div>
-          <div class="sm-frame-editor" id="smHookText" contenteditable="true" spellcheck="false">${curScript.hook}</div>
+          <div class="sm-frame-editor" id="smHookText" contenteditable="true" spellcheck="false">
+            <span class="sm-hook-lead">${curScript.hookLead}</span>
+            <span class="sm-hook-highlight">${curScript.hookHighlight}</span>
+            <span class="sm-hook-tail">${curScript.hookTail}</span>
+          </div>
         </div>
 
         <!-- Part 2: The Core Body -->
         <div class="sm-frame-card">
           <div class="sm-frame-header">
-            <div class="sm-frame-title">
-              <span class="sm-part-badge sm-badge-body">Part 2</span>
-              <span>The Story / Breakdown (4–25s)</span>
+            <div class="sm-frame-title sm-title-body">
+              <span>02 · The Core Story (4–25s)</span>
             </div>
             <button class="sm-copy-part-btn" id="smCopyBodyBtn" title="Copy body only">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
               <span>Copy</span>
             </button>
           </div>
-          <div class="sm-frame-editor" id="smBodyText" contenteditable="true" spellcheck="false">${curScript.body}</div>
+          <div class="sm-frame-editor sm-body-text" id="smBodyText" contenteditable="true" spellcheck="false">${curScript.body}</div>
         </div>
 
         <!-- Part 3: Call to Action -->
         <div class="sm-frame-card">
           <div class="sm-frame-header">
-            <div class="sm-frame-title">
-              <span class="sm-part-badge sm-badge-cta">Part 3</span>
-              <span>Retention Call-To-Action (26–35s)</span>
+            <div class="sm-frame-title sm-title-cta">
+              <span>03 · Retention Call-To-Action (26–35s)</span>
             </div>
             <button class="sm-copy-part-btn" id="smCopyCtaBtn" title="Copy CTA only">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
               <span>Copy</span>
             </button>
           </div>
-          <div class="sm-frame-editor" id="smCtaText" contenteditable="true" spellcheck="false">${curScript.cta}</div>
+          <div class="sm-frame-editor sm-cta-text" id="smCtaText" contenteditable="true" spellcheck="false">${curScript.cta}</div>
         </div>
 
         <!-- Trending Hashtags -->
@@ -1198,11 +1251,11 @@
 
       </div>
 
-      <!-- 5. Foolproof Action Deck (The 3 Options to Post) -->
+      <!-- 5. Qubora Glowing Action Deck -->
       <footer class="sm-footer">
         <!-- Option 1: Record Directly on Webcam -->
         <button class="sm-btn-record" id="smOpenRecordBtn" title="Open webcam teleprompter and record video directly in Chrome">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <circle cx="12" cy="12" r="8"></circle>
           </svg>
           <span>Record Short with Webcam</span>
@@ -1232,14 +1285,13 @@
       <div class="sm-modal-overlay" id="smWebcamModal">
         <div class="sm-modal-header">
           <div class="sm-modal-title">
-            <span style="color: #EF4444;">●</span>
+            <span class="sm-pulse-dot"></span>
             <span>Webcam Teleprompter Studio</span>
           </div>
           <button class="sm-close-btn" id="smCloseWebcamBtn">✕</button>
         </div>
 
         <div class="sm-webcam-body">
-          <!-- Camera Feed / Playback Container -->
           <div class="sm-camera-box">
             <video id="smWebcamFeed" autoplay muted playsinline></video>
             <video id="smRecordedPlayback" controls style="display: none;"></video>
@@ -1250,22 +1302,20 @@
             <div class="sm-rec-timer" id="smRecTimer">00:00 / 00:30</div>
           </div>
 
-          <!-- Scrolling Teleprompter Display -->
           <div class="sm-teleprompter-glass" id="smTeleprompterText">
-            <strong style="color: #60A5FA; display: block; margin-bottom: 4px;">Part 1 (Hook):</strong>
-            <span id="smCamHook">${curScript.hook}</span>
+            <strong style="color: #34D399; display: block; margin-bottom: 4px;">Part 1 (The Hook):</strong>
+            <span id="smCamHook">${curScript.hookLead}${curScript.hookHighlight}${curScript.hookTail}</span>
             <br><br>
-            <strong style="color: #A5B4FC; display: block; margin-bottom: 4px;">Part 2 (Story & Product):</strong>
+            <strong style="color: #8CE4B0; display: block; margin-bottom: 4px;">Part 2 (The Story):</strong>
             <span id="smCamBody">${curScript.body}</span>
             <br><br>
             <strong style="color: #34D399; display: block; margin-bottom: 4px;">Part 3 (Call-to-Action):</strong>
             <span id="smCamCta">${curScript.cta}</span>
           </div>
 
-          <!-- Controls -->
           <div class="sm-webcam-controls">
             <button class="sm-btn-start-rec" id="smStartRecBtn">
-              <span>🔴 Start 30s Recording</span>
+              <span>Start 30s Recording</span>
             </button>
             <button class="sm-btn-stop-rec" id="smStopRecBtn">
               <span>⏹ Stop & Review</span>
@@ -1304,11 +1354,9 @@
   }
 
   function attachEventListeners() {
-    // Close button
     const closeBtn = sidebar.querySelector('#smCloseBtn');
     if (closeBtn) closeBtn.onclick = toggleSidebar;
 
-    // Manual Re-scan Button
     const rescanBtn = sidebar.querySelector('#smRescanBtn');
     if (rescanBtn) {
       rescanBtn.onclick = () => {
@@ -1319,7 +1367,6 @@
       };
     }
 
-    // Angle Tabs Selection
     sidebar.querySelectorAll('.sm-angle-tab').forEach(btn => {
       btn.onclick = () => {
         const idx = parseInt(btn.getAttribute('data-idx'), 10);
@@ -1331,16 +1378,15 @@
       };
     });
 
-    // Copy Hook Only
     const copyHookBtn = sidebar.querySelector('#smCopyHookBtn');
     if (copyHookBtn) {
       copyHookBtn.onclick = () => {
-        const text = sidebar.querySelector('#smHookText')?.textContent || '';
-        navigator.clipboard.writeText(text).then(() => showToast('Hook copied!'));
+        const curScript = generatedScripts[activeStyleIndex];
+        const fullHook = `${curScript.hookLead}${curScript.hookHighlight}${curScript.hookTail}`;
+        navigator.clipboard.writeText(fullHook).then(() => showToast('Hook copied!'));
       };
     }
 
-    // Copy Body Only
     const copyBodyBtn = sidebar.querySelector('#smCopyBodyBtn');
     if (copyBodyBtn) {
       copyBodyBtn.onclick = () => {
@@ -1349,7 +1395,6 @@
       };
     }
 
-    // Copy CTA Only
     const copyCtaBtn = sidebar.querySelector('#smCtaBtn');
     if (copyCtaBtn) {
       copyCtaBtn.onclick = () => {
@@ -1358,7 +1403,6 @@
       };
     }
 
-    // Copy Hashtags
     const copyTagsBtn = sidebar.querySelector('#smCopyHashtagsBtn');
     if (copyTagsBtn) {
       copyTagsBtn.onclick = () => {
@@ -1367,16 +1411,13 @@
       };
     }
 
-    // Primary Action: Copy Full Script
     const copyFullBtn = sidebar.querySelector('#smCopyFullBtn');
     const copyFullText = sidebar.querySelector('#smCopyFullText');
     if (copyFullBtn && copyFullText) {
       copyFullBtn.onclick = () => executeCopyFullScript();
     }
 
-    // =========================================================================
-    // FEATURE 1: WEBCAM STUDIO RECORDING LOGIC
-    // =========================================================================
+    // WEBCAM RECORDING LOGIC
     const openRecordBtn = sidebar.querySelector('#smOpenRecordBtn');
     const webcamModal = sidebar.querySelector('#smWebcamModal');
     const closeWebcamBtn = sidebar.querySelector('#smCloseWebcamBtn');
@@ -1392,7 +1433,8 @@
     if (openRecordBtn && webcamModal) {
       openRecordBtn.onclick = async () => {
         const curScript = generatedScripts[activeStyleIndex] || generatedScripts[0];
-        sidebar.querySelector('#smCamHook').textContent = curScript.hook;
+        const fullHook = `${curScript.hookLead}${curScript.hookHighlight}${curScript.hookTail}`;
+        sidebar.querySelector('#smCamHook').textContent = fullHook;
         sidebar.querySelector('#smCamBody').textContent = curScript.body;
         sidebar.querySelector('#smCamCta').textContent = curScript.cta;
 
@@ -1472,13 +1514,11 @@
         stopRecBtn.style.display = 'flex';
         recBadge.classList.add('active');
 
-        // Teleprompter smooth auto-scroll
         prompterText.scrollTop = 0;
         teleprompterScrollInterval = setInterval(() => {
           prompterText.scrollTop += 1;
         }, 120);
 
-        // 30s Recording countdown timer
         recordingTimer = setInterval(() => {
           recordingSeconds++;
           const secFormatted = String(recordingSeconds).padStart(2, '0');
@@ -1514,9 +1554,7 @@
       };
     }
 
-    // =========================================================================
-    // FEATURE 2: SEND TO PHONE QR CODE MODAL
-    // =========================================================================
+    // QR CODE MODAL LOGIC
     const openPhoneBtn = sidebar.querySelector('#smOpenPhoneBtn');
     const phoneModal = sidebar.querySelector('#smPhoneModal');
     const closePhoneBtn = sidebar.querySelector('#smClosePhoneBtn');
@@ -1547,10 +1585,10 @@
 
   function executeCopyFullScript() {
     const curScript = generatedScripts[activeStyleIndex];
-    const hookText = sidebar.querySelector('#smHookText')?.textContent || '';
-    const bodyText = sidebar.querySelector('#smBodyText')?.textContent || '';
-    const ctaText = sidebar.querySelector('#smCtaText')?.textContent || '';
-    const formatted = `[PART 1: THE VIRAL HOOK]\n${hookText}\n\n[PART 2: THE CORE STORY]\n${bodyText}\n\n[PART 3: RETENTION CALL-TO-ACTION]\n${ctaText}\n\nHASHTAGS:\n${curScript.hashtags}`;
+    const fullHook = `${curScript.hookLead}${curScript.hookHighlight}${curScript.hookTail}`;
+    const bodyText = sidebar.querySelector('#smBodyText')?.textContent || curScript.body;
+    const ctaText = sidebar.querySelector('#smCtaText')?.textContent || curScript.cta;
+    const formatted = `[PART 1: THE VIRAL HOOK]\n${fullHook}\n\n[PART 2: THE CORE STORY]\n${bodyText}\n\n[PART 3: RETENTION CALL-TO-ACTION]\n${ctaText}\n\nHASHTAGS:\n${curScript.hashtags}`;
 
     navigator.clipboard.writeText(formatted).then(() => {
       const copyFullBtn = sidebar.querySelector('#smCopyFullBtn');
@@ -1578,15 +1616,14 @@
     } else {
       sidebar.classList.remove('open');
       triggerTab.style.display = 'flex';
+      if (isRecording) cleanupWebcam();
     }
   }
 
   triggerTab.onclick = toggleSidebar;
   shadow.appendChild(sidebar);
 
-  // =========================================================================
-  // AUTOMATED REAL-TIME HANDS-FREE VIDEO DETECTION & LIVE RE-SYNC ENGINE
-  // =========================================================================
+  // AUTOMATED REAL-TIME VIDEO DETECTION & LIVE RE-SYNC ENGINE
   document.addEventListener('play', () => {
     setTimeout(checkAndAutoUpdate, 150);
   }, true);
@@ -1636,5 +1673,5 @@
     });
   }
 
-  console.log('[StitchMatrix] Complete 1-Click Publishing Studio v3.5 loaded.');
+  console.log('[StitchMatrix] Qubora Emerald Obsidian Studio v3.6 loaded.');
 })();

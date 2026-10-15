@@ -1,19 +1,23 @@
-/* StitchMatrix — Executive Dark Slate Studio v3.2 Design System
-   Linear / Stripe Pro UI Palette:
-   Background: #0B0F17
-   Header: #101726
-   Card Surface: #131C2B
-   Borders: #1F2C44
-   Primary Accent: #2563EB
-   Active Highlighting: #3B82F6 / #60A5FA
+/* StitchMatrix — Qubora Emerald Obsidian Studio v3.6 Design System
+   Design DNA: Qubora Deep Obsidian Void & Ethereal Emerald Glow
+   Void Canvas: #060806
+   Header Surface: #080C09
+   Card Surface: #0A0E0B
+   Borders: #141E17 / #1C2B20
+   Core Emerald Accent: #10B981
+   Bright Green Glow: #34D399
+   Soft Sage Mint: #8CE4B0
+   High-Contrast Lead: #FFFFFF
+   Smoke Gray Body: #9CA3AF / #6B7280
 */
 
 :host {
   all: initial;
-  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: 13px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Plus Jakarta Sans", "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 13.5px;
   line-height: 1.5;
-  color: #F1F5F9;
+  color: #F8FAFC;
+  letter-spacing: -0.015em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

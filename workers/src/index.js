@@ -335,23 +335,45 @@ Format strictly as 01 | Hook Element, 02 | Core Thesis, 03 | Retentive Call-To-A
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #0B0F17;
+      background: #060806;
       color: #F8FAFC;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Plus Jakarta Sans", "Inter", "Segoe UI", Roboto, sans-serif;
+      padding: 18px 16px 36px 16px;
       line-height: 1.6;
+      letter-spacing: -0.015em;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
     }
     .header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid #1E2D47;
-      padding-bottom: 12px;
-      margin-bottom: 16px;
+      border-bottom: 1px solid #141E17;
+      padding-bottom: 14px;
+      margin-bottom: 18px;
     }
-    .brand { font-size: 16px; font-weight: 750; color: #60A5FA; }
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-icon {
+      width: 26px;
+      height: 26px;
+      filter: drop-shadow(0 0 6px rgba(52, 211, 153, 0.6));
+    }
+    .brand-text {
+      font-size: 16px;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: -0.02em;
+    }
+    .brand-text span {
+      color: #34D399;
+    }
     .btn-open-yt {
-      background: #EF4444;
+      background: #141E17;
+      border: 1px solid #1C2B20;
       color: #FFFFFF;
       text-decoration: none;
       font-size: 12px;
@@ -361,21 +383,48 @@ Format strictly as 01 | Hook Element, 02 | Core Thesis, 03 | Retentive Call-To-A
       display: inline-flex;
       align-items: center;
       gap: 5px;
+      transition: all 0.2s ease;
+    }
+    .btn-open-yt:hover {
+      background: #1B291F;
+      border-color: #34D399;
     }
     .video-card {
-      background: #131D2E;
-      border: 1px solid #1E2D47;
-      border-radius: 10px;
-      padding: 12px;
+      background: radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.08) 0%, rgba(10, 14, 11, 0.95) 85%);
+      border: 1px solid #16241A;
+      border-radius: 12px;
+      padding: 14px;
       margin-bottom: 16px;
     }
-    .video-label { font-size: 11px; color: #34D399; font-weight: 650; text-transform: uppercase; }
-    .video-title { font-size: 14px; font-weight: 700; color: #FFFFFF; margin-top: 4px; }
+    .video-label {
+      font-size: 11px;
+      color: #34D399;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .pulse-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #34D399;
+      box-shadow: 0 0 8px #34D399;
+    }
+    .video-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-top: 6px;
+      line-height: 1.35;
+    }
     .section {
-      background: #131C2B;
-      border: 1px solid #1F2C44;
-      border-radius: 10px;
-      padding: 14px;
+      background: #0A0E0B;
+      border: 1px solid #16221A;
+      border-radius: 12px;
+      padding: 16px;
       margin-bottom: 12px;
     }
     .section-tag {
@@ -383,77 +432,106 @@ Format strictly as 01 | Hook Element, 02 | Core Thesis, 03 | Retentive Call-To-A
       font-weight: 700;
       letter-spacing: 0.04em;
       text-transform: uppercase;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
-    .tag-hook { color: #60A5FA; }
-    .tag-body { color: #A5B4FC; }
-    .tag-cta { color: #34D399; }
-    .script-text { font-size: 17px; font-weight: 500; color: #F1F5F9; line-height: 1.5; }
+    .tag-hook { color: #34D399; }
+    .tag-body { color: #8CE4B0; }
+    .tag-cta  { color: #34D399; }
+    .script-text {
+      font-size: 17px;
+      font-weight: 500;
+      line-height: 1.55;
+    }
+    .hook-text { color: #FFFFFF; font-weight: 600; }
+    .body-text { color: #9CA3AF; }
+    .cta-text  { color: #8CE4B0; font-weight: 600; }
     .action-btn {
       width: 100%;
-      background: #2563EB;
+      background: linear-gradient(135deg, #059669 0%, #10B981 100%);
       color: #FFFFFF;
       border: none;
-      border-radius: 10px;
-      padding: 14px;
+      border-radius: 12px;
+      padding: 15px;
       font-size: 15px;
       font-weight: 700;
       cursor: pointer;
-      margin-top: 10px;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+      margin-top: 14px;
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: -0.01em;
+      transition: all 0.2s ease;
     }
-    .action-btn:active { background: #1D4ED8; }
+    .action-btn:active {
+      transform: scale(0.98);
+      background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+    }
     .tags-box {
-      background: #0E1624;
-      border: 1px solid #1E2D47;
-      border-radius: 8px;
-      padding: 10px;
+      background: #0A0E0B;
+      border: 1px solid #16221A;
+      border-radius: 10px;
+      padding: 12px;
       margin-top: 12px;
-      font-size: 12px;
-      color: #60A5FA;
+      font-size: 12.5px;
+      color: #34D399;
+      font-weight: 600;
     }
     .toast {
       position: fixed;
       bottom: 24px;
       left: 50%;
       transform: translateX(-50%);
-      background: #10B981;
+      background: #0A0E0B;
+      border: 1px solid #10B981;
       color: #FFFFFF;
-      padding: 8px 18px;
+      padding: 9px 20px;
       border-radius: 9999px;
       font-weight: 700;
       font-size: 13px;
       opacity: 0;
-      transition: opacity 0.2s ease;
+      transition: all 0.2s ease;
       pointer-events: none;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
     }
     .toast.show { opacity: 1; }
   </style>
 </head>
 <body>
   <div class="header">
-    <div class="brand">⚡ StitchMatrix Mobile</div>
-    <a href="${videoUrl}" target="_blank" class="btn-open-yt">▶ Open in YouTube</a>
+    <div class="brand-wrap">
+      <svg class="brand-icon" viewBox="0 0 28 28" fill="none">
+        <circle cx="14" cy="14" r="10" stroke="#10B981" stroke-width="2" stroke-dasharray="32 18" stroke-linecap="round"/>
+        <circle cx="14" cy="14" r="6" stroke="#34D399" stroke-width="1.5" stroke-dasharray="18 12" stroke-linecap="round" transform="rotate(45 14 14)"/>
+        <circle cx="14" cy="14" r="2.5" fill="#4EFA94"/>
+      </svg>
+      <div class="brand-text">Stitch<span>Matrix</span></div>
+    </div>
+    <a href="${videoUrl}" target="_blank" class="btn-open-yt">▶ Open YouTube</a>
   </div>
 
   <div class="video-card">
-    <div class="video-label">Remixing Active Video</div>
+    <div class="video-label">
+      <span class="pulse-dot"></span>
+      <span>Remixing Active Video</span>
+    </div>
     <div class="video-title">${title}</div>
   </div>
 
   <div class="section">
     <div class="section-tag tag-hook">Part 1: The Viral Hook (0–3s)</div>
-    <div class="script-text">${hook}</div>
+    <div class="script-text hook-text">${hook}</div>
   </div>
 
   <div class="section">
     <div class="section-tag tag-body">Part 2: The Core Story & Product Bridge</div>
-    <div class="script-text">${body}</div>
+    <div class="script-text body-text">${body}</div>
   </div>
 
   <div class="section">
     <div class="section-tag tag-cta">Part 3: Call-To-Action</div>
-    <div class="script-text">${cta}</div>
+    <div class="script-text cta-text">${cta}</div>
   </div>
 
   <div class="tags-box">${tags}</div>
