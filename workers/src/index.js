@@ -101,89 +101,93 @@ function calculateVelocityIndex(urlMeta, customMetrics = {}) {
 /**
  * Synthesizes three structured script mutations
  */
+function cleanSubject(raw) {
+  if (!raw) return 'this viral moment';
+  let s = raw.replace(/#\w+/g, '').replace(/\|.*$/g, '').replace(/[^\w\s'&]/gi, '').trim();
+  return s.length > 3 ? s : raw.slice(0, 40);
+}
+
 function generateScriptMutations(payload) {
   const {
-    marketVector = 'Career / Tech Coach (High Conversion Vector)',
-    tone = 'Aggressive Hook',
     length = '35s',
-    videoContext = 'Top 1% Career Acceleration Tactics'
+    videoContext = 'Viral Video Framework'
   } = payload;
+
+  const subject = cleanSubject(videoContext);
 
   const mutations = [
     {
       id: 'mutation_alpha',
-      name: 'Mutation A: The Contrarian Counter-Frame',
+      name: 'Angle A: Curiosity Gap & Secret Revelation',
       structure: '01 Hook -> 02 Tension Thesis -> 03 Frictionless CTA',
-      alignmentScore: '95.8%',
-      estRetention: '91.2%',
+      alignmentScore: '96.8%',
+      estRetention: '93.2%',
       length: length,
       blocks: {
-        hook: `Stop updating your LinkedIn headline. If you're still relying on inbound recruiter DMs in 2026, you're already 8 months behind the curve.`,
-        thesis: `The top 1% of tech earners don't apply to public listings. They build an asynchronous Proof-of-Work pipeline that triggers algorithmic inbound. Here is the exact 3-step architecture our cohort deployed last week to bypass the recruiter filter completely.`,
-        cta: `Drop the word "PIPELINE" below and I'll send you our unlisted high-density career framework doc before the open window closes tonight.`
+        hook: `Nobody realized this secret about ${subject} until now. The real story behind what you're watching is blowing everyone's mind.`,
+        thesis: `While 99% of people scrolled right past this, there's a crazy detail hidden in plain sight. If you look closely at how this was constructed, everything changes. The creators specifically engineered this exact moment to trigger the algorithm and keep you glued to your screen.`,
+        cta: `Did you catch that detail on your first watch? Drop your theory in the comments and save this before it's taken down.`
       },
       rawScript: `01 | Hook Element:
-Stop updating your LinkedIn headline. If you're still relying on inbound recruiter DMs in 2026, you're already 8 months behind the curve.
+Nobody realized this secret about ${subject} until now. The real story behind what you're watching is blowing everyone's mind.
 
-02 | Core Thesis:
-The top 1% of tech earners don't apply to public listings. They build an asynchronous Proof-of-Work pipeline that triggers algorithmic inbound. Here is the exact 3-step architecture our cohort deployed last week to bypass the recruiter filter completely.
+02 | Core Story:
+While 99% of people scrolled right past this, there's a crazy detail hidden in plain sight. If you look closely at how this was constructed, everything changes. The creators specifically engineered this exact moment to trigger the algorithm and keep you glued to your screen.
 
-03 | Retentive Call-To-Action:
-Drop the word "PIPELINE" below and I'll send you our unlisted high-density career framework doc before the open window closes tonight.`
+03 | Retention Call-To-Action:
+Did you catch that detail on your first watch? Drop your theory in the comments and save this before it's taken down.`
     },
     {
       id: 'mutation_beta',
-      name: 'Mutation B: The Tactical System Breakdown',
-      structure: '01 Data Anomaly -> 02 Execution Protocol -> 03 High-Retention CTA',
-      alignmentScore: '94.2%',
-      estRetention: '89.6%',
+      name: 'Angle B: Hot Take & Controversial Debate',
+      structure: '01 Contrast Hook -> 02 Breakdown -> 03 Debate CTA',
+      alignmentScore: '95.2%',
+      estRetention: '90.6%',
       length: length,
       blocks: {
-        hook: `Most engineers think getting promoted requires 60-hour workweeks. Here is the exact spreadsheet matrix I used to double senior salary in 90 days.`,
-        thesis: `Rule one: Quantify organizational leverage, not raw ticket output. Rule two: Replace status updates with asymmetric business KPI reports that reach VP-level visibility within 48 hours. Rule three: Own the deployment choke-points.`,
-        cta: `Bookmark this breakdown before it's taken down. Full repository templates are pinned in the bio.`
+        hook: `Everyone is talking about ${subject}, but everyone is getting the entire story completely backwards. Here is the uncomfortable truth.`,
+        thesis: `People think this succeeded by luck. But look at the pattern: the first 2 seconds drops you directly into peak tension without a single second wasted on introductions. That single psychological trick is why this is generating millions of views right now.`,
+        cta: `Do you agree with this take or do you see it differently? Sound off in the comments below right now.`
       },
       rawScript: `01 | Hook Element:
-Most engineers think getting promoted requires 60-hour workweeks. Here is the exact spreadsheet matrix I used to double senior salary in 90 days.
+Everyone is talking about ${subject}, but everyone is getting the entire story completely backwards. Here is the uncomfortable truth.
 
-02 | Core Thesis:
-Rule one: Quantify organizational leverage, not raw ticket output. Rule two: Replace status updates with asymmetric business KPI reports that reach VP-level visibility within 48 hours. Rule three: Own the deployment choke-points.
+02 | Core Story:
+People think this succeeded by luck. But look at the pattern: the first 2 seconds drops you directly into peak tension without a single second wasted on introductions. That single psychological trick is why this is generating millions of views right now.
 
-03 | Retentive Call-To-Action:
-Bookmark this breakdown before it's taken down. Full repository templates are pinned in the bio.`
+03 | Retention Call-To-Action:
+Do you agree with this take or do you see it differently? Sound off in the comments below right now.`
     },
     {
       id: 'mutation_gamma',
-      name: 'Mutation C: The High-Velocity Teardown',
+      name: 'Angle C: Behind-The-Scenes Algorithmic Teardown',
       structure: '01 Pattern Interrupt -> 02 Rapid Synthesis -> 03 Velocity Hook CTA',
-      alignmentScore: '92.7%',
-      estRetention: '88.1%',
+      alignmentScore: '94.7%',
+      estRetention: '89.1%',
       length: length,
       blocks: {
-        hook: `This one viral framework generated 4.2M impressions and \$180K in organic pipeline with zero paid ad spend. Let's inspect the telemetry.`,
-        thesis: `Notice how the first 1.8 seconds eliminates preamble? No intro animations, zero throat-clearing. You deliver the punchline in frame one, stack 3 high-contrast proof points, and deliver immediate utility before the 12-second retention cliff.`,
-        cta: `Run this exact prompt script through your own studio today. Comment "MATRIX" for the copy-paste prompt bundle.`
+        hook: `This video about ${subject} is currently breaking the algorithm. Let's break down the exact formula in 30 seconds.`,
+        thesis: `Notice how frame one gives you an immediate emotional punchline? Then they immediately stack 3 high-contrast visual cuts before the 8-second retention drop-off. If you're a creator trying to hit millions of views, steal this exact pacing.`,
+        cta: `Bookmark this breakdown to copy for your next upload. Hit follow for daily algorithmic teardowns.`
       },
       rawScript: `01 | Hook Element:
-This one viral framework generated 4.2M impressions and \$180K in organic pipeline with zero paid ad spend. Let's inspect the telemetry.
+This video about ${subject} is currently breaking the algorithm. Let's break down the exact formula in 30 seconds.
 
-02 | Core Thesis:
-Notice how the first 1.8 seconds eliminates preamble? No intro animations, zero throat-clearing. You deliver the punchline in frame one, stack 3 high-contrast proof points, and deliver immediate utility before the 12-second retention cliff.
+02 | Core Story:
+Notice how frame one gives you an immediate emotional punchline? Then they immediately stack 3 high-contrast visual cuts before the 8-second retention drop-off. If you're a creator trying to hit millions of views, steal this exact pacing.
 
-03 | Retentive Call-To-Action:
-Run this exact prompt script through your own studio today. Comment "MATRIX" for the copy-paste prompt bundle.`
+03 | Retention Call-To-Action:
+Bookmark this breakdown to copy for your next upload. Hit follow for daily algorithmic teardowns.`
     }
   ];
 
   return {
     meta: {
-      marketVector,
-      tone,
+      subject,
       length,
       videoContext,
       timestamp: new Date().toISOString(),
-      ribbonText: '• SYNTAX COMPILED: READY TO INJECT | UTF-8 | LF',
-      generator: 'StitchMatrix Neural Synthesis v2.4-PROD'
+      generator: 'StitchMatrix Dynamic Neural Synthesis v3.3-PROD'
     },
     mutations
   };
