@@ -392,6 +392,103 @@ Format strictly as 01 | Hook Element, 02 | Core Thesis, 03 | Retentive Call-To-A
       }
     }
 
+    // AI Voiceover (TTS) Audio Generation Engine
+    if (url.pathname === '/api/tts') {
+      try {
+        let text = '';
+        if (request.method === 'POST') {
+          const body = await request.json();
+          text = body.text || '';
+        } else {
+          text = url.searchParams.get('text') || '';
+        }
+
+        if (!text || text.trim().length === 0) {
+          return new Response(JSON.stringify({ error: 'Text required' }), {
+            status: 400,
+            headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' }
+          });
+        }
+
+        // Clean text for natural spoken narration
+        const cleanText = text
+          .replace(/#[\p{L}\p{N}_]+/gu, '')
+          .replace(/\[.*?\]/g, '')
+          .replace(/https?:\/\/\S+/g, '')
+          .replace(/[*_~`]/g, '')
+          .trim();
+
+        // Split into sentences / chunks under 180 chars
+        const chunks = [];
+        const sentences = cleanText.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [cleanText];
+        let currentChunk = '';
+
+        for (const sentence of sentences) {
+          const trimmed = sentence.trim();
+          if (!trimmed) continue;
+          if ((currentChunk + ' ' + trimmed).trim().length < 180) {
+            currentChunk = (currentChunk + ' ' + trimmed).trim();
+          } else {
+            if (currentChunk) chunks.push(currentChunk);
+            if (trimmed.length < 180) {
+              currentChunk = trimmed;
+            } else {
+              const words = trimmed.split(/\s+/);
+              let sub = '';
+              for (const w of words) {
+                if ((sub + ' ' + w).trim().length < 180) {
+                  sub = (sub + ' ' + w).trim();
+                } else {
+                  if (sub) chunks.push(sub);
+                  sub = w;
+                }
+              }
+              if (sub) currentChunk = sub;
+            }
+          }
+        }
+        if (currentChunk) chunks.push(currentChunk);
+
+        // Fetch MP3 chunks
+        const activeChunks = chunks.slice(0, 15);
+        const audioBuffers = await Promise.all(
+          activeChunks.map(async (chunk) => {
+            const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(chunk)}`;
+            const res = await fetch(ttsUrl, {
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+              }
+            });
+            if (!res.ok) throw new Error('TTS chunk failed');
+            return await res.arrayBuffer();
+          })
+        );
+
+        // Concatenate MP3 binary chunks
+        const totalBytes = audioBuffers.reduce((acc, b) => acc + b.byteLength, 0);
+        const merged = new Uint8Array(totalBytes);
+        let offset = 0;
+        for (const b of audioBuffers) {
+          merged.set(new Uint8Array(b), offset);
+          offset += b.byteLength;
+        }
+
+        return new Response(merged, {
+          headers: {
+            ...CORS_HEADERS,
+            'Content-Type': 'audio/mpeg',
+            'Content-Disposition': 'attachment; filename="stitchmatrix-ai-voiceover.mp3"',
+            'Cache-Control': 'public, max-age=86400'
+          }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ error: err.message }), {
+          status: 500,
+          headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
     // Save script session for ultra-short mobile QR code URL
     if (url.pathname === '/api/save-script' && request.method === 'POST') {
       try {

@@ -1,11 +1,12 @@
 /**
- * StitchMatrix — Qubora Emerald Obsidian Studio v3.6
+ * StitchMatrix — Qubora Emerald Obsidian Studio v3.7.0
  * Chrome Extension Manifest V3 In-DOM Sidebar Engine
- * Design DNA: Qubora Dark Aesthetic
- * - Deep obsidian void (#060806) with luminous Emerald & Sage Mint accents (#10B981 / #34D399 / #8CE4B0)
- * - Precision SF Pro / Neo-Grotesque typography with multi-tone contrast formatting
- * - Glowing aura ring visuals & glowing organic emerald beacons
- * - Complete 1-click publishing suite: Built-in Webcam Teleprompter + Send-to-Phone QR + Live Auto-Tracking
+ * Features:
+ * - 1-Click AI Voiceover Studio (Continuous MP3 Narration, zero camera/mic required)
+ * - Built-in Webcam Teleprompter Studio & In-Browser Video Recorder
+ * - Send-to-Phone Companion Link & High-Resolution QR Code
+ * - Multi-Platform Real-Time Active Video Auto-Detection (YouTube Shorts, TikTok, Instagram Reels)
+ * - Deep Obsidian Void (#060806) & Glowing Emerald Design System
  */
 
 (function () {
@@ -421,6 +422,12 @@
   let recordingTimer = null;
   let teleprompterScrollInterval = null;
   let recordedBlobUrl = null;
+  let currentWebcamModal = null;
+
+  // Faceless AI Voiceover Studio State
+  let currentVoiceBlob = null;
+  let currentVoiceBlobUrl = null;
+  let isGeneratingVoice = false;
 
   // Create Host Container
   const host = document.createElement('div');
@@ -898,30 +905,62 @@
       gap: 8px;
     }
 
-    /* Option 1: Record Short with Webcam (Emerald Gradient Glow) */
-    .sm-btn-record {
+    /* Option 1: 1-Click AI Voiceover (.mp3) - Radiant Qubora Emerald */
+    .sm-btn-voiceover {
       width: 100%;
-      background: linear-gradient(135deg, #059669 0%, #10B981 100%);
-      color: #FFFFFF;
+      background: linear-gradient(135deg, #059669 0%, #10B981 50%, #34D399 100%);
+      color: #040805;
       border: none;
       border-radius: 10px;
       padding: 12px 16px;
       font-size: 13.5px;
-      font-weight: 700;
+      font-weight: 750;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 22px rgba(16, 185, 129, 0.45);
       letter-spacing: -0.01em;
     }
 
-    .sm-btn-record:hover {
-      background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+    .sm-btn-voiceover:hover {
+      background: linear-gradient(135deg, #10B981 0%, #34D399 50%, #6EE7B7 100%);
       transform: translateY(-1px);
-      box-shadow: 0 6px 26px rgba(52, 211, 153, 0.45);
+      box-shadow: 0 6px 28px rgba(52, 211, 153, 0.6);
+      color: #020402;
+    }
+
+    .sm-btn-voiceover:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 14px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Option 2: Record Short with Webcam */
+    .sm-btn-record {
+      width: 100%;
+      background: #0C120E;
+      color: #D1FAE5;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 12.5px;
+      font-weight: 650;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: all 0.2s ease;
+    }
+
+    .sm-btn-record:hover {
+      background: #121A15;
+      color: #FFFFFF;
+      border-color: #34D399;
+      box-shadow: 0 2px 16px rgba(16, 185, 129, 0.25);
+      transform: translateY(-1px);
     }
 
     .sm-btn-row-split {
@@ -1272,6 +1311,208 @@
       border-color: #10B981;
     }
 
+    /* AI VOICEOVER MODAL VIEW (FACELESS CREATOR STUDIO) */
+    .sm-voice-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 18px;
+      gap: 12px;
+      overflow-y: auto;
+    }
+
+    .sm-voice-hero {
+      background: #000000;
+      border: 1px solid #16241A;
+      border-radius: 12px;
+      padding: 22px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      box-shadow: inset 0 0 24px rgba(16, 185, 129, 0.08);
+    }
+
+    .sm-soundwaves {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      height: 48px;
+      margin-bottom: 12px;
+    }
+
+    .sm-soundwaves .bar {
+      width: 4px;
+      height: 12px;
+      background: #10B981;
+      border-radius: 4px;
+      transition: height 0.15s ease, background 0.15s ease;
+    }
+
+    .sm-soundwaves.playing .bar {
+      animation: soundwaveBounce 0.8s infinite ease-in-out alternate;
+    }
+
+    .sm-soundwaves.loading .bar {
+      animation: soundwavePulse 0.5s infinite ease-in-out alternate;
+    }
+
+    @keyframes soundwaveBounce {
+      0% { height: 8px; opacity: 0.4; }
+      50% { height: 44px; opacity: 1; background: #34D399; }
+      100% { height: 14px; opacity: 0.6; }
+    }
+
+    @keyframes soundwavePulse {
+      0% { height: 6px; opacity: 0.3; }
+      100% { height: 28px; opacity: 0.9; background: #10B981; }
+    }
+
+    .sm-soundwaves .bar:nth-child(1) { animation-delay: 0.05s; }
+    .sm-soundwaves .bar:nth-child(2) { animation-delay: 0.18s; }
+    .sm-soundwaves .bar:nth-child(3) { animation-delay: 0.30s; }
+    .sm-soundwaves .bar:nth-child(4) { animation-delay: 0.42s; }
+    .sm-soundwaves .bar:nth-child(5) { animation-delay: 0.54s; }
+    .sm-soundwaves .bar:nth-child(6) { animation-delay: 0.66s; }
+    .sm-soundwaves .bar:nth-child(7) { animation-delay: 0.54s; }
+    .sm-soundwaves .bar:nth-child(8) { animation-delay: 0.42s; }
+    .sm-soundwaves .bar:nth-child(9) { animation-delay: 0.30s; }
+    .sm-soundwaves .bar:nth-child(10) { animation-delay: 0.18s; }
+    .sm-soundwaves .bar:nth-child(11) { animation-delay: 0.10s; }
+    .sm-soundwaves .bar:nth-child(12) { animation-delay: 0.05s; }
+
+    .sm-voice-status {
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 3px;
+      letter-spacing: -0.01em;
+    }
+
+    .sm-voice-substatus {
+      font-size: 11.5px;
+      color: #9CA3AF;
+      max-width: 290px;
+      line-height: 1.45;
+    }
+
+    .sm-voice-script-box {
+      background: #0A0E0B;
+      border: 1px solid #16221A;
+      border-radius: 10px;
+      padding: 12px 14px;
+      max-height: 130px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sm-voice-script-box::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    .sm-voice-script-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #34D399;
+      text-transform: uppercase;
+    }
+
+    .sm-voice-script-text {
+      font-size: 12.5px;
+      line-height: 1.55;
+      color: #E2E8F0;
+      user-select: text;
+    }
+
+    .sm-voice-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .sm-btn-generate-voice {
+      width: 100%;
+      background: linear-gradient(135deg, #059669 0%, #10B981 100%);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 18px rgba(16, 185, 129, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .sm-btn-generate-voice:hover {
+      background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+    }
+
+    .sm-btn-generate-voice:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .sm-voice-action-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .sm-btn-voice-play {
+      background: #0C110E;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34D399;
+      border-radius: 8px;
+      padding: 11px 12px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .sm-btn-voice-play:hover {
+      background: #141E17;
+      color: #FFFFFF;
+      border-color: #34D399;
+    }
+
+    .sm-btn-voice-download {
+      background: linear-gradient(135deg, #059669 0%, #10B981 100%);
+      border: none;
+      color: #FFFFFF;
+      border-radius: 8px;
+      padding: 11px 12px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 2px 14px rgba(16, 185, 129, 0.35);
+      transition: all 0.15s ease;
+    }
+
+    .sm-btn-voice-download:hover {
+      background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+    }
+
     /* Toast Notification */
     .sm-toast {
       position: absolute;
@@ -1342,6 +1583,64 @@
       u: currentContext.url || window.location.href
     });
     return `${WORKER_BASE}/p?${params.toString()}`;
+  }
+
+  function prepareTtsText(rawText) {
+    if (!rawText) return '';
+    return rawText
+      .replace(/#[\w-]+/g, '') // remove hashtags
+      .replace(/https?:\/\/\S+/g, '') // remove URLs
+      .replace(/[*_~`\[\]\(\)\{\}\<\>\|\\]/g, ' ') // remove markdown brackets & formatting
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  async function fetchAudioTts(rawText) {
+    const cleanText = prepareTtsText(rawText);
+    if (!cleanText) {
+      throw new Error('Please enter script text to generate voiceover narration.');
+    }
+
+    // Attempt 1: Direct fetch to Cloudflare Worker TTS endpoint
+    try {
+      const res = await fetch(`${WORKER_BASE}/api/tts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: cleanText })
+      });
+      if (res.ok) {
+        return await res.blob();
+      }
+    } catch (e) {
+      console.warn('[StitchMatrix] Direct TTS fetch failed, attempting service worker proxy...', e);
+    }
+
+    // Attempt 2: Background Service Worker Proxy (immune to web page CSP)
+    return new Promise((resolve, reject) => {
+      if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
+        chrome.runtime.sendMessage({ action: 'API_PROXY_TTS', text: cleanText }, (response) => {
+          if (chrome.runtime.lastError) {
+            return reject(new Error(chrome.runtime.lastError.message));
+          }
+          if (!response || !response.success) {
+            return reject(new Error(response?.error || 'TTS audio generation failed'));
+          }
+          try {
+            const binary = atob(response.base64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+              bytes[i] = binary.charCodeAt(i);
+            }
+            const blob = new Blob([bytes], { type: 'audio/mpeg' });
+            resolve(blob);
+          } catch (err) {
+            reject(err);
+          }
+        });
+      } else {
+        reject(new Error('Extension runtime communication unavailable'));
+      }
+    });
   }
 
   // Smooth live in-place update without closing the drawer
@@ -1540,12 +1839,22 @@
 
       <!-- 5. Qubora Glowing Action Deck -->
       <footer class="sm-footer">
-        <!-- Option 1: Record Directly on Webcam -->
+        <!-- Option 1: 1-Click AI Voiceover (.mp3) - Faceless Creator Studio -->
+        <button class="sm-btn-voiceover" id="smOpenVoiceoverBtn" title="Generate studio AI voiceover audio (.mp3) in 1 click (No camera, no mic)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          </svg>
+          <span>🔊 Generate AI Voiceover (.mp3)</span>
+        </button>
+
+        <!-- Option 2: Record Directly on Webcam -->
         <button class="sm-btn-record" id="smOpenRecordBtn" title="Open webcam teleprompter and record video directly in Chrome">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
             <circle cx="12" cy="12" r="8"></circle>
           </svg>
-          <span>Record Short with Webcam</span>
+          <span>📹 Record Short with Webcam</span>
         </button>
 
         <!-- Option 2 & 3: Send to Phone OR Copy Script -->
@@ -1643,6 +1952,66 @@
 
           <div class="sm-qr-link-box">
             <input type="text" id="smMobileLinkInput" readonly spellcheck="false" title="Click to copy link" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 1-CLICK AI VOICEOVER MODAL (FACELESS CREATOR STUDIO) -->
+      <div class="sm-modal-overlay" id="smVoiceoverModal">
+        <div class="sm-modal-header">
+          <div class="sm-modal-title">
+            <span class="sm-pulse-dot" style="background:#10B981;"></span>
+            <span>AI Voiceover Studio (Faceless Creator)</span>
+          </div>
+          <button class="sm-close-btn" id="smCloseVoiceoverBtn">✕</button>
+        </div>
+
+        <div class="sm-voice-body">
+          <div class="sm-voice-hero">
+            <div class="sm-soundwaves" id="smSoundwaves">
+              <span class="bar"></span>
+              <span class="bar"></span>
+              <span class="bar"></span>
+              <span class="bar"></span>
+              <span class="bar"></span>
+              <span class="bar"></span>
+              <span class="bar"></span>
+              <span class="bar"></span>
+              <span class="bar"></span>
+              <span class="bar"></span>
+              <span class="bar"></span>
+              <span class="bar"></span>
+            </div>
+
+            <div class="sm-voice-status" id="smVoiceStatus">
+              Ready to generate studio voiceover
+            </div>
+            <div class="sm-voice-substatus" id="smVoiceSubstatus">
+              AI studio narrator reads your viral script with natural human pacing
+            </div>
+          </div>
+
+          <div class="sm-voice-script-box">
+            <div class="sm-voice-script-label">NARRATION SCRIPT:</div>
+            <div class="sm-voice-script-text" id="smVoiceScriptText"></div>
+          </div>
+
+          <audio id="smTtsAudio" preload="auto" style="display:none;"></audio>
+
+          <div class="sm-voice-controls">
+            <div class="sm-voice-action-row" id="smVoiceActionRow" style="display: none;">
+              <button class="sm-btn-voice-play" id="smVoicePlayBtn" title="Play or pause audio preview">
+                <span id="smVoicePlayIcon">▶</span>
+                <span id="smVoicePlayText">Play Preview</span>
+              </button>
+              <button class="sm-btn-voice-download" id="smVoiceDownloadBtn" title="Download finished studio-grade MP3 audio">
+                <span>💾 Download .mp3</span>
+              </button>
+            </div>
+
+            <button class="sm-btn-generate-voice" id="smGenerateVoiceBtn">
+              <span id="smGenerateVoiceBtnText">⚡ Generate Voiceover Now</span>
+            </button>
           </div>
         </div>
       </div>
@@ -1930,6 +2299,181 @@
         });
       };
     }
+
+    // AI VOICEOVER (FACELESS CREATOR) STUDIO LOGIC
+    const openVoiceoverBtn = sidebar.querySelector('#smOpenVoiceoverBtn');
+    const voiceoverModal = sidebar.querySelector('#smVoiceoverModal');
+    const closeVoiceoverBtn = sidebar.querySelector('#smCloseVoiceoverBtn');
+    const soundwaves = sidebar.querySelector('#smSoundwaves');
+    const voiceStatus = sidebar.querySelector('#smVoiceStatus');
+    const voiceSubstatus = sidebar.querySelector('#smVoiceSubstatus');
+    const voiceScriptText = sidebar.querySelector('#smVoiceScriptText');
+    const ttsAudio = sidebar.querySelector('#smTtsAudio');
+    const generateVoiceBtn = sidebar.querySelector('#smGenerateVoiceBtn');
+    const generateVoiceBtnText = sidebar.querySelector('#smGenerateVoiceBtnText');
+    const voiceActionRow = sidebar.querySelector('#smVoiceActionRow');
+    const voicePlayBtn = sidebar.querySelector('#smVoicePlayBtn');
+    const voicePlayIcon = sidebar.querySelector('#smVoicePlayIcon');
+    const voicePlayText = sidebar.querySelector('#smVoicePlayText');
+    const voiceDownloadBtn = sidebar.querySelector('#smVoiceDownloadBtn');
+
+    function getActiveScriptForVoice() {
+      const curScript = generatedScripts[activeStyleIndex] || generatedScripts[0];
+      const hookLead = sidebar.querySelector('.sm-hook-lead')?.textContent || curScript.hookLead;
+      const hookHighlight = sidebar.querySelector('.sm-hook-highlight')?.textContent || curScript.hookHighlight;
+      const hookTail = sidebar.querySelector('.sm-hook-tail')?.textContent || curScript.hookTail;
+      const fullHook = `${hookLead} ${hookHighlight} ${hookTail}`.trim();
+      const bodyText = sidebar.querySelector('#smBodyText')?.textContent || curScript.body;
+      const ctaText = sidebar.querySelector('#smCtaText')?.textContent || curScript.cta;
+      return `${fullHook}. ${bodyText}. ${ctaText}`;
+    }
+
+    async function synthesizeVoiceover() {
+      if (isGeneratingVoice) return;
+      isGeneratingVoice = true;
+
+      const rawScript = getActiveScriptForVoice();
+      const narrationText = prepareTtsText(rawScript);
+
+      if (voiceScriptText) {
+        voiceScriptText.textContent = narrationText;
+      }
+
+      // UI Loading state
+      if (soundwaves) {
+        soundwaves.classList.remove('playing');
+        soundwaves.classList.add('loading');
+      }
+      if (voiceStatus) voiceStatus.textContent = '⚡ Synthesizing Studio Voiceover...';
+      if (voiceSubstatus) voiceSubstatus.textContent = 'Generating human-paced continuous MP3 narration without camera or mic';
+      if (generateVoiceBtn) generateVoiceBtn.disabled = true;
+      if (generateVoiceBtnText) generateVoiceBtnText.textContent = '⏳ Generating MP3 Audio...';
+      if (voiceActionRow) voiceActionRow.style.display = 'none';
+
+      try {
+        const blob = await fetchAudioTts(narrationText);
+        currentVoiceBlob = blob;
+        if (currentVoiceBlobUrl) URL.revokeObjectURL(currentVoiceBlobUrl);
+        currentVoiceBlobUrl = URL.createObjectURL(blob);
+
+        if (ttsAudio) {
+          ttsAudio.src = currentVoiceBlobUrl;
+          ttsAudio.load();
+        }
+
+        // UI Ready state
+        if (soundwaves) soundwaves.classList.remove('loading');
+        if (voiceStatus) voiceStatus.textContent = '✨ Voiceover Ready! (Continuous MP3)';
+        if (voiceSubstatus) voiceSubstatus.textContent = 'Professional AI narration ready. Preview or download below.';
+        if (generateVoiceBtnText) generateVoiceBtnText.textContent = '🔄 Re-generate Audio';
+        if (generateVoiceBtn) generateVoiceBtn.disabled = false;
+        if (voiceActionRow) voiceActionRow.style.display = 'grid';
+
+        // Auto-play audio preview
+        if (ttsAudio) {
+          try {
+            await ttsAudio.play();
+            if (soundwaves) soundwaves.classList.add('playing');
+            if (voicePlayIcon) voicePlayIcon.textContent = '⏸';
+            if (voicePlayText) voicePlayText.textContent = 'Pause Preview';
+          } catch (autoErr) {
+            console.log('[StitchMatrix] Audio preview ready (autoplay blocked by browser, click Play):', autoErr);
+          }
+        }
+        showToast('🔊 AI Voiceover Ready!');
+      } catch (err) {
+        console.error('[StitchMatrix] Voiceover failed:', err);
+        if (soundwaves) soundwaves.classList.remove('loading', 'playing');
+        if (voiceStatus) voiceStatus.textContent = 'Generation Failed';
+        if (voiceSubstatus) voiceSubstatus.textContent = err.message || 'Error communicating with voice engine.';
+        if (generateVoiceBtnText) generateVoiceBtnText.textContent = '⚡ Retry Generation';
+        if (generateVoiceBtn) generateVoiceBtn.disabled = false;
+        showToast('Voiceover failed: ' + (err.message || 'Error'));
+      } finally {
+        isGeneratingVoice = false;
+      }
+    }
+
+    function stopVoicePlayback() {
+      if (ttsAudio) {
+        ttsAudio.pause();
+        ttsAudio.currentTime = 0;
+      }
+      if (soundwaves) {
+        soundwaves.classList.remove('playing', 'loading');
+      }
+      if (voicePlayIcon) voicePlayIcon.textContent = '▶';
+      if (voicePlayText) voicePlayText.textContent = 'Play Preview';
+    }
+
+    function cleanupVoiceover() {
+      stopVoicePlayback();
+      if (voiceoverModal) voiceoverModal.classList.remove('active');
+    }
+
+    if (ttsAudio) {
+      ttsAudio.onended = () => {
+        if (soundwaves) soundwaves.classList.remove('playing');
+        if (voicePlayIcon) voicePlayIcon.textContent = '▶';
+        if (voicePlayText) voicePlayText.textContent = 'Play Preview';
+      };
+      ttsAudio.onpause = () => {
+        if (soundwaves) soundwaves.classList.remove('playing');
+        if (voicePlayIcon) voicePlayIcon.textContent = '▶';
+        if (voicePlayText) voicePlayText.textContent = 'Play Preview';
+      };
+      ttsAudio.onplay = () => {
+        if (soundwaves) soundwaves.classList.add('playing');
+        if (voicePlayIcon) voicePlayIcon.textContent = '⏸';
+        if (voicePlayText) voicePlayText.textContent = 'Pause Preview';
+      };
+    }
+
+    if (voicePlayBtn && ttsAudio) {
+      voicePlayBtn.onclick = () => {
+        if (ttsAudio.paused) {
+          ttsAudio.play().catch(e => console.warn(e));
+        } else {
+          ttsAudio.pause();
+        }
+      };
+    }
+
+    if (voiceDownloadBtn) {
+      voiceDownloadBtn.onclick = () => {
+        if (!currentVoiceBlobUrl) return;
+        const a = document.createElement('a');
+        a.href = currentVoiceBlobUrl;
+        const cleanTitle = (currentContext.displayTitle || 'viral-script')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '')
+          .slice(0, 32);
+        a.download = `stitchmatrix-${cleanTitle || 'voiceover'}-${Date.now()}.mp3`;
+        a.click();
+        showToast('💾 Voiceover MP3 downloaded!');
+      };
+    }
+
+    if (generateVoiceBtn) {
+      generateVoiceBtn.onclick = () => {
+        synthesizeVoiceover();
+      };
+    }
+
+    if (openVoiceoverBtn && voiceoverModal) {
+      openVoiceoverBtn.onclick = () => {
+        const rawScript = getActiveScriptForVoice();
+        const narrationText = prepareTtsText(rawScript);
+        if (voiceScriptText) voiceScriptText.textContent = narrationText;
+        voiceoverModal.classList.add('active');
+        synthesizeVoiceover();
+      };
+    }
+
+    if (closeVoiceoverBtn) {
+      closeVoiceoverBtn.onclick = cleanupVoiceover;
+    }
   }
 
   function executeCopyFullScript() {
@@ -1965,7 +2509,13 @@
     } else {
       sidebar.classList.remove('open');
       triggerTab.style.display = 'flex';
-      if (isRecording) cleanupWebcam();
+      const audio = sidebar.querySelector('#smTtsAudio');
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+      const waves = sidebar.querySelector('#smSoundwaves');
+      if (waves) waves.classList.remove('playing', 'loading');
     }
   }
 
@@ -2064,5 +2614,5 @@
     });
   }
 
-  console.log('[StitchMatrix] Multi-Platform Real-Time Studio v3.6.2 loaded.');
+  console.log('[StitchMatrix] Multi-Platform Real-Time Studio v3.7.0 loaded.');
 })();

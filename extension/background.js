@@ -59,4 +59,32 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .catch(err => sendResponse({ success: false, error: err.message }));
     return true; // Keep message channel open for async response
   }
+
+  if (request.action === 'API_PROXY_TTS') {
+    fetch('https://stitchmatrix-api.humangeek77.workers.dev/api/tts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: request.text })
+    })
+      .then(async r => {
+        if (!r.ok) {
+          const errText = await r.text();
+          throw new Error(`Worker HTTP ${r.status}: ${errText}`);
+        }
+        const buf = await r.arrayBuffer();
+        const bytes = new Uint8Array(buf);
+        let binary = '';
+        const chunkSize = 8192;
+        for (let i = 0; i < bytes.length; i += chunkSize) {
+          binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+        }
+        const base64 = btoa(binary);
+        sendResponse({ success: true, base64: base64, contentType: 'audio/mpeg' });
+      })
+      .catch(err => {
+        console.error('[StitchMatrix] TTS proxy error:', err);
+        sendResponse({ success: false, error: err.message });
+      });
+    return true; // Keep message channel open for async response
+  }
 });
