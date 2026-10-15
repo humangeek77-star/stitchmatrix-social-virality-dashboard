@@ -1,5 +1,11 @@
-/* StitchMatrix — Creator Script Studio v3.1 Clean Light Theme
-   Apple / Notion / Loom Minimalist Design System
+/* StitchMatrix — Executive Dark Slate Studio v3.2 Design System
+   Linear / Stripe Pro UI Palette:
+   Background: #0B0F17
+   Header: #101726
+   Card Surface: #131C2B
+   Borders: #1F2C44
+   Primary Accent: #2563EB
+   Active Highlighting: #3B82F6 / #60A5FA
 */
 
 :host {
@@ -7,7 +13,7 @@
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: 13px;
   line-height: 1.5;
-  color: #0F172A;
+  color: #F1F5F9;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -16,26 +22,4 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-}
-
-/* Base Light Theme Tokens */
-.sm-sidebar-container {
-  --sm-bg: #F8FAFC;
-  --sm-card-bg: #FFFFFF;
-  --sm-header-bg: #FFFFFF;
-  --sm-border: #E2E8F0;
-  --sm-border-focus: #4F46E5;
-  --sm-text-primary: #0F172A;
-  --sm-text-secondary: #475569;
-  --sm-text-muted: #64748B;
-  --sm-primary-btn: #0F172A;
-  --sm-primary-hover: #1E293B;
-  --sm-accent-indigo: #4F46E5;
-  --sm-accent-emerald: #059669;
-  --sm-badge-blue-bg: #DBEAFE;
-  --sm-badge-blue-text: #1D4ED8;
-  --sm-badge-indigo-bg: #E0E7FF;
-  --sm-badge-indigo-text: #4338CA;
-  --sm-badge-emerald-bg: #D1FAE5;
-  --sm-badge-emerald-text: #047857;
 }
