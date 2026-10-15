@@ -226,39 +226,76 @@
         platform = 'YouTube Shorts';
 
         const reels = Array.from(document.querySelectorAll('ytd-reel-video-renderer'));
-        let activeReel = reels.find(r => r.hasAttribute('is-active'));
+        let activeReel = null;
 
-        if (!activeReel && reels.length > 0) {
+        // 3a. Extract current video ID from URL
+        const urlMatch = url.match(/\/shorts\/([a-zA-Z0-9_-]+)/);
+        const currentVideoId = urlMatch ? urlMatch[1] : null;
+
+        // 3b. Match reel by current Video ID
+        if (currentVideoId && reels.length > 0) {
           activeReel = reels.find(r => {
-            const v = r.querySelector('video');
-            return v && !v.paused && v.currentTime > 0;
+            return r.querySelector(`a[href*="${currentVideoId}"]`)
+              || r.getAttribute('video-id') === currentVideoId
+              || r.id === currentVideoId;
           });
         }
 
+        // 3c. Match by screen center coverage & maximum visible height in viewport
         if (!activeReel && reels.length > 0) {
-          const midY = window.innerHeight / 2;
-          let bestDist = Infinity;
-          for (const r of reels) {
+          const windowH = window.innerHeight;
+          const midY = windowH / 2;
+
+          const scoredReels = reels.map(r => {
             const rect = r.getBoundingClientRect();
-            if (rect.height > 0) {
-              const dist = Math.abs(rect.top + rect.height / 2 - midY);
-              if (dist < bestDist) {
-                bestDist = dist;
-                activeReel = r;
-              }
+            const visibleTop = Math.max(0, rect.top);
+            const visibleBottom = Math.min(windowH, rect.bottom);
+            const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+            const coversCenter = rect.top <= midY && rect.bottom >= midY;
+            const v = r.querySelector('video');
+            const isPlaying = v && !v.paused && v.currentTime > 0;
+            return { reel: r, visibleHeight, coversCenter, isPlaying };
+          });
+
+          // Priority A: Reel covering the screen center line with >200px visible height
+          const centerReel = scoredReels.find(x => x.coversCenter && x.visibleHeight > 200);
+          if (centerReel) {
+            activeReel = centerReel.reel;
+          } else {
+            // Priority B: Highest visible height on screen
+            scoredReels.sort((a, b) => b.visibleHeight - a.visibleHeight);
+            if (scoredReels[0] && scoredReels[0].visibleHeight > 100) {
+              activeReel = scoredReels[0].reel;
             }
           }
         }
 
+        // 3d. Fallback to playing video or is-active
+        if (!activeReel && reels.length > 0) {
+          activeReel = reels.find(r => {
+            const v = r.querySelector('video');
+            return v && !v.paused && v.currentTime > 0;
+          }) || reels.find(r => r.hasAttribute('is-active'));
+        }
+
         if (activeReel) {
           const tEl = activeReel.querySelector(
-            '#overlay #title, .ytReelMetamodelViewModelHostTitle, #title.ytd-reel-player-header-renderer, h2.title, yt-formatted-string.title, .title, h2'
+            '#overlay #title, .ytReelMetamodelViewModelHostTitle, #title.ytd-reel-player-header-renderer, h2.title, yt-formatted-string.title, h2.ytd-reel-player-header-renderer, ytd-reel-player-overlay-renderer #title, yt-reel-metamodel-view-model h2, h2'
           );
           const aEl = activeReel.querySelector(
-            '#channel-name, .ytd-channel-name, #text.ytd-channel-name, [id="channel-name"], .yt-simple-endpoint.ytd-channel-name'
+            '#channel-name, .ytd-channel-name, #text.ytd-channel-name, [id="channel-name"], .yt-simple-endpoint.ytd-channel-name, .ytReelMetamodelViewModelHostHeaderChannelName'
           );
           if (tEl?.textContent?.trim()) title = tEl.textContent.trim();
           if (aEl?.textContent?.trim()) author = aEl.textContent.trim();
+        }
+
+        // 3e. Document Title Source-of-Truth Validation
+        // YouTube Shorts always sets document.title = "<Active Title> - YouTube"
+        if (document.title && !document.title.includes('YouTube Shorts') && document.title.includes(' - YouTube')) {
+          const docTitleClean = document.title.replace(/\s*-\s*YouTube.*$/i, '').trim();
+          if (docTitleClean && docTitleClean.length > 2) {
+            title = docTitleClean;
+          }
         }
 
         if (!title) {
@@ -268,17 +305,17 @@
           if (headerTitle?.textContent?.trim()) title = headerTitle.textContent.trim();
         }
 
-        if (!title && document.title && !document.title.includes('YouTube Shorts')) {
-          title = document.title.replace(' - YouTube', '').trim();
-        }
-
         if (!author) {
           const genericAuthor = document.querySelector('#channel-name, .ytd-channel-name, #text.ytd-channel-name');
           if (genericAuthor?.textContent?.trim()) author = genericAuthor.textContent.trim();
         }
 
-        const m = url.match(/\/shorts\/([a-zA-Z0-9_-]+)/);
-        if (m) videoId = m[1];
+        if (currentVideoId) {
+          videoId = currentVideoId;
+        } else {
+          const m = url.match(/\/shorts\/([a-zA-Z0-9_-]+)/);
+          if (m) videoId = m[1];
+        }
       }
     } catch (e) {
       // Graceful error recovery
