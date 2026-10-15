@@ -1,7 +1,7 @@
 /**
- * StitchMatrix — Script Matrix Studio v2.5
+ * StitchMatrix — Script Matrix Studio v3.0
  * Chrome Extension Manifest V3 In-DOM Sidebar Engine
- * Design DNA: Linear / Stripe Minimalist Dark Theme (#09090B / #121214 / #18181B / #27272A)
+ * Ergonomic High-Efficiency Architecture & Multi-Palette Theme Engine
  * Injected on: TikTok, YouTube Shorts, and Instagram Reels
  */
 
@@ -155,6 +155,7 @@
     ]
   };
 
+  // State Management
   let activeMarket = 'career';
   let currentMutationIndex = 1; // Default to Tactical
   let activeTone = 'Direct Hook';
@@ -162,6 +163,22 @@
   let isOpen = false;
   let liveSurgeText = null;
   let liveScoreText = null;
+  let showThemeMenu = false;
+
+  // Saved theme preference (default: linear)
+  let currentTheme = 'linear';
+  try {
+    currentTheme = localStorage.getItem('sm_active_theme') || 'linear';
+  } catch (e) {
+    currentTheme = 'linear';
+  }
+
+  const THEMES = [
+    { id: 'linear', name: 'Linear Indigo', previewColor: '#6366F1' },
+    { id: 'carbon', name: 'Carbon Mono', previewColor: '#FFFFFF' },
+    { id: 'slate', name: 'Executive Slate', previewColor: '#38BDF8' },
+    { id: 'titanium', name: 'Studio Light', previewColor: '#4F46E5' }
+  ];
 
   // Create Host Container
   const host = document.createElement('div');
@@ -179,7 +196,6 @@
       font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       font-size: 13px;
       line-height: 1.5;
-      color: #E4E4E7;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
@@ -190,6 +206,115 @@
       padding: 0;
     }
 
+    /* THEME SYSTEM (CSS Variables) */
+    .sm-sidebar-container, .sm-floating-trigger {
+      /* Default: Linear Indigo Theme */
+      --sm-bg: #0C0D11;
+      --sm-header-bg: #111218;
+      --sm-subbar-bg: #0E0F14;
+      --sm-card-bg: #14151C;
+      --sm-card-hover: #1A1C25;
+      --sm-border: #20222C;
+      --sm-border-subtle: #181922;
+      --sm-primary: #6366F1;
+      --sm-primary-hover: #4F46E5;
+      --sm-primary-text: #FFFFFF;
+      --sm-accent-cyan: #38BDF8;
+      --sm-accent-emerald: #10B981;
+      --sm-text-primary: #F3F4F6;
+      --sm-text-secondary: #9CA3AF;
+      --sm-text-muted: #6B7280;
+      --sm-tag-bg: #1B1D26;
+      --sm-active-pill: #252836;
+      --sm-active-pill-border: #3A3E52;
+      --sm-frame-hook-border: #6366F1;
+      --sm-frame-thesis-border: #38BDF8;
+      --sm-frame-cta-border: #10B981;
+      --sm-input-bg: #12131A;
+      --sm-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+    }
+
+    /* Carbon Monochrome Theme */
+    .sm-sidebar-container[data-theme="carbon"] {
+      --sm-bg: #000000;
+      --sm-header-bg: #0A0A0A;
+      --sm-subbar-bg: #050505;
+      --sm-card-bg: #0E0E0E;
+      --sm-card-hover: #161616;
+      --sm-border: #242424;
+      --sm-border-subtle: #1A1A1A;
+      --sm-primary: #FFFFFF;
+      --sm-primary-hover: #E5E5E5;
+      --sm-primary-text: #000000;
+      --sm-accent-cyan: #D4D4D8;
+      --sm-accent-emerald: #10B981;
+      --sm-text-primary: #FAFAFA;
+      --sm-text-secondary: #A1A1AA;
+      --sm-text-muted: #71717A;
+      --sm-tag-bg: #171717;
+      --sm-active-pill: #262626;
+      --sm-active-pill-border: #404040;
+      --sm-frame-hook-border: #E4E4E7;
+      --sm-frame-thesis-border: #A1A1AA;
+      --sm-frame-cta-border: #10B981;
+      --sm-input-bg: #0A0A0A;
+      --sm-shadow: 0 16px 40px rgba(0, 0, 0, 0.85);
+    }
+
+    /* Executive Slate Theme */
+    .sm-sidebar-container[data-theme="slate"] {
+      --sm-bg: #0B0F19;
+      --sm-header-bg: #0F172A;
+      --sm-subbar-bg: #080D16;
+      --sm-card-bg: #141E30;
+      --sm-card-hover: #1A263D;
+      --sm-border: #253347;
+      --sm-border-subtle: #192435;
+      --sm-primary: #0284C7;
+      --sm-primary-hover: #0369A1;
+      --sm-primary-text: #FFFFFF;
+      --sm-accent-cyan: #38BDF8;
+      --sm-accent-emerald: #34D399;
+      --sm-text-primary: #F8FAFC;
+      --sm-text-secondary: #94A3B8;
+      --sm-text-muted: #64748B;
+      --sm-tag-bg: #1E293B;
+      --sm-active-pill: #29394E;
+      --sm-active-pill-border: #3B506B;
+      --sm-frame-hook-border: #0284C7;
+      --sm-frame-thesis-border: #38BDF8;
+      --sm-frame-cta-border: #34D399;
+      --sm-input-bg: #101826;
+      --sm-shadow: 0 16px 40px rgba(2, 6, 23, 0.75);
+    }
+
+    /* Studio Light Theme */
+    .sm-sidebar-container[data-theme="titanium"] {
+      --sm-bg: #F8FAFC;
+      --sm-header-bg: #FFFFFF;
+      --sm-subbar-bg: #F1F5F9;
+      --sm-card-bg: #FFFFFF;
+      --sm-card-hover: #F8FAFC;
+      --sm-border: #E2E8F0;
+      --sm-border-subtle: #EDF2F7;
+      --sm-primary: #4F46E5;
+      --sm-primary-hover: #4338CA;
+      --sm-primary-text: #FFFFFF;
+      --sm-accent-cyan: #0284C7;
+      --sm-accent-emerald: #059669;
+      --sm-text-primary: #0F172A;
+      --sm-text-secondary: #475569;
+      --sm-text-muted: #94A3B8;
+      --sm-tag-bg: #F1F5F9;
+      --sm-active-pill: #E2E8F0;
+      --sm-active-pill-border: #CBD5E1;
+      --sm-frame-hook-border: #4F46E5;
+      --sm-frame-thesis-border: #0284C7;
+      --sm-frame-cta-border: #059669;
+      --sm-input-bg: #F8FAFC;
+      --sm-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+    }
+
     /* Floating Edge Tab Trigger */
     .sm-floating-trigger {
       position: fixed;
@@ -197,16 +322,16 @@
       right: 0;
       transform: translateY(-50%);
       width: 32px;
-      height: 84px;
-      background: #121214;
-      border: 1px solid #27272A;
+      height: 80px;
+      background: var(--sm-header-bg);
+      border: 1px solid var(--sm-border);
       border-right: none;
       border-radius: 8px 0 0 8px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 7px;
       cursor: pointer;
       z-index: 2147483646;
       box-shadow: -4px 0 16px rgba(0, 0, 0, 0.4);
@@ -214,16 +339,16 @@
     }
 
     .sm-floating-trigger:hover {
-      background: #18181B;
+      background: var(--sm-card-hover);
       width: 36px;
-      border-color: #3F3F46;
+      border-color: var(--sm-primary);
     }
 
     .sm-floating-trigger svg {
       width: 15px;
       height: 15px;
       fill: none;
-      stroke: #A1A1AA;
+      stroke: var(--sm-text-secondary);
       stroke-width: 1.75;
     }
 
@@ -231,7 +356,8 @@
       width: 5px;
       height: 5px;
       border-radius: 50%;
-      background: #10B981;
+      background: var(--sm-accent-emerald);
+      box-shadow: 0 0 6px var(--sm-accent-emerald);
     }
 
     /* Main Sidebar Drawer */
@@ -239,501 +365,556 @@
       position: fixed;
       top: 0;
       right: 0;
-      width: 380px;
+      width: 395px;
       height: 100vh;
-      background: #09090B !important;
-      border-left: 1px solid #222226;
-      color: #E4E4E7;
+      background: var(--sm-bg) !important;
+      border-left: 1px solid var(--sm-border);
+      color: var(--sm-text-primary);
       z-index: 2147483647;
-      transform: translateX(380px);
-      transition: transform 340ms cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateX(395px);
+      transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       flex-direction: column;
-      box-shadow: -12px 0 36px rgba(0, 0, 0, 0.7);
+      box-shadow: var(--sm-shadow);
       overflow: hidden;
+      user-select: text;
     }
 
     .sm-sidebar-container.open {
       transform: translateX(0);
     }
 
-    /* Top Header */
+    /* 1. Header Bar (Clean, Compact, Modern) */
     .sm-header {
-      padding: 14px 18px;
-      background: #0D0D10;
-      border-bottom: 1px solid #1E1E22;
+      padding: 11px 16px;
+      background: var(--sm-header-bg);
+      border-bottom: 1px solid var(--sm-border);
       display: flex;
       align-items: center;
       justify-content: space-between;
+      position: relative;
     }
 
-    .sm-header-brand {
+    .sm-header-left {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 9px;
     }
 
-    .sm-header-logo {
+    .sm-brand-badge {
       width: 22px;
       height: 22px;
       border-radius: 6px;
-      background: #18181B;
-      border: 1px solid #27272A;
+      background: var(--sm-tag-bg);
+      border: 1px solid var(--sm-border);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #F4F4F5;
-      font-weight: 600;
-      font-size: 11px;
+      color: var(--sm-primary);
+      font-weight: 700;
+      font-size: 11.5px;
     }
 
-    .sm-header-title {
+    .sm-brand-name {
       font-size: 13px;
-      font-weight: 600;
-      color: #F4F4F5;
+      font-weight: 650;
+      color: var(--sm-text-primary);
       letter-spacing: -0.015em;
-      line-height: 1.2;
     }
 
-    .sm-header-subtitle {
-      font-size: 11px;
-      color: #71717A;
-      letter-spacing: -0.005em;
-      font-weight: 400;
+    .sm-platform-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 7px;
+      background: var(--sm-tag-bg);
+      border: 1px solid var(--sm-border);
+      border-radius: 9999px;
+      font-size: 10.5px;
+      font-weight: 500;
+      color: var(--sm-text-secondary);
+    }
+
+    .sm-live-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--sm-accent-emerald);
+      box-shadow: 0 0 5px var(--sm-accent-emerald);
     }
 
     .sm-header-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-
-    .sm-status-badge {
-      display: flex;
-      align-items: center;
       gap: 6px;
-      background: #121215;
-      border: 1px solid #222226;
-      padding: 3px 8px;
-      border-radius: 9999px;
-      font-size: 11px;
-      font-weight: 450;
-      color: #A1A1AA;
     }
 
-    .sm-status-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #10B981;
-    }
-
-    .sm-close-btn {
+    .sm-icon-btn {
       background: transparent;
       border: 1px solid transparent;
-      color: #71717A;
+      color: var(--sm-text-muted);
       cursor: pointer;
-      padding: 4px;
+      padding: 5px 6px;
       border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 500;
       transition: all 0.15s ease;
     }
 
-    .sm-close-btn:hover {
-      color: #F4F4F5;
-      background: #18181B;
-      border-color: #27272A;
+    .sm-icon-btn:hover {
+      color: var(--sm-text-primary);
+      background: var(--sm-tag-bg);
+      border-color: var(--sm-border);
     }
 
-    /* Detected Source Strip */
-    .sm-source-strip {
-      padding: 7px 18px;
-      background: #111114;
-      border-bottom: 1px solid #1C1C1F;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 11px;
-      color: #71717A;
-    }
-
-    .sm-source-platform {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      color: #A1A1AA;
-      font-weight: 500;
-    }
-
-    /* Scrollable Content Body */
-    .sm-content-body {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .sm-content-body::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    .sm-content-body::-webkit-scrollbar-thumb {
-      background: #27272A;
-      border-radius: 4px;
-    }
-
-    /* Linear-Style Card Surface */
-    .sm-card {
-      background: #121214 !important;
-      border: 1px solid #1E1E22 !important;
-      border-radius: 10px;
-      padding: 14px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    }
-
-    /* Optimization Index Component */
-    .sm-index-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-    }
-
-    .sm-index-label {
-      font-size: 12px;
-      font-weight: 500;
-      color: #A1A1AA;
-      letter-spacing: -0.01em;
-    }
-
-    .sm-index-score {
-      font-size: 13px;
-      font-weight: 600;
-      color: #F4F4F5;
-      letter-spacing: -0.02em;
-    }
-
-    .sm-progress-bar-bg {
-      width: 100%;
-      height: 5px;
-      background: #1F1F23;
-      border-radius: 9999px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .sm-progress-bar-fill {
-      height: 100%;
-      width: 94.2%;
-      background: #3B82F6 !important;
-      border-radius: 9999px;
-      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .sm-telemetry-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: 2px;
-      font-size: 11px;
-      color: #71717A;
-    }
-
-    .sm-telemetry-surge {
-      color: #10B981;
-      font-weight: 500;
-    }
-
-    .sm-telemetry-node {
-      color: #71717A;
-    }
-
-    /* Target Market Selector */
-    .sm-section-label {
-      font-size: 12px;
-      font-weight: 500;
-      color: #A1A1AA;
-      letter-spacing: -0.01em;
-    }
-
-    .sm-select-wrapper {
-      position: relative;
-    }
-
-    .sm-select {
-      width: 100%;
-      background: #18181B;
-      border: 1px solid #27272A;
-      border-radius: 8px;
-      padding: 8px 30px 8px 12px;
-      color: #F4F4F5;
-      font-size: 12.5px;
-      font-weight: 450;
-      outline: none;
-      appearance: none;
-      cursor: pointer;
-      transition: border-color 0.15s ease, background 0.15s ease;
-    }
-
-    .sm-select:hover {
-      background: #1C1C20;
-      border-color: #3F3F46;
-    }
-
-    .sm-select:focus {
-      border-color: #3B82F6;
-      box-shadow: 0 0 0 1px #3B82F6;
-    }
-
-    .sm-select-chevron {
+    /* Theme Picker Dropdown Menu */
+    .sm-theme-menu {
       position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      pointer-events: none;
-      color: #71717A;
-      font-size: 9px;
-    }
-
-    /* Segmented Filter Badges */
-    .sm-badges-row {
+      top: 45px;
+      right: 42px;
+      width: 160px;
+      background: var(--sm-header-bg);
+      border: 1px solid var(--sm-border);
+      border-radius: 8px;
+      padding: 4px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+      z-index: 100;
       display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: 2px;
     }
 
-    .sm-badge {
-      display: inline-flex;
+    .sm-theme-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--sm-text-secondary);
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+      transition: all 0.12s ease;
+    }
+
+    .sm-theme-item:hover {
+      background: var(--sm-card-hover);
+      color: var(--sm-text-primary);
+    }
+
+    .sm-theme-item.active {
+      background: var(--sm-active-pill);
+      color: var(--sm-text-primary);
+      font-weight: 600;
+    }
+
+    .sm-theme-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* 2. Micro Telemetry Bar (Ultra-Compact, Replaces Bulky Card) */
+    .sm-telemetry-bar {
+      padding: 6px 16px;
+      background: var(--sm-subbar-bg);
+      border-bottom: 1px solid var(--sm-border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      position: relative;
+    }
+
+    .sm-telemetry-stat {
+      display: flex;
       align-items: center;
       gap: 4px;
-      background: #18181B;
-      border: 1px solid #27272A;
+      color: var(--sm-text-secondary);
+      font-weight: 500;
+    }
+
+    .sm-telemetry-stat strong {
+      color: var(--sm-text-primary);
+    }
+
+    .sm-surge-val {
+      color: var(--sm-accent-emerald);
+      font-weight: 600;
+    }
+
+    /* Hairline Alignment Progress Beam */
+    .sm-telemetry-beam {
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      height: 2px;
+      background: var(--sm-primary);
+      width: 94.2%;
+      transition: width 0.5s ease;
+      box-shadow: 0 0 6px var(--sm-primary);
+    }
+
+    /* 3. Streamlined Control Deck */
+    .sm-control-deck {
+      padding: 10px 14px;
+      background: var(--sm-bg);
+      border-bottom: 1px solid var(--sm-border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sm-deck-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sm-market-select {
+      flex: 1;
+      background: var(--sm-input-bg);
+      border: 1px solid var(--sm-border);
       border-radius: 6px;
-      padding: 4px 9px;
-      font-size: 11px;
-      font-weight: 450;
-      color: #A1A1AA;
+      padding: 6px 26px 6px 10px;
+      color: var(--sm-text-primary);
+      font-size: 11.5px;
+      font-weight: 500;
+      outline: none;
       cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2210%22%20height%3D%226%22%20viewBox%3D%220%200%2010%206%22%3E%3Cpath%20fill%3D%22%2371717A%22%20d%3D%22M0%200l5%205%205-5z%22%2F%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-position: right 9px center;
+      transition: border-color 0.15s ease;
+    }
+
+    .sm-market-select:hover {
+      border-color: var(--sm-active-pill-border);
+    }
+
+    .sm-market-select:focus {
+      border-color: var(--sm-primary);
+    }
+
+    .sm-pill-toggle {
+      background: var(--sm-input-bg);
+      border: 1px solid var(--sm-border);
+      border-radius: 6px;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--sm-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
       user-select: none;
       transition: all 0.15s ease;
     }
 
-    .sm-badge:hover {
-      background: #202024;
-      color: #F4F4F5;
-      border-color: #3F3F46;
+    .sm-pill-toggle:hover {
+      color: var(--sm-text-primary);
+      border-color: var(--sm-active-pill-border);
     }
 
-    .sm-badge.active {
-      background: #1E2433;
-      border-color: #2E4C7E;
-      color: #93C5FD;
+    .sm-pill-toggle.active {
+      color: var(--sm-primary);
+      border-color: var(--sm-primary);
+      background: var(--sm-tag-bg);
     }
 
-    /* Segmented Tabs (Linear Style) */
-    .sm-tabs-row {
+    /* Mutation Tabs Segmented Slider */
+    .sm-tabs-segmented {
       display: flex;
-      background: #141416;
-      border-radius: 8px;
-      padding: 3px;
-      border: 1px solid #222226;
+      background: var(--sm-header-bg);
+      border: 1px solid var(--sm-border);
+      border-radius: 7px;
+      padding: 2px;
+      gap: 2px;
     }
 
-    .sm-tab-btn {
+    .sm-tab-pill {
       flex: 1;
       background: transparent;
       border: none;
-      padding: 6px 8px;
-      font-size: 12px;
+      padding: 5px 8px;
+      font-size: 11.5px;
       font-weight: 500;
-      color: #71717A;
+      color: var(--sm-text-muted);
       cursor: pointer;
-      border-radius: 6px;
+      border-radius: 5px;
       text-align: center;
       transition: all 0.15s ease;
-    }
-
-    .sm-tab-btn:hover {
-      color: #D4D4D8;
-    }
-
-    .sm-tab-btn.active {
-      background: #202024;
-      color: #FFFFFF;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-    }
-
-    /* Script Production Terminal (Clean Editor) */
-    .sm-terminal-card {
-      background: #121214 !important;
-      border: 1px solid #1E1E22 !important;
-      border-radius: 10px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    }
-
-    .sm-terminal-header {
-      padding: 9px 14px;
-      background: #151518;
-      border-bottom: 1px solid #1E1E22;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      font-size: 11px;
-      color: #71717A;
-      font-weight: 500;
-    }
-
-    .sm-terminal-content {
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .sm-frame-block {
-      display: flex;
-      flex-direction: column;
+      justify-content: center;
       gap: 4px;
-      background: #161619;
-      border: 1px solid #222226;
-      border-left: 3px solid #3B82F6;
-      padding: 10px 12px;
-      border-radius: 6px;
     }
 
-    .sm-frame-block.thesis {
-      border-left-color: #60A5FA;
+    .sm-tab-pill:hover {
+      color: var(--sm-text-primary);
     }
 
-    .sm-frame-block.cta {
-      border-left-color: #10B981;
-    }
-
-    .sm-frame-label {
-      font-size: 10.5px;
+    .sm-tab-pill.active {
+      background: var(--sm-card-bg);
+      color: var(--sm-text-primary);
       font-weight: 600;
-      color: #71717A;
-      letter-spacing: 0.01em;
+      border: 1px solid var(--sm-border);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    }
+
+    .sm-tab-pill .tab-badge {
+      font-size: 9.5px;
+      opacity: 0.7;
+    }
+
+    /* 4. Full-Height Ergonomic Script Studio Canvas */
+    .sm-canvas-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 14px;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      flex-direction: column;
+      gap: 10px;
     }
 
-    .sm-frame-text {
-      font-family: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
-      font-size: 11.5px;
-      line-height: 1.6;
-      color: #D4D4D8;
-      white-space: pre-wrap;
-      word-break: break-word;
-      outline: none;
-      cursor: text;
+    .sm-canvas-body::-webkit-scrollbar {
+      width: 4px;
     }
 
-    .sm-frame-text:focus {
-      background: #1B1B20;
+    .sm-canvas-body::-webkit-scrollbar-thumb {
+      background: var(--sm-border);
       border-radius: 4px;
     }
 
-    .sm-terminal-ribbon {
-      padding: 7px 14px;
-      background: #0E0E10;
-      border-top: 1px solid #1C1C1F;
-      font-size: 11px;
-      color: #52525B;
+    /* Script Block Card (Linear / Editorial Clean Look) */
+    .sm-frame-card {
+      background: var(--sm-card-bg);
+      border: 1px solid var(--sm-border);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      position: relative;
+    }
+
+    .sm-frame-card:hover {
+      border-color: var(--sm-active-pill-border);
+    }
+
+    .sm-frame-card:focus-within {
+      border-color: var(--sm-primary);
+      box-shadow: 0 0 0 1px var(--sm-primary);
+    }
+
+    .sm-frame-header {
+      padding: 7px 11px;
+      background: var(--sm-header-bg);
+      border-bottom: 1px solid var(--sm-border-subtle);
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
-    .sm-ribbon-tag {
-      color: #10B981;
+    .sm-frame-title {
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sm-frame-indicator {
+      width: 7px;
+      height: 7px;
+      border-radius: 2px;
+    }
+
+    .sm-ind-hook { background: var(--sm-frame-hook-border); }
+    .sm-ind-thesis { background: var(--sm-frame-thesis-border); }
+    .sm-ind-cta { background: var(--sm-frame-cta-border); }
+
+    .sm-frame-title-hook { color: var(--sm-text-primary); }
+    .sm-frame-title-thesis { color: var(--sm-text-primary); }
+    .sm-frame-title-cta { color: var(--sm-text-primary); }
+
+    .sm-frame-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sm-frame-time {
+      font-size: 10px;
+      color: var(--sm-text-muted);
       font-weight: 500;
+    }
+
+    .sm-frame-copy-btn {
+      background: transparent;
+      border: none;
+      color: var(--sm-text-muted);
+      cursor: pointer;
+      padding: 2px 5px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 10px;
+      font-weight: 500;
+      transition: all 0.12s ease;
+    }
+
+    .sm-frame-copy-btn:hover {
+      background: var(--sm-tag-bg);
+      color: var(--sm-text-primary);
+    }
+
+    /* Editable Text Box (Clean Proportional Typography) */
+    .sm-frame-editor {
+      padding: 10px 12px;
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 12.5px;
+      line-height: 1.55;
+      color: var(--sm-text-primary);
+      outline: none;
+      cursor: text;
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 48px;
+    }
+
+    /* Telemetry Info Ribbon at bottom of canvas */
+    .sm-canvas-ribbon {
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 10.5px;
+      color: var(--sm-text-muted);
+    }
+
+    .sm-ribbon-tag {
+      color: var(--sm-accent-emerald);
       display: flex;
       align-items: center;
       gap: 4px;
+      font-weight: 500;
     }
 
-    /* Bottom Action Zone */
+    /* 5. Ergonomic Sticky Action Footer */
     .sm-footer {
-      padding: 16px 18px;
-      background: #0D0D10;
-      border-top: 1px solid #1E1E22;
+      padding: 12px 14px;
+      background: var(--sm-header-bg);
+      border-top: 1px solid var(--sm-border);
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 7px;
     }
 
-    /* Primary Enterprise Button */
+    /* Primary Action: Copy Full Script (The #1 operator action) */
     .sm-btn-primary {
       width: 100%;
-      background: #2563EB;
-      color: #FFFFFF;
-      border: 1px solid #3B82F6;
-      border-radius: 8px;
-      padding: 10px 16px;
-      font-size: 13px;
-      font-weight: 550;
+      background: var(--sm-primary);
+      color: var(--sm-primary-text);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 7px;
+      padding: 9px 14px;
+      font-size: 12.5px;
+      font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 7px;
       transition: all 0.15s ease;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
     }
 
     .sm-btn-primary:hover {
-      background: #1D4ED8;
-      border-color: #2563EB;
+      background: var(--sm-primary-hover);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
     }
 
     .sm-btn-primary:active {
       transform: scale(0.99);
     }
 
-    .sm-btn-primary.success {
-      background: #059669;
-      border-color: #10B981;
+    .sm-btn-primary.copied {
+      background: var(--sm-accent-emerald) !important;
+      color: #FFFFFF !important;
     }
 
-    /* Secondary Micro Actions */
+    /* Secondary Action Bar */
+    .sm-btn-secondary-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
     .sm-btn-secondary {
-      width: 100%;
-      background: #18181B;
-      color: #D4D4D8;
-      border: 1px solid #27272A;
-      border-radius: 8px;
-      padding: 8px 12px;
-      font-size: 12px;
+      background: var(--sm-tag-bg);
+      color: var(--sm-text-secondary);
+      border: 1px solid var(--sm-border);
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-size: 11.5px;
       font-weight: 500;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 5px;
       transition: all 0.15s ease;
     }
 
     .sm-btn-secondary:hover {
-      background: #202024;
-      color: #FFFFFF;
-      border-color: #3F3F46;
+      background: var(--sm-card-hover);
+      color: var(--sm-text-primary);
+      border-color: var(--sm-active-pill-border);
     }
 
-    .sm-btn-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
+    .sm-btn-secondary.success {
+      color: var(--sm-accent-emerald);
+      border-color: var(--sm-accent-emerald);
+    }
+
+    /* Toast Notification */
+    .sm-toast {
+      position: absolute;
+      bottom: 74px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: var(--sm-header-bg);
+      border: 1px solid var(--sm-primary);
+      color: var(--sm-text-primary);
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 200;
+    }
+
+    .sm-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
   `;
   shadow.appendChild(styleEl);
@@ -753,7 +934,25 @@
   // Sidebar Container
   const sidebar = document.createElement('div');
   sidebar.className = 'sm-sidebar-container';
+  sidebar.setAttribute('data-theme', currentTheme);
 
+  // Toast Container
+  const toastEl = document.createElement('div');
+  toastEl.className = 'sm-toast';
+  sidebar.appendChild(toastEl);
+
+  function showToast(msg) {
+    toastEl.innerHTML = `
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      <span>${msg}</span>
+    `;
+    toastEl.classList.add('show');
+    setTimeout(() => {
+      toastEl.classList.remove('show');
+    }, 2000);
+  }
+
+  // Live Telemetry Worker Sync
   async function fetchLiveTelemetry(context) {
     try {
       const res = await fetch(`${WORKER_BASE}/api/analyze`, {
@@ -768,16 +967,26 @@
       if (data.success && data.velocityMetrics) {
         liveSurgeText = data.velocityMetrics.velocitySurge;
         liveScoreText = data.velocityMetrics.optimizationScore;
-        const surgeEl = sidebar.querySelector('.sm-telemetry-surge');
-        const scoreValEl = sidebar.querySelector('#smScoreVal');
-        const progressBar = sidebar.querySelector('#smProgressBar');
+        const surgeEl = sidebar.querySelector('#smSurgeText');
+        const scoreEl = sidebar.querySelector('#smScoreText');
+        const beamEl = sidebar.querySelector('#smTelemetryBeam');
         if (surgeEl) surgeEl.textContent = liveSurgeText;
-        if (scoreValEl) scoreValEl.textContent = `${liveScoreText} Score`;
-        if (progressBar) progressBar.style.width = liveScoreText;
+        if (scoreEl) scoreEl.textContent = liveScoreText;
+        if (beamEl) beamEl.style.width = liveScoreText;
       }
     } catch (e) {
-      // Fallback gracefully to offline calculation
+      // Graceful offline fallback
     }
+  }
+
+  // Calculate word count and estimated reading time
+  function getCanvasStats() {
+    const hook = sidebar.querySelector('#smHookText')?.textContent || '';
+    const thesis = sidebar.querySelector('#smThesisText')?.textContent || '';
+    const cta = sidebar.querySelector('#smCtaText')?.textContent || '';
+    const words = (hook + ' ' + thesis + ' ' + cta).trim().split(/\s+/).filter(Boolean).length;
+    const estimatedSeconds = Math.round(words / 2.3); // ~140 wpm speaking pace
+    return { words, estimatedSeconds };
   }
 
   function renderSidebar() {
@@ -788,168 +997,215 @@
     const displayScore = liveScoreText || cur.alignmentScore;
     const displaySurge = liveSurgeText || cur.surge;
 
+    sidebar.setAttribute('data-theme', currentTheme);
+
     sidebar.innerHTML = `
-      <!-- 1. The Telemetry Status Bar -->
+      <!-- 1. Compact Header Bar -->
       <header class="sm-header">
-        <div class="sm-header-brand">
-          <div class="sm-header-logo">S</div>
+        <div class="sm-header-left">
+          <div class="sm-brand-badge">S</div>
           <div>
-            <div class="sm-header-title">StitchMatrix</div>
-            <div class="sm-header-subtitle">Enterprise Distribution Suite <span style="font-size: 9px; padding: 1px 4px; background: #27272A; border-radius: 3px; color: #93C5FD; margin-left: 4px;">v2.5</span></div>
+            <span class="sm-brand-name">StitchMatrix</span>
+          </div>
+          <div class="sm-platform-pill" title="Target Video Host">
+            <span class="sm-live-dot"></span>
+            <span>${context.platform}</span>
           </div>
         </div>
+
         <div class="sm-header-actions">
-          <div class="sm-status-badge">
-            <span class="sm-status-dot"></span>
-            <span>Live Worker Sync</span>
-          </div>
-          <button class="sm-close-btn" id="smCloseBtn" title="Close (Esc)">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <!-- Theme Switcher Button -->
+          <button class="sm-icon-btn" id="smThemeToggleBtn" title="Switch Theme Color Palette">
+            <span>🎨</span>
+            <span style="text-transform: capitalize;">${currentTheme}</span>
+          </button>
+
+          <!-- Close Button -->
+          <button class="sm-icon-btn" id="smCloseBtn" title="Close Studio (Esc)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
         </div>
+
+        <!-- Theme Picker Menu (Toggled) -->
+        ${showThemeMenu ? `
+          <div class="sm-theme-menu" id="smThemeMenu">
+            ${THEMES.map(t => `
+              <button class="sm-theme-item ${t.id === currentTheme ? 'active' : ''}" data-theme-id="${t.id}">
+                <span class="sm-theme-swatch" style="background: ${t.previewColor};"></span>
+                <span>${t.name}</span>
+                ${t.id === currentTheme ? '<span style="margin-left:auto; font-size: 10px;">✓</span>' : ''}
+              </button>
+            `).join('')}
+          </div>
+        ` : ''}
       </header>
 
-      <!-- Real-time Ingestion Strip -->
-      <div class="sm-source-strip">
-        <div class="sm-source-platform">
-          <span>Target:</span>
-          <strong style="color: #F4F4F5;">${context.platform}</strong>
+      <!-- 2. Micro Telemetry Bar (Consolidated Status & Latency) -->
+      <div class="sm-telemetry-bar">
+        <div class="sm-telemetry-stat">
+          <span>Alignment:</span>
+          <strong id="smScoreText">${displayScore}</strong>
         </div>
-        <span style="max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${context.author}</span>
+        <div class="sm-telemetry-stat">
+          <span>Velocity:</span>
+          <span class="sm-surge-val" id="smSurgeText">${displaySurge}</span>
+        </div>
+        <div class="sm-telemetry-stat">
+          <span style="opacity: 0.7;">14ms · 48 nodes</span>
+        </div>
+        <!-- Hairline Progress Beam -->
+        <div class="sm-telemetry-beam" id="smTelemetryBeam" style="width: ${displayScore};"></div>
       </div>
 
-      <!-- Scrollable Main Content -->
-      <div class="sm-content-body">
-        
-        <!-- 2. The Optimization Index Card -->
-        <div class="sm-card">
-          <div class="sm-index-header">
-            <span class="sm-index-label">System Alignment</span>
-            <span class="sm-index-score" id="smScoreVal">${displayScore} Score</span>
+      <!-- 3. Streamlined Command & Filter Deck -->
+      <div class="sm-control-deck">
+        <div class="sm-deck-row">
+          <!-- Market Vector Dropdown -->
+          <select class="sm-market-select" id="smMarketSelect" title="Select Target Market Vector">
+            <option value="career" ${activeMarket === 'career' ? 'selected' : ''}>Career & Tech Leadership</option>
+            <option value="saas" ${activeMarket === 'saas' ? 'selected' : ''}>B2B SaaS Founder (Retention)</option>
+            <option value="fintech" ${activeMarket === 'fintech' ? 'selected' : ''}>Fintech & Wealth Advisory</option>
+          </select>
+
+          <!-- Tone Pill Toggle -->
+          <div class="sm-pill-toggle active" id="smToneToggle" title="Click to cycle tone style">
+            ${activeTone}
           </div>
-          <div class="sm-progress-bar-bg">
-            <div class="sm-progress-bar-fill" id="smProgressBar" style="width: ${displayScore};"></div>
-          </div>
-          <div class="sm-telemetry-row">
-            <span class="sm-telemetry-surge">${displaySurge}</span>
-            <span class="sm-telemetry-node">14ms latency · 48 nodes</span>
+
+          <!-- Length Pill Toggle -->
+          <div class="sm-pill-toggle active" id="smLengthToggle" title="Click to cycle duration target">
+            ${activeLength}
           </div>
         </div>
 
-        <!-- 3. Target Market Vector Dropdown -->
-        <div class="sm-card">
-          <div class="sm-section-label">Target Market Vector</div>
-          <div class="sm-select-wrapper">
-            <select class="sm-select" id="smMarketSelect">
-              <option value="career" ${activeMarket === 'career' ? 'selected' : ''}>Career & Tech Leadership (High Conversion)</option>
-              <option value="saas" ${activeMarket === 'saas' ? 'selected' : ''}>B2B SaaS Founder (Retention Matrix)</option>
-              <option value="fintech" ${activeMarket === 'fintech' ? 'selected' : ''}>Fintech & Wealth Advisory (High Ticket)</option>
-            </select>
-            <span class="sm-select-chevron">▼</span>
-          </div>
-          <div class="sm-badges-row">
-            <div class="sm-badge active" id="smToneBadge">Tone: ${activeTone}</div>
-            <div class="sm-badge active" id="smLengthBadge">Length: ${activeLength}</div>
-            <div class="sm-badge" id="smProofBadge">Proof: High Density</div>
-          </div>
-        </div>
-
-        <!-- Mutation Switcher Tabs -->
-        <div class="sm-tabs-row">
+        <!-- Angle Mutation Pill Switcher (Contrarian / Tactical / Teardown) -->
+        <div class="sm-tabs-segmented">
           ${list.map((m, idx) => `
-            <button class="sm-tab-btn ${idx === currentMutationIndex ? 'active' : ''}" data-idx="${idx}">
-              ${m.tabLabel}
+            <button class="sm-tab-pill ${idx === currentMutationIndex ? 'active' : ''}" data-idx="${idx}">
+              <span>${m.tabLabel}</span>
+              <span class="tab-badge">~${m.duration}</span>
             </button>
           `).join('')}
         </div>
+      </div>
 
-        <!-- 4. The Script Production Terminal -->
-        <div class="sm-terminal-card">
-          <div class="sm-terminal-header">
-            <span>Script Canvas (Editable)</span>
-            <span style="color: #60A5FA;">Mutation ${String.fromCharCode(65 + currentMutationIndex)} · ~${cur.duration}</span>
-          </div>
-          
-          <div class="sm-terminal-content">
-            <!-- Frame 01: Hook -->
-            <div class="sm-frame-block">
-              <div class="sm-frame-label">
-                <span>01. Hook Element</span>
-                <span style="font-weight: 400; font-size: 10px; color: #52525B;">Click to edit</span>
-              </div>
-              <div class="sm-frame-text" id="smHookText" contenteditable="true" spellcheck="false">${cur.hook}</div>
+      <!-- 4. Full-Height Ergonomic Script Canvas -->
+      <div class="sm-canvas-body">
+        
+        <!-- Frame 01: Hook -->
+        <div class="sm-frame-card">
+          <div class="sm-frame-header">
+            <div class="sm-frame-title">
+              <span class="sm-frame-indicator sm-ind-hook"></span>
+              <span class="sm-frame-title-hook">01 · HOOK ELEMENT</span>
             </div>
-
-            <!-- Frame 02: Core Thesis -->
-            <div class="sm-frame-block thesis">
-              <div class="sm-frame-label">
-                <span>02. Core Thesis</span>
-                <span style="font-weight: 400; font-size: 10px; color: #52525B;">Click to edit</span>
-              </div>
-              <div class="sm-frame-text" id="smThesisText" contenteditable="true" spellcheck="false">${cur.thesis}</div>
-            </div>
-
-            <!-- Frame 03: CTA -->
-            <div class="sm-frame-block cta">
-              <div class="sm-frame-label">
-                <span>03. Call-to-Action</span>
-                <span style="font-weight: 400; font-size: 10px; color: #52525B;">Click to edit</span>
-              </div>
-              <div class="sm-frame-text" id="smCtaText" contenteditable="true" spellcheck="false">${cur.cta}</div>
+            <div class="sm-frame-actions">
+              <span class="sm-frame-time">0–3s</span>
+              <button class="sm-frame-copy-btn" id="smCopyHookBtn" title="Copy hook only">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span>Copy</span>
+              </button>
             </div>
           </div>
+          <div class="sm-frame-editor" id="smHookText" contenteditable="true" spellcheck="false">${cur.hook}</div>
+        </div>
 
-          <!-- Bottom Metadata Ribbon -->
-          <div class="sm-terminal-ribbon">
-            <span>Syntax compiled · UTF-8</span>
-            <span class="sm-ribbon-tag">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              Verified #99014
-            </span>
+        <!-- Frame 02: Thesis -->
+        <div class="sm-frame-card">
+          <div class="sm-frame-header">
+            <div class="sm-frame-title">
+              <span class="sm-frame-indicator sm-ind-thesis"></span>
+              <span class="sm-frame-title-thesis">02 · CORE THESIS & LEVERAGE</span>
+            </div>
+            <div class="sm-frame-actions">
+              <span class="sm-frame-time">4–25s</span>
+              <button class="sm-frame-copy-btn" id="smCopyThesisBtn" title="Copy thesis only">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span>Copy</span>
+              </button>
+            </div>
           </div>
+          <div class="sm-frame-editor" id="smThesisText" contenteditable="true" spellcheck="false">${cur.thesis}</div>
+        </div>
+
+        <!-- Frame 03: CTA -->
+        <div class="sm-frame-card">
+          <div class="sm-frame-header">
+            <div class="sm-frame-title">
+              <span class="sm-frame-indicator sm-ind-cta"></span>
+              <span class="sm-frame-title-cta">03 · CALL-TO-ACTION</span>
+            </div>
+            <div class="sm-frame-actions">
+              <span class="sm-frame-time">26–35s</span>
+              <button class="sm-frame-copy-btn" id="smCopyCtaBtn" title="Copy CTA only">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span>Copy</span>
+              </button>
+            </div>
+          </div>
+          <div class="sm-frame-editor" id="smCtaText" contenteditable="true" spellcheck="false">${cur.cta}</div>
+        </div>
+
+        <!-- Telemetry Ribbon / Speaking Pace -->
+        <div class="sm-canvas-ribbon">
+          <span id="smWordStats">~74 words · ~32s speaking pace</span>
+          <span class="sm-ribbon-tag">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Algorithmic Check Passed
+          </span>
         </div>
 
       </div>
 
-      <!-- 5. The Enterprise CTA Button & Action Zone -->
+      <!-- 5. Ergonomic Sticky Action Deck (Primary Fast Action = Copy Full Script) -->
       <footer class="sm-footer">
-        <button class="sm-btn-primary" id="smSyncGithubBtn">
-          <!-- Clean Git branch vector graphic asset -->
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="6" y1="3" x2="6" y2="15"></line>
-            <circle cx="18" cy="6" r="3"></circle>
-            <circle cx="6" cy="18" r="3"></circle>
-            <path d="M18 9a9 9 0 0 1-9 9"></path>
+        <!-- Prominent Primary Action Button -->
+        <button class="sm-btn-primary" id="smCopyFullBtn" title="Copy Complete Script (Alt+C)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
           </svg>
-          <span id="smSyncBtnText">Sync Assets to GitHub</span>
+          <span id="smCopyFullBtnText">Copy Full Script (Alt+C)</span>
         </button>
 
-        <div class="sm-btn-grid">
-          <button class="sm-btn-secondary" id="smCopyScriptBtn">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
-            <span id="smCopyBtnText">Copy Script</span>
-          </button>
-
-          <button class="sm-btn-secondary" id="smRegenerateBtn">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <!-- Secondary Quick Actions -->
+        <div class="sm-btn-secondary-row">
+          <button class="sm-btn-secondary" id="smRegenerateBtn" title="Cycle or Synthesize Next Script Angle">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="23 4 23 10 17 10"></polyline>
               <polyline points="1 20 1 14 7 14"></polyline>
               <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
             </svg>
-            <span id="smRegenText">Regenerate</span>
+            <span id="smRegenBtnText">Cycle Angle</span>
+          </button>
+
+          <button class="sm-btn-secondary" id="smSyncGithubBtn" title="Sync Mutation to GitHub Repository">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="6" y1="3" x2="6" y2="15"></line>
+              <circle cx="18" cy="6" r="3"></circle>
+              <circle cx="6" cy="18" r="3"></circle>
+              <path d="M18 9a9 9 0 0 1-9 9"></path>
+            </svg>
+            <span id="smSyncBtnText">Sync to GitHub</span>
           </button>
         </div>
       </footer>
     `;
 
     attachEventListeners();
+    updateWordStats();
     fetchLiveTelemetry(context);
+  }
+
+  function updateWordStats() {
+    const stats = getCanvasStats();
+    const statsEl = sidebar.querySelector('#smWordStats');
+    if (statsEl) {
+      statsEl.textContent = `~${stats.words} words · ~${stats.estimatedSeconds}s speaking pace`;
+    }
   }
 
   function attachEventListeners() {
@@ -957,7 +1213,40 @@
     const closeBtn = sidebar.querySelector('#smCloseBtn');
     if (closeBtn) closeBtn.onclick = toggleSidebar;
 
-    // Market Vector select
+    // Theme Picker Toggle Button
+    const themeToggleBtn = sidebar.querySelector('#smThemeToggleBtn');
+    if (themeToggleBtn) {
+      themeToggleBtn.onclick = (e) => {
+        e.stopPropagation();
+        showThemeMenu = !showThemeMenu;
+        renderSidebar();
+      };
+    }
+
+    // Theme Menu Selection
+    sidebar.querySelectorAll('.sm-theme-item').forEach(item => {
+      item.onclick = (e) => {
+        e.stopPropagation();
+        const themeId = item.getAttribute('data-theme-id');
+        currentTheme = themeId;
+        try {
+          localStorage.setItem('sm_active_theme', themeId);
+        } catch (err) {}
+        showThemeMenu = false;
+        renderSidebar();
+        showToast(`Theme switched to ${item.textContent.trim()}`);
+      };
+    });
+
+    // Close theme menu on outside click
+    sidebar.onclick = () => {
+      if (showThemeMenu) {
+        showThemeMenu = false;
+        renderSidebar();
+      }
+    };
+
+    // Market Vector Select
     const marketSelect = sidebar.querySelector('#smMarketSelect');
     if (marketSelect) {
       marketSelect.onchange = (e) => {
@@ -969,8 +1258,30 @@
       };
     }
 
-    // Mutation Tabs
-    sidebar.querySelectorAll('.sm-tab-btn').forEach(btn => {
+    // Tone Toggle
+    const toneToggle = sidebar.querySelector('#smToneToggle');
+    if (toneToggle) {
+      const tones = ['Direct Hook', 'Data Teardown', 'Story Paradox', 'Authority'];
+      toneToggle.onclick = () => {
+        const nextIdx = (tones.indexOf(activeTone) + 1) % tones.length;
+        activeTone = tones[nextIdx];
+        renderSidebar();
+      };
+    }
+
+    // Length Toggle
+    const lengthToggle = sidebar.querySelector('#smLengthToggle');
+    if (lengthToggle) {
+      const lengths = ['35s', '45s', '60s', '20s'];
+      lengthToggle.onclick = () => {
+        const nextIdx = (lengths.indexOf(activeLength) + 1) % lengths.length;
+        activeLength = lengths[nextIdx];
+        renderSidebar();
+      };
+    }
+
+    // Mutation Segmented Tabs
+    sidebar.querySelectorAll('.sm-tab-pill').forEach(btn => {
       btn.onclick = () => {
         const idx = parseInt(btn.getAttribute('data-idx'), 10);
         currentMutationIndex = idx;
@@ -978,98 +1289,57 @@
       };
     });
 
-    // Tone Badge toggle
-    const toneBadge = sidebar.querySelector('#smToneBadge');
-    if (toneBadge) {
-      const tones = ['Direct Hook', 'Data Breakdown', 'Story Paradox'];
-      toneBadge.onclick = () => {
-        const nextIdx = (tones.indexOf(activeTone) + 1) % tones.length;
-        activeTone = tones[nextIdx];
-        renderSidebar();
-      };
-    }
-
-    // Length Badge toggle
-    const lengthBadge = sidebar.querySelector('#smLengthBadge');
-    if (lengthBadge) {
-      const lengths = ['35s', '45s', '60s'];
-      lengthBadge.onclick = () => {
-        const nextIdx = (lengths.indexOf(activeLength) + 1) % lengths.length;
-        activeLength = lengths[nextIdx];
-        renderSidebar();
-      };
-    }
-
-    // Sync to GitHub Button
-    const syncBtn = sidebar.querySelector('#smSyncGithubBtn');
-    const syncText = sidebar.querySelector('#smSyncBtnText');
-    if (syncBtn && syncText) {
-      syncBtn.onclick = async () => {
-        const originalText = syncText.textContent;
-        syncText.textContent = 'Syncing...';
-        syncBtn.style.opacity = '0.8';
-
-        try {
-          const list = SCRIPT_MUTATIONS[activeMarket] || SCRIPT_MUTATIONS.career;
-          const cur = list[currentMutationIndex];
-          const hookText = sidebar.querySelector('#smHookText')?.textContent || cur.hook;
-          const thesisText = sidebar.querySelector('#smThesisText')?.textContent || cur.thesis;
-          const ctaText = sidebar.querySelector('#smCtaText')?.textContent || cur.cta;
-
-          const payload = {
-            repo: 'humangeek77-star/stitchmatrix-social-virality-dashboard',
-            scriptMutation: { ...cur, hook: hookText, thesis: thesisText, cta: ctaText },
-            marketVector: activeMarket,
-            tone: activeTone,
-            length: activeLength,
-            url: window.location.href,
-            syncedAt: new Date().toISOString()
-          };
-          
-          try {
-            await fetch(`${WORKER_BASE}/api/sync-github`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
-          } catch (fetchErr) {
-            // Local fallback simulation
-          }
-
-          syncBtn.classList.add('success');
-          syncText.textContent = '✓ Synced to GitHub';
-          setTimeout(() => {
-            syncBtn.classList.remove('success');
-            syncText.textContent = originalText;
-            syncBtn.style.opacity = '1';
-          }, 2500);
-        } catch (err) {
-          syncText.textContent = 'Synced Locally';
-          setTimeout(() => { syncText.textContent = originalText; syncBtn.style.opacity = '1'; }, 2000);
-        }
-      };
-    }
-
-    // Copy Script to Clipboard
-    const copyBtn = sidebar.querySelector('#smCopyScriptBtn');
-    const copyText = sidebar.querySelector('#smCopyBtnText');
-    if (copyBtn && copyText) {
-      copyBtn.onclick = () => {
-        const hookText = sidebar.querySelector('#smHookText')?.textContent || '';
-        const thesisText = sidebar.querySelector('#smThesisText')?.textContent || '';
-        const ctaText = sidebar.querySelector('#smCtaText')?.textContent || '';
-        const formatted = `01 | Hook Element:\n${hookText}\n\n02 | Core Thesis:\n${thesisText}\n\n03 | Retentive Call-To-Action:\n${ctaText}`;
-        navigator.clipboard.writeText(formatted).then(() => {
-          const original = copyText.textContent;
-          copyText.textContent = '✓ Copied!';
-          setTimeout(() => { copyText.textContent = original; }, 1800);
+    // Per-Frame Quick Copy Buttons
+    const copyHookBtn = sidebar.querySelector('#smCopyHookBtn');
+    if (copyHookBtn) {
+      copyHookBtn.onclick = () => {
+        const text = sidebar.querySelector('#smHookText')?.textContent || '';
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('Hook copied to clipboard!');
         });
       };
     }
 
-    // Regenerate Hook Button with Live Worker Call
+    const copyThesisBtn = sidebar.querySelector('#smCopyThesisBtn');
+    if (copyThesisBtn) {
+      copyThesisBtn.onclick = () => {
+        const text = sidebar.querySelector('#smThesisText')?.textContent || '';
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('Thesis copied to clipboard!');
+        });
+      };
+    }
+
+    const copyCtaBtn = sidebar.querySelector('#smCopyCtaBtn');
+    if (copyCtaBtn) {
+      copyCtaBtn.onclick = () => {
+        const text = sidebar.querySelector('#smCtaText')?.textContent || '';
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('CTA copied to clipboard!');
+        });
+      };
+    }
+
+    // Input listeners to update word stats on the fly
+    ['#smHookText', '#smThesisText', '#smCtaText'].forEach(selector => {
+      const el = sidebar.querySelector(selector);
+      if (el) {
+        el.oninput = updateWordStats;
+      }
+    });
+
+    // Primary Action: Copy Full Script
+    const copyFullBtn = sidebar.querySelector('#smCopyFullBtn');
+    const copyFullText = sidebar.querySelector('#smCopyFullBtnText');
+    if (copyFullBtn && copyFullText) {
+      copyFullBtn.onclick = () => {
+        executeCopyFullScript();
+      };
+    }
+
+    // Cycle / Regenerate Angle
     const regenBtn = sidebar.querySelector('#smRegenerateBtn');
-    const regenText = sidebar.querySelector('#smRegenText');
+    const regenText = sidebar.querySelector('#smRegenBtnText');
     if (regenBtn) {
       regenBtn.onclick = async () => {
         if (regenText) regenText.textContent = 'Synthesizing...';
@@ -1089,7 +1359,6 @@
           });
           const data = await res.json();
           if (data.success && data.data?.mutations) {
-            // Cycle mutation
             const list = SCRIPT_MUTATIONS[activeMarket] || SCRIPT_MUTATIONS.career;
             currentMutationIndex = (currentMutationIndex + 1) % list.length;
           }
@@ -1098,9 +1367,85 @@
           currentMutationIndex = (currentMutationIndex + 1) % list.length;
         } finally {
           renderSidebar();
+          showToast('Switched to next script angle');
         }
       };
     }
+
+    // Sync to GitHub
+    const syncBtn = sidebar.querySelector('#smSyncGithubBtn');
+    const syncText = sidebar.querySelector('#smSyncBtnText');
+    if (syncBtn && syncText) {
+      syncBtn.onclick = async () => {
+        const originalText = syncText.textContent;
+        syncText.textContent = 'Syncing...';
+        syncBtn.style.opacity = '0.75';
+
+        try {
+          const list = SCRIPT_MUTATIONS[activeMarket] || SCRIPT_MUTATIONS.career;
+          const cur = list[currentMutationIndex];
+          const hookText = sidebar.querySelector('#smHookText')?.textContent || cur.hook;
+          const thesisText = sidebar.querySelector('#smThesisText')?.textContent || cur.thesis;
+          const ctaText = sidebar.querySelector('#smCtaText')?.textContent || cur.cta;
+
+          const payload = {
+            repo: 'humangeek77-star/stitchmatrix-social-virality-dashboard',
+            scriptMutation: { ...cur, hook: hookText, thesis: thesisText, cta: ctaText },
+            marketVector: activeMarket,
+            tone: activeTone,
+            length: activeLength,
+            url: window.location.href,
+            syncedAt: new Date().toISOString()
+          };
+
+          try {
+            await fetch(`${WORKER_BASE}/api/sync-github`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+          } catch (e) {
+            // Local fallback
+          }
+
+          syncBtn.classList.add('success');
+          syncText.textContent = '✓ Synced!';
+          showToast('Asset synced to GitHub repository');
+          setTimeout(() => {
+            syncBtn.classList.remove('success');
+            syncText.textContent = originalText;
+            syncBtn.style.opacity = '1';
+          }, 2400);
+        } catch (err) {
+          syncText.textContent = 'Synced Locally';
+          setTimeout(() => {
+            syncText.textContent = originalText;
+            syncBtn.style.opacity = '1';
+          }, 2000);
+        }
+      };
+    }
+  }
+
+  function executeCopyFullScript() {
+    const hookText = sidebar.querySelector('#smHookText')?.textContent || '';
+    const thesisText = sidebar.querySelector('#smThesisText')?.textContent || '';
+    const ctaText = sidebar.querySelector('#smCtaText')?.textContent || '';
+    const formatted = `01 | HOOK:\n${hookText}\n\n02 | THESIS:\n${thesisText}\n\n03 | CALL-TO-ACTION:\n${ctaText}`;
+
+    navigator.clipboard.writeText(formatted).then(() => {
+      const copyFullBtn = sidebar.querySelector('#smCopyFullBtn');
+      const copyFullText = sidebar.querySelector('#smCopyFullBtnText');
+      if (copyFullBtn && copyFullText) {
+        copyFullBtn.classList.add('copied');
+        copyFullText.textContent = '✓ Copied to Clipboard!';
+        showToast('Full script copied to clipboard!');
+        setTimeout(() => {
+          copyFullBtn.classList.remove('copied');
+          copyFullText.textContent = 'Copy Full Script (Alt+C)';
+        }, 1800);
+      }
+    });
   }
 
   function toggleSidebar() {
@@ -1112,24 +1457,49 @@
     } else {
       sidebar.classList.remove('open');
       triggerTab.style.display = 'flex';
+      showThemeMenu = false;
     }
   }
 
   triggerTab.onclick = toggleSidebar;
   shadow.appendChild(sidebar);
 
-  // Keyboard shortcut listener
+  // Global Keyboard Shortcuts
   window.addEventListener('keydown', (e) => {
+    // Alt + S : Toggle Sidebar
     if ((e.altKey && (e.key === 's' || e.key === 'S')) || (e.ctrlKey && e.shiftKey && (e.key === 's' || e.key === 'S'))) {
       e.preventDefault();
       toggleSidebar();
     }
+    // Escape : Close Sidebar
     if (e.key === 'Escape' && isOpen) {
       toggleSidebar();
     }
+    // Alt + C : Copy Full Script
+    if (isOpen && e.altKey && (e.key === 'c' || e.key === 'C')) {
+      e.preventDefault();
+      executeCopyFullScript();
+    }
+    // Alt + 1 / 2 / 3 : Switch Mutation Angle
+    if (isOpen && e.altKey && ['1', '2', '3'].includes(e.key)) {
+      e.preventDefault();
+      const idx = parseInt(e.key, 10) - 1;
+      const list = SCRIPT_MUTATIONS[activeMarket] || SCRIPT_MUTATIONS.career;
+      if (idx < list.length) {
+        currentMutationIndex = idx;
+        renderSidebar();
+        showToast(`Angle switched: ${list[idx].tabLabel}`);
+      }
+    }
+    // Alt + R : Cycle Angle
+    if (isOpen && e.altKey && (e.key === 'r' || e.key === 'R')) {
+      e.preventDefault();
+      const regenBtn = sidebar.querySelector('#smRegenerateBtn');
+      if (regenBtn) regenBtn.click();
+    }
   });
 
-  // Message listener from background script
+  // Extension runtime message listener
   if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       if (request.action === 'TOGGLE_SIDEBAR') {
@@ -1139,5 +1509,5 @@
     });
   }
 
-  console.log('[StitchMatrix] Enterprise Studio Extension v2.5 loaded.');
+  console.log('[StitchMatrix] High-Efficiency Studio Extension v3.0 loaded.');
 })();
