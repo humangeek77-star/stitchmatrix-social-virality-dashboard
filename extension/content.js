@@ -1,8 +1,9 @@
 /**
- * StitchMatrix — Viral Script Studio v3.3
+ * StitchMatrix — Viral Script Studio v3.4
  * Chrome Extension Manifest V3 In-DOM Sidebar Engine
- * Zero-Dropdown Automated Architecture:
- * - Automatically reads whatever video you are watching (Shorts, TikTok, Reels)
+ * Fully Automated Hands-Free Video Tracking:
+ * - Automatically detects whatever video you scroll or navigate to in real-time
+ * - ZERO need to close or reopen the extension — updates live on the fly as you scroll
  * - Generates 100% contextual viral scripts directly derived from that specific video
  * - No niche dropdowns, no wasted time, zero friction. Built to get creators seen by millions.
  */
@@ -41,7 +42,15 @@
         const reels = Array.from(document.querySelectorAll('ytd-reel-video-renderer'));
         let activeReel = reels.find(r => r.hasAttribute('is-active'));
 
-        // If not flagged with is-active, pick the one closest to screen center
+        // If not flagged with is-active, check which reel has a currently playing video
+        if (!activeReel && reels.length > 0) {
+          activeReel = reels.find(r => {
+            const v = r.querySelector('video');
+            return v && !v.paused && v.currentTime > 0;
+          });
+        }
+
+        // If still not found, pick the one closest to screen center
         if (!activeReel && reels.length > 0) {
           const midY = window.innerHeight / 2;
           let bestDist = Infinity;
@@ -58,15 +67,21 @@
         }
 
         if (activeReel) {
-          const tEl = activeReel.querySelector('#title, .title, h2, yt-formatted-string.title, .ytReelMetamodelViewModelHostTitle, #overlay #title');
-          const aEl = activeReel.querySelector('#channel-name, .ytd-channel-name, #text.ytd-channel-name, [id="channel-name"]');
+          const tEl = activeReel.querySelector(
+            '#overlay #title, .ytReelMetamodelViewModelHostTitle, #title.ytd-reel-player-header-renderer, h2.title, yt-formatted-string.title, .title, h2'
+          );
+          const aEl = activeReel.querySelector(
+            '#channel-name, .ytd-channel-name, #text.ytd-channel-name, [id="channel-name"], .yt-simple-endpoint.ytd-channel-name'
+          );
           if (tEl?.textContent?.trim()) title = tEl.textContent.trim();
           if (aEl?.textContent?.trim()) author = aEl.textContent.trim();
         }
 
         // 2. Fallback selectors in Shorts header
         if (!title) {
-          const headerTitle = document.querySelector('#title.ytd-reel-player-header-renderer, ytd-shorts-player-header-renderer #text, h1.title, h2.title');
+          const headerTitle = document.querySelector(
+            'ytd-shorts-player-header-renderer #text, #title.ytd-reel-player-header-renderer, .ytReelMetamodelViewModelHostTitle, h1.title, h2.title'
+          );
           if (headerTitle?.textContent?.trim()) title = headerTitle.textContent.trim();
         }
 
@@ -121,7 +136,7 @@
     const words = rawTitle
       .replace(/[^\w\s]/gi, '')
       .split(/\s+/)
-      .filter(w => w.length > 3 && !['this', 'that', 'with', 'from', 'have', 'were', 'what', 'epic', 'part'].includes(w.toLowerCase()));
+      .filter(w => w.length > 3 && !['this', 'that', 'with', 'from', 'have', 'were', 'what', 'epic', 'part', 'episode'].includes(w.toLowerCase()));
     
     const tags = words.slice(0, 3).map(w => '#' + w.charAt(0).toUpperCase() + w.slice(1));
     tags.push('#ViralShorts', '#Trending');
@@ -314,6 +329,25 @@
       letter-spacing: -0.01em;
     }
 
+    .sm-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sm-auto-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      color: #34D399;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      padding: 2px 6px;
+      border-radius: 9999px;
+      font-weight: 600;
+    }
+
     .sm-close-btn {
       background: #162035;
       border: 1px solid #23314B;
@@ -334,7 +368,7 @@
       border-color: #3B82F6;
     }
 
-    /* Video Ingestion Card (The Anchor of the Studio) */
+    /* Video Ingestion Banner (The Live Anchor) */
     .sm-video-banner {
       padding: 10px 16px;
       background: linear-gradient(180deg, #131D2E 0%, #0E1624 100%);
@@ -342,6 +376,11 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
+      transition: background 0.4s ease;
+    }
+
+    .sm-video-banner.pulse-active {
+      background: linear-gradient(180deg, #1D3557 0%, #10223D 100%);
     }
 
     .sm-video-status-row {
@@ -370,6 +409,12 @@
       border-radius: 50%;
       background: #10B981;
       box-shadow: 0 0 8px #10B981;
+      animation: smBeaconPulse 2s infinite ease-in-out;
+    }
+
+    @keyframes smBeaconPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
     }
 
     .sm-rescan-btn {
@@ -401,6 +446,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       letter-spacing: -0.01em;
+      transition: color 0.3s ease;
     }
 
     .sm-video-meta {
@@ -790,7 +836,7 @@
     toastEl.classList.add('show');
     setTimeout(() => {
       toastEl.classList.remove('show');
-    }, 2000);
+    }, 2200);
   }
 
   function getCanvasStats() {
@@ -802,10 +848,58 @@
     return { words, estSec };
   }
 
-  function refreshVideoAndScripts() {
-    currentContext = detectVideoContext();
-    generatedScripts = buildViralScripts(currentContext);
-    renderSidebar();
+  // Smooth live in-place update without closing the drawer
+  function updateLiveContent(animateFlash) {
+    const curScript = generatedScripts[activeStyleIndex] || generatedScripts[0];
+
+    const titleEl = sidebar.querySelector('#smDetectedTitle');
+    const targetEl = sidebar.querySelector('#smMetaTarget');
+    const authorEl = sidebar.querySelector('#smMetaAuthor');
+    const scoreEl = sidebar.querySelector('#smMetaScore');
+    const hookEl = sidebar.querySelector('#smHookText');
+    const bodyEl = sidebar.querySelector('#smBodyText');
+    const ctaEl = sidebar.querySelector('#smCtaText');
+    const tagsEl = sidebar.querySelector('#smHashtagDisplay');
+    const bannerEl = sidebar.querySelector('#smVideoBanner');
+
+    if (titleEl) {
+      titleEl.textContent = `"${currentContext.displayTitle}"`;
+      titleEl.title = currentContext.title;
+    }
+    if (targetEl) targetEl.textContent = currentContext.platform;
+    if (authorEl) authorEl.textContent = currentContext.author;
+    if (scoreEl) scoreEl.textContent = curScript.viralScore;
+    if (hookEl) hookEl.textContent = curScript.hook;
+    if (bodyEl) bodyEl.textContent = curScript.body;
+    if (ctaEl) ctaEl.textContent = curScript.cta;
+    if (tagsEl) tagsEl.textContent = curScript.hashtags;
+
+    updateWordStats();
+
+    if (animateFlash && bannerEl) {
+      bannerEl.classList.add('pulse-active');
+      setTimeout(() => bannerEl.classList.remove('pulse-active'), 500);
+    }
+  }
+
+  // Core automatic detection & live sync
+  function checkAndAutoUpdate() {
+    if (!isOpen) return;
+
+    const newContext = detectVideoContext();
+
+    // Check if video title has changed and is valid
+    if (newContext.title && newContext.title !== currentContext.title && newContext.title !== 'Active Viral Video') {
+      // Do not interrupt if user is actively editing text
+      const activeEl = shadow.activeElement;
+      if (activeEl && activeEl.isContentEditable) return;
+
+      currentContext = newContext;
+      generatedScripts = buildViralScripts(currentContext);
+
+      updateLiveContent(true);
+      showToast(`⚡ Remixed for: "${currentContext.displayTitle.slice(0, 26)}..."`);
+    }
   }
 
   function renderSidebar() {
@@ -820,34 +914,40 @@
             <div class="sm-header-title">StitchMatrix Viral Studio</div>
           </div>
         </div>
-        <button class="sm-close-btn" id="smCloseBtn" title="Close Studio (Esc)">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
+        <div class="sm-header-actions">
+          <span class="sm-auto-badge" title="Live automatic video tracking active">
+            <span class="sm-pulse-dot" style="width: 4px; height: 4px;"></span>
+            <span>Auto-Sync</span>
+          </span>
+          <button class="sm-close-btn" id="smCloseBtn" title="Close Studio (Esc)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
       </header>
 
-      <!-- 2. Active Video Ingestion Card (The Core Anchor) -->
-      <div class="sm-video-banner">
+      <!-- 2. Active Video Ingestion Card (The Core Live Anchor) -->
+      <div class="sm-video-banner" id="smVideoBanner">
         <div class="sm-video-status-row">
           <span class="sm-live-badge">
             <span class="sm-pulse-dot"></span>
             <span>Remixing Active Video</span>
           </span>
-          <button class="sm-rescan-btn" id="smRescanBtn" title="Scan new video if scrolled">
-            🔄 Re-scan Video
+          <button class="sm-rescan-btn" id="smRescanBtn" title="Manually re-check video">
+            🔄 Re-scan
           </button>
         </div>
         <div class="sm-video-title" id="smDetectedTitle" title="${currentContext.title}">
           "${currentContext.displayTitle}"
         </div>
         <div class="sm-video-meta">
-          <span>Target: <strong>${currentContext.platform}</strong></span>
+          <span>Target: <strong id="smMetaTarget">${currentContext.platform}</strong></span>
           <span>•</span>
-          <span>Creator: <strong>${currentContext.author}</strong></span>
+          <span>Creator: <strong id="smMetaAuthor">${currentContext.author}</strong></span>
           <span>•</span>
-          <span style="color: #34D399;">Viral Potential: <strong>${curScript.viralScore}</strong></span>
+          <span style="color: #34D399;">Viral Potential: <strong id="smMetaScore">${curScript.viralScore}</strong></span>
         </div>
       </div>
 
@@ -992,12 +1092,14 @@
     const closeBtn = sidebar.querySelector('#smCloseBtn');
     if (closeBtn) closeBtn.onclick = toggleSidebar;
 
-    // Re-scan Button
+    // Manual Re-scan Button
     const rescanBtn = sidebar.querySelector('#smRescanBtn');
     if (rescanBtn) {
       rescanBtn.onclick = () => {
-        refreshVideoAndScripts();
-        showToast(`Remixed: "${currentContext.displayTitle.slice(0, 30)}..."`);
+        currentContext = detectVideoContext();
+        generatedScripts = buildViralScripts(currentContext);
+        updateLiveContent(true);
+        showToast(`Remixed: "${currentContext.displayTitle.slice(0, 26)}..."`);
       };
     }
 
@@ -1006,7 +1108,10 @@
       btn.onclick = () => {
         const idx = parseInt(btn.getAttribute('data-idx'), 10);
         activeStyleIndex = idx;
-        renderSidebar();
+        sidebar.querySelectorAll('.sm-angle-tab').forEach((b, i) => {
+          b.classList.toggle('active', i === idx);
+        });
+        updateLiveContent(false);
       };
     });
 
@@ -1022,7 +1127,7 @@
     }
 
     // Copy Body Only
-    const copyBodyBtn = sidebar.querySelector('#smCopyBodyBtn');
+    const copyBodyBtn = sidebar.querySelector('#smBodyText')?.parentElement?.querySelector('#smCopyBodyBtn');
     if (copyBodyBtn) {
       copyBodyBtn.onclick = () => {
         const text = sidebar.querySelector('#smBodyText')?.textContent || '';
@@ -1033,7 +1138,7 @@
     }
 
     // Copy CTA Only
-    const copyCtaBtn = sidebar.querySelector('#smCopyCtaBtn');
+    const copyCtaBtn = sidebar.querySelector('#smCtaText')?.parentElement?.querySelector('#smCopyCtaBtn');
     if (copyCtaBtn) {
       copyCtaBtn.onclick = () => {
         const text = sidebar.querySelector('#smCtaText')?.textContent || '';
@@ -1076,7 +1181,10 @@
     if (tryAnotherBtn) {
       tryAnotherBtn.onclick = () => {
         activeStyleIndex = (activeStyleIndex + 1) % generatedScripts.length;
-        renderSidebar();
+        sidebar.querySelectorAll('.sm-angle-tab').forEach((b, i) => {
+          b.classList.toggle('active', i === activeStyleIndex);
+        });
+        updateLiveContent(false);
         showToast(`Angle: ${generatedScripts[activeStyleIndex].title}`);
       };
     }
@@ -1184,7 +1292,9 @@
   function toggleSidebar() {
     isOpen = !isOpen;
     if (isOpen) {
-      refreshVideoAndScripts();
+      currentContext = detectVideoContext();
+      generatedScripts = buildViralScripts(currentContext);
+      renderSidebar();
       sidebar.classList.add('open');
       triggerTab.style.display = 'none';
     } else {
@@ -1197,20 +1307,36 @@
   triggerTab.onclick = toggleSidebar;
   shadow.appendChild(sidebar);
 
-  // Auto-detect when user scrolls or navigates to a new Short/Reel
-  let lastUrl = window.location.href;
-  setInterval(() => {
-    if (window.location.href !== lastUrl) {
-      lastUrl = window.location.href;
-      if (isOpen) {
-        refreshVideoAndScripts();
-        showToast(`Remixed: "${currentContext.displayTitle.slice(0, 26)}..."`);
-      }
-    }
-  }, 1000);
+  // =========================================================================
+  // AUTOMATED REAL-TIME HANDS-FREE VIDEO DETECTION & LIVE RE-SYNC ENGINE
+  // =========================================================================
 
-  // Global Keyboard Shortcuts
+  // 1. Capture-phase video play listener (Fires the microsecond a new video starts playing)
+  document.addEventListener('play', () => {
+    setTimeout(checkAndAutoUpdate, 150);
+  }, true);
+
+  // 2. YouTube custom navigation events
+  window.addEventListener('yt-navigate-finish', () => {
+    setTimeout(checkAndAutoUpdate, 200);
+  });
+  window.addEventListener('yt-page-data-updated', () => {
+    setTimeout(checkAndAutoUpdate, 200);
+  });
+
+  // 3. Mouse wheel scroll listener (passive)
+  let wheelTimer = null;
+  window.addEventListener('wheel', () => {
+    if (wheelTimer) clearTimeout(wheelTimer);
+    wheelTimer = setTimeout(checkAndAutoUpdate, 250);
+  }, { passive: true });
+
+  // 4. Keyboard arrow navigation listener (Down/Up/PageDown/PageUp/J/K)
   window.addEventListener('keydown', (e) => {
+    if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'j', 'k', 'J', 'K'].includes(e.key)) {
+      setTimeout(checkAndAutoUpdate, 300);
+    }
+    // Global Shortcuts
     if ((e.altKey && (e.key === 's' || e.key === 'S')) || (e.ctrlKey && e.shiftKey && (e.key === 's' || e.key === 'S'))) {
       e.preventDefault();
       toggleSidebar();
@@ -1224,6 +1350,13 @@
     }
   });
 
+  // 5. Continuous high-frequency heartbeat poller (every 300ms while sidebar is open)
+  setInterval(() => {
+    if (isOpen) {
+      checkAndAutoUpdate();
+    }
+  }, 300);
+
   // Message listener from background script
   if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -1234,5 +1367,5 @@
     });
   }
 
-  console.log('[StitchMatrix] Zero-Dropdown Viral Studio v3.3 loaded.');
+  console.log('[StitchMatrix] Hands-Free Real-Time Video Tracking v3.4 loaded.');
 })();
