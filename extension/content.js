@@ -1,9 +1,11 @@
 /**
- * StitchMatrix — Qubora Emerald Obsidian Studio v3.7.0
+ * StitchMatrix — Qubora Emerald Obsidian Studio v3.8.0
  * Chrome Extension Manifest V3 In-DOM Sidebar Engine
  * Features:
+ * - Viral Video Snipper & Hook Clipper (Snip 5s/10s hooks directly from playing videos for faceless shorts)
  * - 1-Click AI Voiceover Studio (Continuous MP3 Narration, zero camera/mic required)
- * - Built-in Webcam Teleprompter Studio & In-Browser Video Recorder
+ * - Dual-Playback Synced Preview (Play snipped viral video + AI Voiceover in sync)
+ * - Built-in Webcam Teleprompter Studio & In-Browser Video Recorder (Face Mode)
  * - Send-to-Phone Companion Link & High-Resolution QR Code
  * - Multi-Platform Real-Time Active Video Auto-Detection (YouTube Shorts, TikTok, Instagram Reels)
  * - Deep Obsidian Void (#060806) & Glowing Emerald Design System
@@ -407,11 +409,57 @@
     ];
   }
 
+  // Universal Active Page Video Selector (Direct DOM reference for snipping & recording)
+  function getActivePageVideo() {
+    const videos = Array.from(document.querySelectorAll('video'));
+    if (!videos.length) return null;
+
+    // 1. Video currently playing
+    const playing = videos.find(v => !v.paused && v.currentTime > 0);
+    if (playing) return playing;
+
+    // 2. YouTube main video player
+    const ytMain = document.querySelector('video.html5-main-video');
+    if (ytMain) return ytMain;
+
+    // 3. YouTube Shorts active video inside current reel
+    const activeReel = document.querySelector('ytd-reel-video-renderer[is-active]');
+    if (activeReel) {
+      const v = activeReel.querySelector('video');
+      if (v) return v;
+    }
+
+    // 4. TikTok active video
+    const ttActive = document.querySelector('[data-e2e="recommend-list-item-container"] video') ||
+                     document.querySelector('div[class*="DivVideoFeedList"] video') ||
+                     document.querySelector('video[src]');
+    if (ttActive) return ttActive;
+
+    // 5. Largest visible video in viewport
+    const visible = videos.find(v => {
+      const r = v.getBoundingClientRect();
+      return r.height > 100 && r.width > 100 && r.top < window.innerHeight && r.bottom > 0;
+    });
+    if (visible) return visible;
+
+    return videos[0];
+  }
+
   // State
   let activeStyleIndex = 0;
   let isOpen = false;
   let currentContext = detectVideoContext();
   let generatedScripts = buildViralScripts(currentContext);
+
+  // Creator Studio State (Viral Clip Snip & Webcam)
+  let studioRecordMode = 'snip'; // 'snip' (Faceless) | 'webcam' (Face)
+  let snipRecorder = null;
+  let snipChunks = [];
+  let isSnipping = false;
+  let snipSeconds = 0;
+  let snipTimer = null;
+  let snippedBlobUrl = null;
+  let isSyncPlaying = false;
 
   // Webcam Studio State
   let mediaStream = null;
@@ -422,7 +470,6 @@
   let recordingTimer = null;
   let teleprompterScrollInterval = null;
   let recordedBlobUrl = null;
-  let currentWebcamModal = null;
 
   // Faceless AI Voiceover Studio State
   let currentVoiceBlob = null;
@@ -1056,7 +1103,44 @@
       gap: 7px;
     }
 
-    /* WEBCAM STUDIO VIEW */
+    /* CREATOR STUDIO VIEW (VIRAL CLIP SNIP & WEBCAM) */
+    .sm-rec-mode-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 10px 16px 4px 16px;
+      background: #080C09;
+      border-bottom: 1px solid #141E17;
+    }
+
+    .sm-rec-mode-tab {
+      background: #0C120E;
+      border: 1px solid #16241A;
+      color: #9CA3AF;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 11.5px;
+      font-weight: 650;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .sm-rec-mode-tab:hover {
+      color: #FFFFFF;
+      border-color: #34D399;
+    }
+
+    .sm-rec-mode-tab.active {
+      background: rgba(16, 185, 129, 0.16);
+      border-color: #10B981;
+      color: #34D399;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+    }
+
     .sm-webcam-body {
       flex: 1;
       display: flex;
@@ -1069,7 +1153,7 @@
     .sm-camera-box {
       position: relative;
       width: 100%;
-      height: 230px;
+      height: 220px;
       background: #000000;
       border-radius: 12px;
       overflow: hidden;
@@ -1085,11 +1169,61 @@
       object-fit: cover;
     }
 
+    .sm-snip-helper-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(16, 185, 129, 0.08) 0%, rgba(0, 0, 0, 0.88) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 16px;
+      gap: 8px;
+      z-index: 5;
+    }
+
+    .sm-snip-helper-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34D399;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .sm-snip-helper-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #FFFFFF;
+      max-width: 280px;
+      line-height: 1.4;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .sm-snip-helper-sub {
+      font-size: 11px;
+      color: #9CA3AF;
+      max-width: 260px;
+      line-height: 1.4;
+    }
+
     .sm-rec-indicator {
       position: absolute;
       top: 10px;
       left: 10px;
-      background: rgba(220, 38, 38, 0.85);
+      background: rgba(220, 38, 38, 0.88);
       color: #FFFFFF;
       font-size: 10px;
       font-weight: 700;
@@ -1098,6 +1232,7 @@
       display: none;
       align-items: center;
       gap: 5px;
+      z-index: 10;
     }
 
     .sm-rec-indicator.active {
@@ -1108,13 +1243,15 @@
       position: absolute;
       top: 10px;
       right: 10px;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.75);
       color: #34D399;
       font-size: 11px;
       font-weight: 700;
       padding: 3px 8px;
       border-radius: 6px;
       font-variant-numeric: tabular-nums;
+      z-index: 10;
+      border: 1px solid rgba(16, 185, 129, 0.3);
     }
 
     /* Scrolling Teleprompter Inside Camera Studio */
@@ -1122,11 +1259,11 @@
       background: #0A0E0B;
       border: 1px solid #16221A;
       border-radius: 10px;
-      padding: 14px;
-      max-height: 150px;
+      padding: 12px 14px;
+      max-height: 120px;
       overflow-y: auto;
-      font-size: 13.5px;
-      line-height: 1.6;
+      font-size: 12.5px;
+      line-height: 1.55;
       color: #F8FAFC;
       text-align: center;
       font-weight: 500;
@@ -1136,6 +1273,189 @@
       width: 3px;
     }
 
+    /* Snip Controls Panel */
+    .sm-snip-controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .sm-snip-presets-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+    }
+
+    .sm-btn-snip-preset {
+      background: linear-gradient(135deg, #059669 0%, #10B981 100%);
+      color: #040805;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 4px;
+      font-size: 11.5px;
+      font-weight: 750;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+    }
+
+    .sm-btn-snip-preset:hover {
+      background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+      transform: translateY(-1px);
+    }
+
+    .sm-btn-snip-custom {
+      background: #0C120E;
+      color: #E2E8F0;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      border-radius: 8px;
+      padding: 10px 4px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .sm-btn-snip-custom:hover {
+      background: #141E17;
+      color: #FFFFFF;
+      border-color: #34D399;
+    }
+
+    .sm-snip-audio-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 0;
+    }
+
+    .sm-checkbox-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #9CA3AF;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .sm-checkbox-label input[type="checkbox"] {
+      accent-color: #10B981;
+      cursor: pointer;
+      width: 13px;
+      height: 13px;
+    }
+
+    /* Snip Review Panel (After Snip Capture) */
+    .sm-snip-review-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .sm-btn-review-syncplay {
+      width: 100%;
+      background: linear-gradient(135deg, #059669 0%, #10B981 50%, #34D399 100%);
+      color: #040805;
+      border: none;
+      border-radius: 9px;
+      padding: 11px 14px;
+      font-size: 13px;
+      font-weight: 750;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      box-shadow: 0 4px 18px rgba(16, 185, 129, 0.45);
+      transition: all 0.2s ease;
+    }
+
+    .sm-btn-review-syncplay:hover {
+      background: linear-gradient(135deg, #10B981 0%, #34D399 50%, #6EE7B7 100%);
+      transform: translateY(-1px);
+    }
+
+    .sm-snip-download-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .sm-btn-download-clip {
+      background: #0C110E;
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #34D399;
+      border-radius: 8px;
+      padding: 10px 8px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .sm-btn-download-clip:hover {
+      background: #141E17;
+      color: #FFFFFF;
+      border-color: #34D399;
+    }
+
+    .sm-btn-download-voice-fast {
+      background: #0C110E;
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #8CE4B0;
+      border-radius: 8px;
+      padding: 10px 8px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .sm-btn-download-voice-fast:hover {
+      background: #141E17;
+      color: #FFFFFF;
+      border-color: #34D399;
+    }
+
+    .sm-btn-resnip {
+      background: transparent;
+      border: 1px solid #1A261E;
+      color: #71717A;
+      border-radius: 8px;
+      padding: 7px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .sm-btn-resnip:hover {
+      color: #E2E8F0;
+      border-color: #34D399;
+    }
+
+    /* Webcam Controls */
     .sm-webcam-controls {
       display: flex;
       flex-direction: column;
@@ -1849,12 +2169,16 @@
           <span>🔊 Generate AI Voiceover (.mp3)</span>
         </button>
 
-        <!-- Option 2: Record Directly on Webcam -->
-        <button class="sm-btn-record" id="smOpenRecordBtn" title="Open webcam teleprompter and record video directly in Chrome">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-            <circle cx="12" cy="12" r="8"></circle>
+        <!-- Option 2: Record / Snip Viral Video Clip -->
+        <button class="sm-btn-record" id="smOpenRecordBtn" title="Snip viral moments from video (Faceless) or record with webcam">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="6" cy="6" r="3"></circle>
+            <circle cx="6" cy="18" r="3"></circle>
+            <line x1="20" y1="4" x2="8.12" y2="15.88"></line>
+            <line x1="14.47" y1="14.48" x2="20" y2="20"></line>
+            <line x1="8.12" y1="8.12" x2="12" y2="12"></line>
           </svg>
-          <span>📹 Record Short with Webcam</span>
+          <span>✂️ Snip Viral Clip / Record Video</span>
         </button>
 
         <!-- Option 2 & 3: Send to Phone OR Copy Script -->
@@ -1877,25 +2201,50 @@
         </div>
       </footer>
 
-      <!-- WEBCAM STUDIO MODAL -->
+      <!-- CREATOR STUDIO MODAL: VIRAL CLIP SNIPPER & WEBCAM TELEPROMPTER -->
       <div class="sm-modal-overlay" id="smWebcamModal">
         <div class="sm-modal-header">
           <div class="sm-modal-title">
-            <span class="sm-pulse-dot"></span>
-            <span>Webcam Teleprompter Studio</span>
+            <span class="sm-pulse-dot" style="background:#10B981;"></span>
+            <span id="smRecordModalTitle">Viral Clip Snip & Recording Studio</span>
           </div>
           <button class="sm-close-btn" id="smCloseWebcamBtn">✕</button>
         </div>
 
+        <!-- Mode Switcher Tabs: Snip Viral Video (Faceless) vs Webcam (Face) -->
+        <div class="sm-rec-mode-tabs">
+          <button class="sm-rec-mode-tab active" id="smTabSnipVideo" title="Snip trending video playing on screen (Faceless Mode)">
+            <span>✂️ Snip Viral Video (Faceless)</span>
+          </button>
+          <button class="sm-rec-mode-tab" id="smTabWebcam" title="Record with your webcam and teleprompter (Face Mode)">
+            <span>📹 Webcam Teleprompter</span>
+          </button>
+        </div>
+
         <div class="sm-webcam-body">
-          <div class="sm-camera-box">
-            <video id="smWebcamFeed" autoplay muted playsinline></video>
-            <video id="smRecordedPlayback" controls style="display: none;"></video>
+          <div class="sm-camera-box" id="smCameraBox">
+            <video id="smWebcamFeed" autoplay muted playsinline style="display:none;"></video>
+            <video id="smRecordedPlayback" controls playsinline style="display: none;"></video>
+
+            <!-- Snip Helper Overlay (Shown in Snip Mode before recording) -->
+            <div class="sm-snip-helper-overlay" id="smSnipHelperOverlay">
+              <div class="sm-snip-helper-badge">
+                <span class="sm-pulse-dot"></span>
+                <span>Active Video Source</span>
+              </div>
+              <div class="sm-snip-helper-title" id="smSnipSourceTitle">
+                "${currentContext.displayTitle}"
+              </div>
+              <div class="sm-snip-helper-sub">
+                Click a snip button below to capture the viral moment directly from this player.
+              </div>
+            </div>
+
             <div class="sm-rec-indicator" id="smRecBadge">
               <span class="sm-pulse-dot" style="background:#FFFFFF;"></span>
-              <span>RECORDING</span>
+              <span id="smRecBadgeText">RECORDING</span>
             </div>
-            <div class="sm-rec-timer" id="smRecTimer">00:00 / 00:30</div>
+            <div class="sm-rec-timer" id="smRecTimer">00:00 / 00:05</div>
           </div>
 
           <div class="sm-teleprompter-glass" id="smTeleprompterText">
@@ -1909,7 +2258,51 @@
             <span id="smCamCta">${curScript.cta}</span>
           </div>
 
-          <div class="sm-webcam-controls">
+          <!-- Controls Panel 1: Snip Controls (Default in Faceless Mode) -->
+          <div class="sm-snip-controls-panel" id="smSnipControlsPanel">
+            <div class="sm-snip-presets-row">
+              <button class="sm-btn-snip-preset" id="smSnip5sBtn" title="Snip the first 5s of the viral hook">
+                <span>⚡ Snip 5s Hook</span>
+              </button>
+              <button class="sm-btn-snip-preset" id="smSnip10sBtn" title="Snip a 10s viral clip">
+                <span>⚡ Snip 10s Clip</span>
+              </button>
+              <button class="sm-btn-snip-custom" id="smSnipCustomBtn" title="Start and stop manual snip">
+                <span id="smSnipCustomText">● Custom Snip</span>
+              </button>
+            </div>
+
+            <div class="sm-snip-audio-row">
+              <label class="sm-checkbox-label">
+                <input type="checkbox" id="smMuteOriginalAudio" checked>
+                <span>Mute original audio (Ready for AI Voiceover)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Controls Panel 2: Review / Download Panel (Shown after a clip is snipped) -->
+          <div class="sm-snip-review-panel" id="smSnipReviewPanel" style="display: none;">
+            <button class="sm-btn-review-syncplay" id="smSyncPlayBtn" title="Play snipped video with AI Voiceover simultaneously">
+              <span id="smSyncPlayIcon">▶</span>
+              <span id="smSyncPlayText">Play with AI Voiceover</span>
+            </button>
+            
+            <div class="sm-snip-download-grid">
+              <button class="sm-btn-download-clip" id="smDownloadClipBtn" title="Download pure HD video clip (.webm)">
+                <span>💾 Video Clip (.webm)</span>
+              </button>
+              <button class="sm-btn-download-voice-fast" id="smDownloadVoiceFastBtn" title="Download AI Voiceover narration (.mp3)">
+                <span>🔊 Voiceover (.mp3)</span>
+              </button>
+            </div>
+
+            <button class="sm-btn-resnip" id="smReSnipBtn" title="Discard and snip another clip">
+              <span>🔄 Snip Another Clip</span>
+            </button>
+          </div>
+
+          <!-- Controls Panel 3: Webcam Controls (Shown only in Webcam tab) -->
+          <div class="sm-webcam-controls" id="smWebcamControlsPanel" style="display: none;">
             <button class="sm-btn-start-rec" id="smStartRecBtn">
               <span>Start 30s Recording</span>
             </button>
@@ -1917,7 +2310,7 @@
               <span>⏹ Stop & Review</span>
             </button>
             <button class="sm-btn-download-video" id="smDownloadVideoBtn">
-              <span>💾 Download Ready Video File</span>
+              <span>💾 Download Webcam Video File</span>
             </button>
           </div>
         </div>
@@ -2084,49 +2477,381 @@
       copyFullBtn.onclick = () => executeCopyFullScript();
     }
 
-    // WEBCAM RECORDING LOGIC
+    // CREATOR STUDIO (VIRAL CLIP SNIP & WEBCAM) LOGIC
     const openRecordBtn = sidebar.querySelector('#smOpenRecordBtn');
     const webcamModal = sidebar.querySelector('#smWebcamModal');
     const closeWebcamBtn = sidebar.querySelector('#smCloseWebcamBtn');
+    const tabSnipVideo = sidebar.querySelector('#smTabSnipVideo');
+    const tabWebcam = sidebar.querySelector('#smTabWebcam');
     const videoFeed = sidebar.querySelector('#smWebcamFeed');
     const recordedPlayback = sidebar.querySelector('#smRecordedPlayback');
-    const startRecBtn = sidebar.querySelector('#smStartRecBtn');
-    const stopRecBtn = sidebar.querySelector('#smStopRecBtn');
-    const downloadVideoBtn = sidebar.querySelector('#smDownloadVideoBtn');
+    const snipHelperOverlay = sidebar.querySelector('#smSnipHelperOverlay');
+    const snipSourceTitle = sidebar.querySelector('#smSnipSourceTitle');
     const recBadge = sidebar.querySelector('#smRecBadge');
+    const recBadgeText = sidebar.querySelector('#smRecBadgeText');
     const recTimer = sidebar.querySelector('#smRecTimer');
     const prompterText = sidebar.querySelector('#smTeleprompterText');
 
+    const snipControlsPanel = sidebar.querySelector('#smSnipControlsPanel');
+    const snip5sBtn = sidebar.querySelector('#smSnip5sBtn');
+    const snip10sBtn = sidebar.querySelector('#smSnip10sBtn');
+    const snipCustomBtn = sidebar.querySelector('#smSnipCustomBtn');
+    const snipCustomText = sidebar.querySelector('#smSnipCustomText');
+    const muteOriginalAudio = sidebar.querySelector('#smMuteOriginalAudio');
+
+    const snipReviewPanel = sidebar.querySelector('#smSnipReviewPanel');
+    const syncPlayBtn = sidebar.querySelector('#smSyncPlayBtn');
+    const syncPlayIcon = sidebar.querySelector('#smSyncPlayIcon');
+    const syncPlayText = sidebar.querySelector('#smSyncPlayText');
+    const downloadClipBtn = sidebar.querySelector('#smDownloadClipBtn');
+    const downloadVoiceFastBtn = sidebar.querySelector('#smDownloadVoiceFastBtn');
+    const reSnipBtn = sidebar.querySelector('#smReSnipBtn');
+
+    const webcamControlsPanel = sidebar.querySelector('#smWebcamControlsPanel');
+    const startRecBtn = sidebar.querySelector('#smStartRecBtn');
+    const stopRecBtn = sidebar.querySelector('#smStopRecBtn');
+    const downloadVideoBtn = sidebar.querySelector('#smDownloadVideoBtn');
+
+    function stopSyncPlayback() {
+      if (isSyncPlaying) {
+        if (recordedPlayback) recordedPlayback.pause();
+        if (ttsAudio) ttsAudio.pause();
+        isSyncPlaying = false;
+        if (syncPlayIcon) syncPlayIcon.textContent = '▶';
+        if (syncPlayText) syncPlayText.textContent = 'Play with AI Voiceover';
+      }
+    }
+
+    function switchStudioMode(mode) {
+      studioRecordMode = mode;
+      stopSyncPlayback();
+      stopSnip();
+      cleanupWebcamStreamOnly();
+
+      if (mode === 'snip') {
+        if (tabSnipVideo) tabSnipVideo.classList.add('active');
+        if (tabWebcam) tabWebcam.classList.remove('active');
+        if (videoFeed) videoFeed.style.display = 'none';
+
+        if (snippedBlobUrl) {
+          if (snipHelperOverlay) snipHelperOverlay.style.display = 'none';
+          if (recordedPlayback) {
+            recordedPlayback.src = snippedBlobUrl;
+            recordedPlayback.style.display = 'block';
+          }
+          if (snipControlsPanel) snipControlsPanel.style.display = 'none';
+          if (snipReviewPanel) snipReviewPanel.style.display = 'flex';
+        } else {
+          if (recordedPlayback) recordedPlayback.style.display = 'none';
+          if (snipHelperOverlay) snipHelperOverlay.style.display = 'flex';
+          if (snipControlsPanel) snipControlsPanel.style.display = 'flex';
+          if (snipReviewPanel) snipReviewPanel.style.display = 'none';
+        }
+        if (webcamControlsPanel) webcamControlsPanel.style.display = 'none';
+        if (recTimer) recTimer.textContent = '00:00 / 00:05';
+      } else {
+        // Webcam Mode
+        if (tabWebcam) tabWebcam.classList.add('active');
+        if (tabSnipVideo) tabSnipVideo.classList.remove('active');
+        if (snipHelperOverlay) snipHelperOverlay.style.display = 'none';
+        if (snipControlsPanel) snipControlsPanel.style.display = 'none';
+        if (snipReviewPanel) snipReviewPanel.style.display = 'none';
+        if (webcamControlsPanel) webcamControlsPanel.style.display = 'flex';
+
+        if (recordedBlobUrl) {
+          if (videoFeed) videoFeed.style.display = 'none';
+          if (recordedPlayback) {
+            recordedPlayback.src = recordedBlobUrl;
+            recordedPlayback.style.display = 'block';
+          }
+          if (startRecBtn) startRecBtn.style.display = 'none';
+          if (stopRecBtn) stopRecBtn.style.display = 'none';
+          if (downloadVideoBtn) downloadVideoBtn.style.display = 'flex';
+        } else {
+          initWebcamStream();
+        }
+        if (recTimer) recTimer.textContent = '00:00 / 00:30';
+      }
+    }
+
+    if (tabSnipVideo) tabSnipVideo.onclick = () => switchStudioMode('snip');
+    if (tabWebcam) tabWebcam.onclick = () => switchStudioMode('webcam');
+
     if (openRecordBtn && webcamModal) {
-      openRecordBtn.onclick = async () => {
+      openRecordBtn.onclick = () => {
         const curScript = generatedScripts[activeStyleIndex] || generatedScripts[0];
         const fullHook = `${curScript.hookLead}${curScript.hookHighlight}${curScript.hookTail}`;
-        sidebar.querySelector('#smCamHook').textContent = fullHook;
-        sidebar.querySelector('#smCamBody').textContent = curScript.body;
-        sidebar.querySelector('#smCamCta').textContent = curScript.cta;
+        const camHookEl = sidebar.querySelector('#smCamHook');
+        const camBodyEl = sidebar.querySelector('#smCamBody');
+        const camCtaEl = sidebar.querySelector('#smCamCta');
+        if (camHookEl) camHookEl.textContent = fullHook;
+        if (camBodyEl) camBodyEl.textContent = curScript.body;
+        if (camCtaEl) camCtaEl.textContent = curScript.cta;
+
+        if (snipSourceTitle) snipSourceTitle.textContent = `"${currentContext.displayTitle}"`;
 
         webcamModal.classList.add('active');
-        recordedPlayback.style.display = 'none';
-        videoFeed.style.display = 'block';
-        startRecBtn.style.display = 'flex';
-        stopRecBtn.style.display = 'none';
-        downloadVideoBtn.style.display = 'none';
-        recBadge.classList.remove('active');
-        recTimer.textContent = '00:00 / 00:30';
+        switchStudioMode('snip'); // Default to Faceless Viral Clip mode
+      };
+    }
 
-        try {
-          mediaStream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: 'user' },
-            audio: true
+    function startSnip(durationLimit = null) {
+      const pageVideo = getActivePageVideo();
+      if (!pageVideo) {
+        showToast('⚠️ No playing video detected. Please play the video on the page first.');
+        return;
+      }
+
+      try {
+        let stream = null;
+        if (typeof pageVideo.captureStream === 'function') {
+          stream = pageVideo.captureStream();
+        } else if (typeof pageVideo.mozCaptureStream === 'function') {
+          stream = pageVideo.mozCaptureStream();
+        }
+
+        if (!stream || stream.getVideoTracks().length === 0) {
+          showToast('⚠️ Could not capture stream from video element.');
+          return;
+        }
+
+        const muteOriginal = muteOriginalAudio?.checked;
+        if (muteOriginal) {
+          stream.getAudioTracks().forEach(t => {
+            t.stop();
+            stream.removeTrack(t);
           });
-          videoFeed.srcObject = mediaStream;
-        } catch (err) {
-          showToast('Please allow camera & microphone permissions');
+        }
+
+        snipChunks = [];
+        let mimeType = 'video/webm;codecs=vp9,opus';
+        if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
+
+        snipRecorder = new MediaRecorder(stream, { mimeType });
+
+        snipRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) snipChunks.push(e.data);
+        };
+
+        snipRecorder.onstop = () => {
+          const blob = new Blob(snipChunks, { type: 'video/webm' });
+          if (snippedBlobUrl) URL.revokeObjectURL(snippedBlobUrl);
+          snippedBlobUrl = URL.createObjectURL(blob);
+
+          if (snipHelperOverlay) snipHelperOverlay.style.display = 'none';
+          if (videoFeed) videoFeed.style.display = 'none';
+          if (recordedPlayback) {
+            recordedPlayback.src = snippedBlobUrl;
+            recordedPlayback.style.display = 'block';
+            recordedPlayback.loop = true;
+            recordedPlayback.play().catch(e => console.log(e));
+          }
+
+          if (recBadge) recBadge.classList.remove('active');
+          if (snipControlsPanel) snipControlsPanel.style.display = 'none';
+          if (snipReviewPanel) snipReviewPanel.style.display = 'flex';
+          showToast('✂️ Viral Clip Captured!');
+        };
+
+        if (pageVideo.paused) {
+          pageVideo.play().catch(e => console.log('Autoplay request:', e));
+        }
+
+        snipRecorder.start();
+        isSnipping = true;
+        snipSeconds = 0;
+
+        if (recBadge) {
+          recBadge.classList.add('active');
+          if (recBadgeText) recBadgeText.textContent = 'SNIPPING VIRAL HOOK';
+        }
+
+        if (snipCustomText) snipCustomText.textContent = '⏹ Stop Snip';
+
+        if (snipTimer) clearInterval(snipTimer);
+        const targetStr = durationLimit ? `00:${String(durationLimit).padStart(2, '0')}` : '∞';
+        if (recTimer) recTimer.textContent = `00:00 / ${targetStr}`;
+
+        snipTimer = setInterval(() => {
+          snipSeconds++;
+          const secFormatted = String(snipSeconds).padStart(2, '0');
+          if (recTimer) recTimer.textContent = `00:${secFormatted} / ${targetStr}`;
+
+          if (durationLimit && snipSeconds >= durationLimit) {
+            stopSnip();
+          }
+        }, 1000);
+
+      } catch (err) {
+        console.error('[StitchMatrix] Snip error:', err);
+        showToast('Snip error: ' + err.message);
+      }
+    }
+
+    function stopSnip() {
+      if (snipTimer) clearInterval(snipTimer);
+      if (snipRecorder && snipRecorder.state === 'recording') {
+        snipRecorder.stop();
+      }
+      isSnipping = false;
+      if (snipCustomText) snipCustomText.textContent = '● Custom Snip';
+    }
+
+    if (snip5sBtn) snip5sBtn.onclick = () => startSnip(5);
+    if (snip10sBtn) snip10sBtn.onclick = () => startSnip(10);
+    if (snipCustomBtn) {
+      snipCustomBtn.onclick = () => {
+        if (isSnipping) {
+          stopSnip();
+        } else {
+          startSnip(null);
         }
       };
     }
 
-    function cleanupWebcam() {
+    async function toggleSyncPlayback() {
+      if (!snippedBlobUrl) return;
+
+      if (isSyncPlaying) {
+        stopSyncPlayback();
+        return;
+      }
+
+      // If no AI voiceover generated yet, synthesize it automatically!
+      if (!currentVoiceBlobUrl) {
+        showToast('⚡ Generating AI Voiceover for your clip...');
+        if (syncPlayText) syncPlayText.textContent = '⏳ Synthesizing Voice...';
+        try {
+          const rawScript = getActiveScriptForVoice();
+          const narrationText = prepareTtsText(rawScript);
+          const blob = await fetchAudioTts(narrationText);
+          currentVoiceBlob = blob;
+          currentVoiceBlobUrl = URL.createObjectURL(blob);
+          if (ttsAudio) {
+            ttsAudio.src = currentVoiceBlobUrl;
+            ttsAudio.load();
+          }
+        } catch (err) {
+          showToast('Voiceover failed: ' + err.message);
+          if (syncPlayText) syncPlayText.textContent = 'Play with AI Voiceover';
+          return;
+        }
+      }
+
+      if (recordedPlayback) {
+        recordedPlayback.currentTime = 0;
+        recordedPlayback.muted = true; // Mute video so AI voiceover takes center stage
+        recordedPlayback.play();
+      }
+
+      if (ttsAudio) {
+        ttsAudio.currentTime = 0;
+        ttsAudio.play().catch(e => console.log('Audio play error:', e));
+      }
+
+      isSyncPlaying = true;
+      if (syncPlayIcon) syncPlayIcon.textContent = '⏸';
+      if (syncPlayText) syncPlayText.textContent = 'Pause Dual Preview';
+
+      if (recordedPlayback) {
+        recordedPlayback.onended = () => {
+          if (isSyncPlaying) {
+            recordedPlayback.currentTime = 0;
+            recordedPlayback.play();
+          }
+        };
+      }
+
+      if (ttsAudio) {
+        ttsAudio.onended = () => {
+          isSyncPlaying = false;
+          if (syncPlayIcon) syncPlayIcon.textContent = '▶';
+          if (syncPlayText) syncPlayText.textContent = 'Replay with AI Voiceover';
+        };
+      }
+    }
+
+    if (syncPlayBtn) syncPlayBtn.onclick = toggleSyncPlayback;
+
+    if (downloadClipBtn) {
+      downloadClipBtn.onclick = () => {
+        if (!snippedBlobUrl) return;
+        const a = document.createElement('a');
+        a.href = snippedBlobUrl;
+        const cleanTitle = (currentContext.displayTitle || 'viral-hook')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .slice(0, 30);
+        a.download = `stitchmatrix-clip-${cleanTitle || 'hook'}-${Date.now()}.webm`;
+        a.click();
+        showToast('💾 Video clip downloaded! Ready for Shorts / CapCut.');
+      };
+    }
+
+    if (downloadVoiceFastBtn) {
+      downloadVoiceFastBtn.onclick = async () => {
+        if (!currentVoiceBlobUrl) {
+          showToast('⚡ Synthesizing AI Voiceover for download...');
+          try {
+            const rawScript = getActiveScriptForVoice();
+            const narrationText = prepareTtsText(rawScript);
+            const blob = await fetchAudioTts(narrationText);
+            currentVoiceBlob = blob;
+            currentVoiceBlobUrl = URL.createObjectURL(blob);
+            if (ttsAudio) ttsAudio.src = currentVoiceBlobUrl;
+          } catch (err) {
+            showToast('Voiceover failed: ' + err.message);
+            return;
+          }
+        }
+        const a = document.createElement('a');
+        a.href = currentVoiceBlobUrl;
+        const cleanTitle = (currentContext.displayTitle || 'viral-script')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .slice(0, 30);
+        a.download = `stitchmatrix-voiceover-${cleanTitle || 'narration'}-${Date.now()}.mp3`;
+        a.click();
+        showToast('💾 Voiceover MP3 downloaded!');
+      };
+    }
+
+    if (reSnipBtn) {
+      reSnipBtn.onclick = () => {
+        stopSyncPlayback();
+        if (recordedPlayback) {
+          recordedPlayback.pause();
+          recordedPlayback.style.display = 'none';
+        }
+        if (snipHelperOverlay) snipHelperOverlay.style.display = 'flex';
+        if (snipControlsPanel) snipControlsPanel.style.display = 'flex';
+        if (snipReviewPanel) snipReviewPanel.style.display = 'none';
+        if (recTimer) recTimer.textContent = '00:00 / 00:05';
+      };
+    }
+
+    // WEBCAM STREAM & RECORDING LOGIC
+    async function initWebcamStream() {
+      if (recordedPlayback) recordedPlayback.style.display = 'none';
+      if (videoFeed) videoFeed.style.display = 'block';
+      if (startRecBtn) startRecBtn.style.display = 'flex';
+      if (stopRecBtn) stopRecBtn.style.display = 'none';
+      if (downloadVideoBtn) downloadVideoBtn.style.display = 'none';
+      if (recBadge) recBadge.classList.remove('active');
+      if (recTimer) recTimer.textContent = '00:00 / 00:30';
+
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user' },
+          audio: true
+        });
+        if (videoFeed) videoFeed.srcObject = mediaStream;
+      } catch (err) {
+        showToast('Please allow camera & microphone permissions');
+      }
+    }
+
+    function cleanupWebcamStreamOnly() {
       if (recordingTimer) clearInterval(recordingTimer);
       if (teleprompterScrollInterval) clearInterval(teleprompterScrollInterval);
       if (mediaRecorder && mediaRecorder.state !== 'inactive') {
@@ -2136,10 +2861,16 @@
         mediaStream.getTracks().forEach(t => t.stop());
         mediaStream = null;
       }
+    }
+
+    function cleanupAllRecording() {
+      stopSyncPlayback();
+      stopSnip();
+      cleanupWebcamStreamOnly();
       if (webcamModal) webcamModal.classList.remove('active');
     }
 
-    if (closeWebcamBtn) closeWebcamBtn.onclick = cleanupWebcam;
+    if (closeWebcamBtn) closeWebcamBtn.onclick = cleanupAllRecording;
 
     if (startRecBtn) {
       startRecBtn.onclick = () => {
@@ -2164,32 +2895,37 @@
           if (recordedBlobUrl) URL.revokeObjectURL(recordedBlobUrl);
           recordedBlobUrl = URL.createObjectURL(blob);
 
-          videoFeed.style.display = 'none';
-          recordedPlayback.src = recordedBlobUrl;
-          recordedPlayback.style.display = 'block';
-          recordedPlayback.play();
+          if (videoFeed) videoFeed.style.display = 'none';
+          if (recordedPlayback) {
+            recordedPlayback.src = recordedBlobUrl;
+            recordedPlayback.style.display = 'block';
+            recordedPlayback.play();
+          }
 
-          startRecBtn.style.display = 'none';
-          stopRecBtn.style.display = 'none';
-          downloadVideoBtn.style.display = 'flex';
+          if (startRecBtn) startRecBtn.style.display = 'none';
+          if (stopRecBtn) stopRecBtn.style.display = 'none';
+          if (downloadVideoBtn) downloadVideoBtn.style.display = 'flex';
         };
 
         mediaRecorder.start();
         isRecording = true;
         recordingSeconds = 0;
-        startRecBtn.style.display = 'none';
-        stopRecBtn.style.display = 'flex';
-        recBadge.classList.add('active');
+        if (startRecBtn) startRecBtn.style.display = 'none';
+        if (stopRecBtn) stopRecBtn.style.display = 'flex';
+        if (recBadge) {
+          recBadge.classList.add('active');
+          if (recBadgeText) recBadgeText.textContent = 'RECORDING WEBCAM';
+        }
 
-        prompterText.scrollTop = 0;
+        if (prompterText) prompterText.scrollTop = 0;
         teleprompterScrollInterval = setInterval(() => {
-          prompterText.scrollTop += 1;
+          if (prompterText) prompterText.scrollTop += 1;
         }, 120);
 
         recordingTimer = setInterval(() => {
           recordingSeconds++;
           const secFormatted = String(recordingSeconds).padStart(2, '0');
-          recTimer.textContent = `00:${secFormatted} / 00:30`;
+          if (recTimer) recTimer.textContent = `00:${secFormatted} / 00:30`;
 
           if (recordingSeconds >= 30) {
             stopRecording();
@@ -2205,7 +2941,7 @@
         mediaRecorder.stop();
       }
       isRecording = false;
-      recBadge.classList.remove('active');
+      if (recBadge) recBadge.classList.remove('active');
     }
 
     if (stopRecBtn) stopRecBtn.onclick = stopRecording;
@@ -2215,9 +2951,9 @@
         if (!recordedBlobUrl) return;
         const a = document.createElement('a');
         a.href = recordedBlobUrl;
-        a.download = `stitchmatrix-short-${Date.now()}.webm`;
+        a.download = `stitchmatrix-webcam-${Date.now()}.webm`;
         a.click();
-        showToast('Video downloaded! Ready to upload to Shorts.');
+        showToast('Webcam video downloaded!');
       };
     }
 
@@ -2516,6 +3252,22 @@
       }
       const waves = sidebar.querySelector('#smSoundwaves');
       if (waves) waves.classList.remove('playing', 'loading');
+      const playback = sidebar.querySelector('#smRecordedPlayback');
+      if (playback) {
+        playback.pause();
+      }
+      if (isSnipping) {
+        if (snipTimer) clearInterval(snipTimer);
+        if (snipRecorder && snipRecorder.state === 'recording') snipRecorder.stop();
+        isSnipping = false;
+      }
+      if (isSyncPlaying) {
+        isSyncPlaying = false;
+      }
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(t => t.stop());
+        mediaStream = null;
+      }
     }
   }
 
@@ -2614,5 +3366,5 @@
     });
   }
 
-  console.log('[StitchMatrix] Multi-Platform Real-Time Studio v3.7.0 loaded.');
+  console.log('[StitchMatrix] Multi-Platform Real-Time Studio v3.8.0 loaded.');
 })();
