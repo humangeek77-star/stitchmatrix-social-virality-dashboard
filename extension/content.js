@@ -1,5 +1,5 @@
 /**
- * StitchMatrix — Qubora Emerald Obsidian Studio v3.8.0
+ * StitchMatrix — Qubora Emerald Obsidian Studio v3.8.1
  * Chrome Extension Manifest V3 In-DOM Sidebar Engine
  * Features:
  * - Viral Video Snipper & Hook Clipper (Snip 5s/10s hooks directly from playing videos for faceless shorts)
@@ -26,6 +26,39 @@
 
   const WORKER_BASE = 'https://stitchmatrix-api.humangeek77.workers.dev';
 
+  // Helper to format large numbers to compact notation (e.g. 1.2M, 69.9K)
+  function formatCompactNumber(num) {
+    if (num === null || num === undefined || isNaN(num)) return '';
+    const n = Number(num);
+    if (n >= 1_000_000_000) {
+      return (n / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B';
+    }
+    if (n >= 1_000_000) {
+      return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+    }
+    if (n >= 1_000) {
+      return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+    }
+    return n.toLocaleString();
+  }
+
+  // Helper to clean extracted view and play metric strings
+  function cleanViewCountString(str) {
+    if (!str || typeof str !== 'string') return '';
+    let clean = str.trim();
+    clean = clean.replace(/^(views?|likes?|plays?|watching)\s*:?\s*/i, '');
+    clean = clean.replace(/\s*(views?|likes?|plays?|watching|viewers).*$/i, '').trim();
+    const match = clean.match(/([\d,.]+\s*[KMkmBb]?)/);
+    if (match) {
+      let val = match[1].replace(/\s+/g, '').toUpperCase();
+      val = val.replace(/[,.]$/, '');
+      if (val.length > 0 && /\d/.test(val)) {
+        return val;
+      }
+    }
+    return clean.slice(0, 15);
+  }
+
   // Real-time DOM Context Detector for Social Video Players
   // Universal Active Video & Context Detector for TikTok, Instagram Reels, and YouTube Shorts
   function detectVideoContext() {
@@ -33,6 +66,7 @@
     let platform = 'Social Video';
     let title = '';
     let author = '';
+    let views = '';
     let videoId = '';
 
     try {
@@ -86,13 +120,41 @@
             const descEl = container.querySelector(
               '[data-e2e="video-desc"], [data-e2e="browse-video-desc"], [class*="DivDescription"], [class*="SpanText"], [class*="desc"], h1, h2, div[data-e2e="search-card-video-caption"]'
             );
-            const authorEl = container.querySelector(
-              '[data-e2e="video-author-uniqueid"], [data-e2e="browse-username"], [data-e2e="user-title"], [data-e2e="author-uniqueId"], [class*="AuthorTitle"], [class*="author"], a[href*="/@"]'
+
+            // Extract view or play count from container
+            const viewEl = container.querySelector(
+              '[data-e2e="video-views"], strong[data-e2e="video-views"], [data-e2e="search-card-like-container"], strong[data-e2e="like-count"], [data-e2e="like-count"], div[class*="DivPlayCount"], span[class*="PlayCount"], [class*="play-count"]'
             );
-            const linkEl = container.querySelector('a[href*="/video/"]');
+            if (viewEl?.textContent?.trim()) {
+              views = cleanViewCountString(viewEl.textContent);
+            }
+
+            // Real author handle: check a[href*="/@"] explicitly first to avoid metric collisions
+            const authorLink = container.querySelector('a[href*="/@"]');
+            let handleFromHref = '';
+            if (authorLink) {
+              const href = authorLink.getAttribute('href') || '';
+              const m = href.match(/@([a-zA-Z0-9_.-]+)/);
+              if (m && m[1]) {
+                handleFromHref = '@' + m[1];
+              }
+            }
+
+            const authorEl = container.querySelector(
+              '[data-e2e="video-author-uniqueid"], [data-e2e="browse-username"], [data-e2e="user-title"], [data-e2e="author-uniqueId"], [class*="AuthorTitle"]'
+            );
 
             if (descEl?.textContent?.trim()) title = descEl.textContent.trim();
             if (authorEl?.textContent?.trim()) author = authorEl.textContent.trim();
+            if (!author && handleFromHref) author = handleFromHref;
+
+            // Disambiguation: If extracted author matches a metric like "69.9K" or "1.2M", redirect it to views
+            if (author && /^@?[\d,.]+[KMkmBb]?$/i.test(author.trim())) {
+              if (!views) views = cleanViewCountString(author);
+              author = handleFromHref || '';
+            }
+
+            const linkEl = container.querySelector('a[href*="/video/"]');
             if (linkEl?.href) {
               url = linkEl.href;
               const m = url.match(/\/video\/(\d+)/);
@@ -109,11 +171,30 @@
           if (descEl?.textContent?.trim()) title = descEl.textContent.trim();
         }
 
-        if (!author) {
+        if (!views) {
+          const viewEl = document.querySelector(
+            '[data-e2e="video-views"], strong[data-e2e="video-views"], strong[data-e2e="like-count"], [data-e2e="like-count"], [data-e2e="browse-like-count"], [class*="PlayCount"]'
+          );
+          if (viewEl?.textContent?.trim()) views = cleanViewCountString(viewEl.textContent);
+        }
+
+        if (!author || /^@?[\d,.]+[KMkmBb]?$/i.test(author.trim())) {
           const authorEl = document.querySelector(
             '[data-e2e="browse-username"], [data-e2e="video-author-uniqueid"], [data-e2e="user-title"], [data-e2e="browser-nickname"], [data-e2e="author-uniqueId"], .author-uniqueId'
           );
           if (authorEl?.textContent?.trim()) author = authorEl.textContent.trim();
+
+          const authorLink = document.querySelector('a[href*="/@"]');
+          if (authorLink && (!author || /^@?[\d,.]+[KMkmBb]?$/i.test(author.trim()))) {
+            const href = authorLink.getAttribute('href') || '';
+            const m = href.match(/@([a-zA-Z0-9_.-]+)/);
+            if (m && m[1]) author = '@' + m[1];
+          }
+        }
+
+        if (author && /^@?[\d,.]+[KMkmBb]?$/i.test(author.trim())) {
+          if (!views) views = cleanViewCountString(author);
+          author = '';
         }
 
         if (!videoId) {
@@ -183,10 +264,17 @@
             const authorEl = container.querySelector(
               'header a, span._ap3a, a[role="link"][href^="/"], a[class*="x1i10hfl"][href*="/"]'
             );
+            const viewEl = container.querySelector(
+              'a[href*="/liked_by/"] span, section span[class*="x193iq5w"], div[class*="x1lliihq"] span, span._aacl._aaco._aacw'
+            );
             const linkEl = container.querySelector('a[href*="/reel/"], a[href*="/reels/"], a[href*="/p/"]');
 
             if (captionEl?.textContent?.trim()) title = captionEl.textContent.trim();
             if (authorEl?.textContent?.trim()) author = authorEl.textContent.trim();
+            if (viewEl?.textContent?.trim()) {
+              const raw = viewEl.textContent.trim();
+              if (/\d/.test(raw)) views = cleanViewCountString(raw);
+            }
             if (linkEl?.href) {
               url = linkEl.href;
               const m = url.match(/\/(reels?|p)\/([a-zA-Z0-9_-]+)/);
@@ -201,9 +289,22 @@
           if (captionEl?.textContent?.trim()) title = captionEl.textContent.trim();
         }
 
+        if (!views) {
+          const viewEl = document.querySelector('a[href*="/liked_by/"] span, section span[class*="x193iq5w"]');
+          if (viewEl?.textContent?.trim()) {
+            const raw = viewEl.textContent.trim();
+            if (/\d/.test(raw)) views = cleanViewCountString(raw);
+          }
+        }
+
         if (!author) {
           const authorEl = document.querySelector('header a, span._ap3a, article header a');
           if (authorEl?.textContent?.trim()) author = authorEl.textContent.trim();
+        }
+
+        if (author && /^@?[\d,.]+[KMkmBb]?$/i.test(author.trim())) {
+          if (!views) views = cleanViewCountString(author);
+          author = '';
         }
 
         if (!videoId) {
@@ -226,7 +327,8 @@
       // 3. YOUTUBE SHORTS DETECTION ENGINE
       // =======================================================================
       else if (url.includes('youtube.com')) {
-        platform = 'YouTube Shorts';
+        const isShorts = url.includes('/shorts');
+        platform = isShorts ? 'YouTube Shorts' : 'YouTube';
 
         const reels = Array.from(document.querySelectorAll('ytd-reel-video-renderer'));
         let activeReel = null;
@@ -288,8 +390,16 @@
           const aEl = activeReel.querySelector(
             '#channel-name, .ytd-channel-name, #text.ytd-channel-name, [id="channel-name"], .yt-simple-endpoint.ytd-channel-name, .ytReelMetamodelViewModelHostHeaderChannelName'
           );
+          const viewEl = activeReel.querySelector(
+            '#like-button #text, ytd-like-button-renderer yt-formatted-string, #factoid-views .yt-core-attributed-string, #like-button yt-formatted-string, [aria-label*="like"] #text, yt-button-shape[aria-label*="like"] div[aria-hidden="true"]'
+          );
+
           if (tEl?.textContent?.trim()) title = tEl.textContent.trim();
           if (aEl?.textContent?.trim()) author = aEl.textContent.trim();
+          if (viewEl?.textContent?.trim()) {
+            const raw = viewEl.textContent.trim();
+            if (/\d/.test(raw)) views = cleanViewCountString(raw);
+          }
         }
 
         // 3e. Document Title Source-of-Truth Validation
@@ -303,20 +413,42 @@
 
         if (!title) {
           const headerTitle = document.querySelector(
-            'ytd-shorts-player-header-renderer #text, #title.ytd-reel-player-header-renderer, .ytReelMetamodelViewModelHostTitle, h1.title, h2.title'
+            'ytd-shorts-player-header-renderer #text, #title.ytd-reel-player-header-renderer, .ytReelMetamodelViewModelHostTitle, h1.title, h2.title, ytd-watch-metadata #title h1, h1.ytd-video-primary-info-renderer'
           );
           if (headerTitle?.textContent?.trim()) title = headerTitle.textContent.trim();
         }
 
+        if (!views) {
+          const viewEl = document.querySelector(
+            'ytd-reel-video-renderer[is-active] #like-button #text, #like-button #text, #info span.view-count, ytd-watch-metadata #view-count, ytd-video-view-count-renderer span.view-count'
+          );
+          if (viewEl?.textContent?.trim()) {
+            const raw = viewEl.textContent.trim();
+            if (/\d/.test(raw)) views = cleanViewCountString(raw);
+          }
+        }
+
+        if (!views) {
+          const metaInteractions = document.querySelector('meta[itemprop="interactionCount"]');
+          if (metaInteractions && metaInteractions.content) {
+            views = formatCompactNumber(metaInteractions.content);
+          }
+        }
+
         if (!author) {
-          const genericAuthor = document.querySelector('#channel-name, .ytd-channel-name, #text.ytd-channel-name');
+          const genericAuthor = document.querySelector('#channel-name, .ytd-channel-name, #text.ytd-channel-name, ytd-channel-name a');
           if (genericAuthor?.textContent?.trim()) author = genericAuthor.textContent.trim();
+        }
+
+        if (author && /^@?[\d,.]+[KMkmBb]?$/i.test(author.trim())) {
+          if (!views) views = cleanViewCountString(author);
+          author = '';
         }
 
         if (currentVideoId) {
           videoId = currentVideoId;
         } else {
-          const m = url.match(/\/shorts\/([a-zA-Z0-9_-]+)/);
+          const m = url.match(/\/shorts\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]v=([a-zA-Z0-9_-]+)/);
           if (m) videoId = m[1];
         }
       }
@@ -325,13 +457,14 @@
     }
 
     if (!title) title = 'Active Viral Video';
-    if (!author) author = '@creator';
+    if (!author || /^@?[\d,.]+[KMkmBb]?$/i.test(author.trim())) author = '@creator';
     if (!author.startsWith('@') && !author.includes(' ')) author = '@' + author;
+    if (!views) views = 'Trending';
 
     let displayTitle = title;
     if (displayTitle.length > 68) displayTitle = displayTitle.slice(0, 65) + '...';
 
-    return { platform, title, displayTitle, author, url, videoId };
+    return { platform, title, displayTitle, author, views, url, videoId };
   }
 
   function extractSubject(rawTitle) {
@@ -741,10 +874,24 @@
       gap: 8px;
       font-size: 11px;
       color: #6B7280;
+      flex-wrap: wrap;
     }
 
     .sm-video-meta span strong {
       color: #A1A1AA;
+    }
+
+    .sm-meta-views-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      color: #34D399;
+      font-weight: 600;
+    }
+
+    .sm-meta-views-pill strong {
+      color: #6EE7B7 !important;
+      font-weight: 750 !important;
     }
 
     /* 3. Fast Angle Tabs (Qubora Glass Pills) */
@@ -1970,6 +2117,7 @@
     const titleEl = sidebar.querySelector('#smDetectedTitle');
     const targetEl = sidebar.querySelector('#smMetaTarget');
     const authorEl = sidebar.querySelector('#smMetaAuthor');
+    const viewsEl = sidebar.querySelector('#smMetaViews');
     const scoreEl = sidebar.querySelector('#smMetaScore');
     const hookEl = sidebar.querySelector('#smHookText');
     const bodyEl = sidebar.querySelector('#smBodyText');
@@ -1983,7 +2131,18 @@
     }
     if (targetEl) targetEl.textContent = currentContext.platform;
     if (authorEl) authorEl.textContent = currentContext.author;
+    if (viewsEl) viewsEl.textContent = currentContext.views || 'Trending';
     if (scoreEl) scoreEl.textContent = curScript.viralScore;
+
+    // Synchronize snip overlay source information
+    const snipTitleEl = sidebar.querySelector('#smSnipSourceTitle');
+    const snipTargetEl = sidebar.querySelector('#smSnipMetaTarget');
+    const snipAuthorEl = sidebar.querySelector('#smSnipMetaAuthor');
+    const snipViewsEl = sidebar.querySelector('#smSnipMetaViews');
+    if (snipTitleEl) snipTitleEl.textContent = `"${currentContext.displayTitle}"`;
+    if (snipTargetEl) snipTargetEl.textContent = currentContext.platform;
+    if (snipAuthorEl) snipAuthorEl.textContent = currentContext.author;
+    if (snipViewsEl) snipViewsEl.textContent = currentContext.views || 'Trending';
 
     if (hookEl) {
       hookEl.innerHTML = `
@@ -2021,9 +2180,10 @@
     const idChanged = newContext.videoId && newContext.videoId !== currentContext.videoId;
     const urlChanged = newContext.url && newContext.url !== currentContext.url;
     const authorChanged = newContext.author && newContext.author !== currentContext.author && newContext.author !== '@creator';
+    const viewsChanged = newContext.views && newContext.views !== currentContext.views && newContext.views !== 'Trending';
     const wasPlaceholder = currentContext.title === 'Active Viral Video' && newContext.title && newContext.title !== 'Active Viral Video';
 
-    if (titleChanged || idChanged || wasPlaceholder || (urlChanged && (authorChanged || newContext.title !== 'Active Viral Video'))) {
+    if (titleChanged || idChanged || wasPlaceholder || viewsChanged || (urlChanged && (authorChanged || newContext.title !== 'Active Viral Video'))) {
       const activeEl = shadow.activeElement;
       if (activeEl && activeEl.isContentEditable) return;
 
@@ -2086,6 +2246,8 @@
           <span>Target: <strong id="smMetaTarget">${currentContext.platform}</strong></span>
           <span>•</span>
           <span>Creator: <strong id="smMetaAuthor">${currentContext.author}</strong></span>
+          <span>•</span>
+          <span class="sm-meta-views-pill">Views: <strong id="smMetaViews">${currentContext.views || 'Trending'}</strong></span>
           <span>•</span>
           <span style="color: #34D399;">Viral Potential: <strong id="smMetaScore">${curScript.viralScore}</strong></span>
         </div>
@@ -2235,7 +2397,14 @@
               <div class="sm-snip-helper-title" id="smSnipSourceTitle">
                 "${currentContext.displayTitle}"
               </div>
-              <div class="sm-snip-helper-sub">
+              <div class="sm-snip-helper-meta" id="smSnipSourceMeta" style="font-size: 11px; color: #94A3B8; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 7px; flex-wrap: wrap;">
+                <span>Target: <strong style="color: #E2E8F0;" id="smSnipMetaTarget">${currentContext.platform}</strong></span>
+                <span>•</span>
+                <span>Creator: <strong style="color: #E2E8F0;" id="smSnipMetaAuthor">${currentContext.author}</strong></span>
+                <span>•</span>
+                <span class="sm-meta-views-pill">Views: <strong id="smSnipMetaViews">${currentContext.views || 'Trending'}</strong></span>
+              </div>
+              <div class="sm-snip-helper-sub" style="margin-top: 6px;">
                 Click a snip button below to capture the viral moment directly from this player.
               </div>
             </div>
@@ -2589,6 +2758,12 @@
         if (camCtaEl) camCtaEl.textContent = curScript.cta;
 
         if (snipSourceTitle) snipSourceTitle.textContent = `"${currentContext.displayTitle}"`;
+        const snipTargetEl = sidebar.querySelector('#smSnipMetaTarget');
+        const snipAuthorEl = sidebar.querySelector('#smSnipMetaAuthor');
+        const snipViewsEl = sidebar.querySelector('#smSnipMetaViews');
+        if (snipTargetEl) snipTargetEl.textContent = currentContext.platform;
+        if (snipAuthorEl) snipAuthorEl.textContent = currentContext.author;
+        if (snipViewsEl) snipViewsEl.textContent = currentContext.views || 'Trending';
 
         webcamModal.classList.add('active');
         switchStudioMode('snip'); // Default to Faceless Viral Clip mode
@@ -3366,5 +3541,5 @@
     });
   }
 
-  console.log('[StitchMatrix] Multi-Platform Real-Time Studio v3.8.0 loaded.');
+  console.log('[StitchMatrix] Multi-Platform Real-Time Studio v3.8.1 loaded.');
 })();
