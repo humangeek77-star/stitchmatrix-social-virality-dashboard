@@ -317,6 +317,168 @@ Format strictly as 01 | Hook Element, 02 | Core Thesis, 03 | Retentive Call-To-A
       }
     }
 
+    // Mobile Teleprompter Web Companion (For "Send to Phone" QR Codes)
+    if (url.pathname === '/p' || url.pathname === '/teleprompter') {
+      const title = url.searchParams.get('title') || 'Viral Video Remix';
+      const hook = url.searchParams.get('hook') || '';
+      const body = url.searchParams.get('body') || '';
+      const cta = url.searchParams.get('cta') || '';
+      const tags = url.searchParams.get('tags') || '#ViralShorts';
+      const videoUrl = url.searchParams.get('url') || 'https://www.youtube.com/shorts';
+
+      const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>StitchMatrix Teleprompter</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0B0F17;
+      color: #F8FAFC;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      padding: 16px;
+      line-height: 1.6;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #1E2D47;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+    .brand { font-size: 16px; font-weight: 750; color: #60A5FA; }
+    .btn-open-yt {
+      background: #EF4444;
+      color: #FFFFFF;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 650;
+      padding: 7px 12px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .video-card {
+      background: #131D2E;
+      border: 1px solid #1E2D47;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+    .video-label { font-size: 11px; color: #34D399; font-weight: 650; text-transform: uppercase; }
+    .video-title { font-size: 14px; font-weight: 700; color: #FFFFFF; margin-top: 4px; }
+    .section {
+      background: #131C2B;
+      border: 1px solid #1F2C44;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .section-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .tag-hook { color: #60A5FA; }
+    .tag-body { color: #A5B4FC; }
+    .tag-cta { color: #34D399; }
+    .script-text { font-size: 17px; font-weight: 500; color: #F1F5F9; line-height: 1.5; }
+    .action-btn {
+      width: 100%;
+      background: #2563EB;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    }
+    .action-btn:active { background: #1D4ED8; }
+    .tags-box {
+      background: #0E1624;
+      border: 1px solid #1E2D47;
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 12px;
+      font-size: 12px;
+      color: #60A5FA;
+    }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #10B981;
+      color: #FFFFFF;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 13px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand">⚡ StitchMatrix Mobile</div>
+    <a href="${videoUrl}" target="_blank" class="btn-open-yt">▶ Open in YouTube</a>
+  </div>
+
+  <div class="video-card">
+    <div class="video-label">Remixing Active Video</div>
+    <div class="video-title">${title}</div>
+  </div>
+
+  <div class="section">
+    <div class="section-tag tag-hook">Part 1: The Viral Hook (0–3s)</div>
+    <div class="script-text">${hook}</div>
+  </div>
+
+  <div class="section">
+    <div class="section-tag tag-body">Part 2: The Core Story & Product Bridge</div>
+    <div class="script-text">${body}</div>
+  </div>
+
+  <div class="section">
+    <div class="section-tag tag-cta">Part 3: Call-To-Action</div>
+    <div class="script-text">${cta}</div>
+  </div>
+
+  <div class="tags-box">${tags}</div>
+
+  <button class="action-btn" id="copyBtn">📋 Copy Full Script & Tags</button>
+  <div class="toast" id="toast">✓ Copied to clipboard!</div>
+
+  <script>
+    const fullText = "HOOK:\\n${hook.replace(/"/g, '\\"')}\\n\\nBODY:\\n${body.replace(/"/g, '\\"')}\\n\\nCTA:\\n${cta.replace(/"/g, '\\"')}\\n\\nTAGS:\\n${tags.replace(/"/g, '\\"')}";
+    document.getElementById('copyBtn').onclick = () => {
+      navigator.clipboard.writeText(fullText).then(() => {
+        const t = document.getElementById('toast');
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2000);
+      });
+    };
+  </script>
+</body>
+</html>`;
+
+      return new Response(html, {
+        headers: { 'Content-Type': 'text/html; charset=utf-8' }
+      });
+    }
+
     // 404 Not Found
     return new Response(
       JSON.stringify({ error: 'Endpoint not found' }),

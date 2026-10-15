@@ -1,11 +1,10 @@
 /**
- * StitchMatrix — Viral Script Studio v3.4
+ * StitchMatrix — Viral Script Studio v3.5
  * Chrome Extension Manifest V3 In-DOM Sidebar Engine
- * Fully Automated Hands-Free Video Tracking:
- * - Automatically detects whatever video you scroll or navigate to in real-time
- * - ZERO need to close or reopen the extension — updates live on the fly as you scroll
- * - Generates 100% contextual viral scripts directly derived from that specific video
- * - No niche dropdowns, no wasted time, zero friction. Built to get creators seen by millions.
+ * Complete 1-Click Publishing Suite:
+ * - Built-in Webcam Studio: Record yourself with live scrolling teleprompter right in Chrome
+ * - Send to Phone: QR Code companion opens script & YouTube video on your phone in 1 second
+ * - Zero-Dropdown Hands-Free Tracking: Auto-detects videos as you scroll
  */
 
 (function () {
@@ -20,6 +19,8 @@
       // Ignore
     }
   }
+
+  const WORKER_BASE = 'https://stitchmatrix-api.humangeek77.workers.dev';
 
   // Real-time DOM Context Detector for Social Video Players
   function detectVideoContext() {
@@ -108,22 +109,20 @@
     if (!title) title = 'Active Viral Video';
     if (!author) author = '@creator';
 
-    // Clean up title length for display
     let displayTitle = title;
     if (displayTitle.length > 72) displayTitle = displayTitle.slice(0, 69) + '...';
 
     return { platform, title, displayTitle, author, url };
   }
 
-  // Extract core subject keyword from title
   function extractSubject(rawTitle) {
     if (!rawTitle || rawTitle === 'Active Viral Video') return 'this viral moment';
     let clean = rawTitle
-      .replace(/#\w+/g, '') // strip hashtags
-      .replace(/\|.*$/g, '') // strip | suffix
-      .replace(/\[.*?\]/g, '') // strip brackets
-      .replace(/\(.*?\)/g, '') // strip parens
-      .replace(/[-–—].*$/g, '') // strip dash suffixes
+      .replace(/#\w+/g, '')
+      .replace(/\|.*$/g, '')
+      .replace(/\[.*?\]/g, '')
+      .replace(/\(.*?\)/g, '')
+      .replace(/[-–—].*$/g, '')
       .replace(/\b(official trailer|episode \d+|reimagined|shorts|viral|4k|hd|part \d+)\b/gi, '')
       .replace(/[^\w\s'&]/gi, '')
       .trim();
@@ -131,7 +130,6 @@
     return clean;
   }
 
-  // Generate dynamic hashtags based on actual video title
   function generateDynamicHashtags(rawTitle) {
     const words = rawTitle
       .replace(/[^\w\s]/gi, '')
@@ -143,7 +141,6 @@
     return tags.join(' ');
   }
 
-  // Dynamic Multi-Angle Script Synthesizer tailored to the CURRENT VIDEO
   function buildViralScripts(videoContext) {
     const subject = extractSubject(videoContext.title);
     const hashtags = generateDynamicHashtags(videoContext.title);
@@ -189,12 +186,20 @@
   }
 
   // State
-  let activeStyleIndex = 0; // Default to Curiosity Gap
+  let activeStyleIndex = 0;
   let isOpen = false;
-  let isTeleprompterActive = false;
-  let teleprompterInterval = null;
   let currentContext = detectVideoContext();
   let generatedScripts = buildViralScripts(currentContext);
+
+  // Webcam Studio State
+  let mediaStream = null;
+  let mediaRecorder = null;
+  let recordedChunks = [];
+  let isRecording = false;
+  let recordingSeconds = 0;
+  let recordingTimer = null;
+  let teleprompterScrollInterval = null;
+  let recordedBlobUrl = null;
 
   // Create Host Container
   const host = document.createElement('div');
@@ -204,7 +209,7 @@
   // Attach Shadow DOM for complete CSS encapsulation
   const shadow = host.attachShadow({ mode: 'open' });
 
-  // Inject Scoped Styles into Shadow DOM (Executive Dark Slate Theme)
+  // Inject Styles into Shadow DOM
   const styleEl = document.createElement('style');
   styleEl.textContent = `
     :host {
@@ -268,18 +273,18 @@
       box-shadow: 0 0 8px #10B981;
     }
 
-    /* Main Sidebar Drawer (Executive Dark Slate) */
+    /* Main Sidebar Drawer */
     .sm-sidebar-container {
       position: fixed;
       top: 0;
       right: 0;
-      width: 410px;
+      width: 415px;
       height: 100vh;
       background: #0B0F17 !important;
       border-left: 1px solid #1E293D;
       color: #F1F5F9;
       z-index: 2147483647;
-      transform: translateX(410px);
+      transform: translateX(415px);
       transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       flex-direction: column;
@@ -348,6 +353,20 @@
       font-weight: 600;
     }
 
+    .sm-pulse-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 6px #10B981;
+      animation: smBeaconPulse 2s infinite ease-in-out;
+    }
+
+    @keyframes smBeaconPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
     .sm-close-btn {
       background: #162035;
       border: 1px solid #23314B;
@@ -368,7 +387,7 @@
       border-color: #3B82F6;
     }
 
-    /* Video Ingestion Banner (The Live Anchor) */
+    /* Video Ingestion Banner */
     .sm-video-banner {
       padding: 10px 16px;
       background: linear-gradient(180deg, #131D2E 0%, #0E1624 100%);
@@ -403,20 +422,6 @@
       border-radius: 9999px;
     }
 
-    .sm-pulse-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #10B981;
-      box-shadow: 0 0 8px #10B981;
-      animation: smBeaconPulse 2s infinite ease-in-out;
-    }
-
-    @keyframes smBeaconPulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.85); }
-    }
-
     .sm-rescan-btn {
       background: transparent;
       border: 1px solid #23314B;
@@ -446,7 +451,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
       letter-spacing: -0.01em;
-      transition: color 0.3s ease;
     }
 
     .sm-video-meta {
@@ -461,7 +465,7 @@
       color: #94A3B8;
     }
 
-    /* 3 Fast Angle Tabs (NO DROPDOWNS!) */
+    /* 3 Fast Angle Tabs */
     .sm-angle-deck {
       padding: 8px 14px;
       background: #0D121D;
@@ -526,16 +530,11 @@
       display: flex;
       flex-direction: column;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      transition: border-color 0.15s ease;
     }
 
     .sm-frame-card:hover {
       border-color: #2D3E5E;
-    }
-
-    .sm-frame-card:focus-within {
-      border-color: #3B82F6;
-      box-shadow: 0 0 0 1px #3B82F6;
     }
 
     .sm-frame-header {
@@ -567,12 +566,6 @@
     .sm-badge-hook { background: rgba(59, 130, 246, 0.18); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.3); }
     .sm-badge-body { background: rgba(99, 102, 241, 0.18); color: #A5B4FC; border: 1px solid rgba(99, 102, 241, 0.3); }
     .sm-badge-cta  { background: rgba(16, 185, 129, 0.18); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3); }
-
-    .sm-frame-time {
-      font-size: 10px;
-      color: #64748B;
-      font-weight: 500;
-    }
 
     .sm-copy-part-btn {
       background: #162035;
@@ -606,68 +599,9 @@
       white-space: pre-wrap;
       word-break: break-word;
       min-height: 48px;
-      transition: background 0.2s ease;
     }
 
-    .sm-frame-editor.teleprompter-active {
-      background: rgba(59, 130, 246, 0.18);
-      border-radius: 4px;
-    }
-
-    /* Creator Tools: Teleprompter & Viral Hashtags */
-    .sm-tools-card {
-      background: #131C2B;
-      border: 1px solid #1F2C44;
-      border-radius: 8px;
-      padding: 9px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
-
-    .sm-tool-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 11px;
-      font-weight: 650;
-      color: #F8FAFC;
-    }
-
-    .sm-pacing-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #0E1624;
-      border: 1px solid #1A2436;
-      border-radius: 6px;
-      padding: 6px 10px;
-      font-size: 11px;
-    }
-
-    .sm-practice-btn {
-      background: #2563EB;
-      color: #FFFFFF;
-      border: none;
-      border-radius: 5px;
-      padding: 4px 10px;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      transition: all 0.15s ease;
-    }
-
-    .sm-practice-btn:hover {
-      background: #1D4ED8;
-    }
-
-    .sm-practice-btn.stop {
-      background: #DC2626;
-    }
-
+    /* Tags Row */
     .sm-hashtags-row {
       display: flex;
       align-items: center;
@@ -707,62 +641,54 @@
       border-color: #3B82F6;
     }
 
-    /* Sticky Action Footer */
+    /* Action Deck in Footer (The 3 Super-Simple Buttons) */
     .sm-footer {
-      padding: 11px 14px;
+      padding: 12px 14px;
       background: #101726;
       border-top: 1px solid #1C273C;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 7px;
     }
 
-    .sm-btn-primary {
+    .sm-btn-record {
       width: 100%;
-      background: #2563EB;
+      background: linear-gradient(135deg, #DC2626, #B91C1C);
       color: #FFFFFF;
-      border: 1px solid #3B82F6;
-      border-radius: 7px;
-      padding: 10px 14px;
-      font-size: 12.5px;
-      font-weight: 650;
+      border: 1px solid #EF4444;
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-size: 13px;
+      font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 7px;
+      gap: 8px;
       transition: all 0.15s ease;
-      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
+      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
     }
 
-    .sm-btn-primary:hover {
-      background: #1D4ED8;
-      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.45);
+    .sm-btn-record:hover {
+      background: linear-gradient(135deg, #EF4444, #DC2626);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.5);
     }
 
-    .sm-btn-primary:active {
-      transform: scale(0.99);
-    }
-
-    .sm-btn-primary.copied {
-      background: #059669 !important;
-      border-color: #10B981 !important;
-    }
-
-    .sm-footer-secondary {
+    .sm-btn-row-split {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 6px;
     }
 
-    .sm-btn-secondary {
+    .sm-btn-phone {
       background: #131C2B;
-      border: 1px solid #1F2C44;
-      color: #CBD5E1;
-      border-radius: 6px;
-      padding: 7px 10px;
+      border: 1px solid #2563EB;
+      color: #93C5FD;
+      border-radius: 7px;
+      padding: 8px 10px;
       font-size: 11.5px;
-      font-weight: 550;
+      font-weight: 650;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -771,16 +697,273 @@
       transition: all 0.15s ease;
     }
 
-    .sm-btn-secondary:hover {
-      background: #1A263B;
-      color: #F8FAFC;
+    .sm-btn-phone:hover {
+      background: #1E293B;
+      color: #FFFFFF;
+      border-color: #3B82F6;
+    }
+
+    .sm-btn-copy {
+      background: #131C2B;
+      border: 1px solid #1F2C44;
+      color: #CBD5E1;
+      border-radius: 7px;
+      padding: 8px 10px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .sm-btn-copy:hover {
+      background: #1E293B;
+      color: #FFFFFF;
       border-color: #2D3E5E;
+    }
+
+    .sm-btn-copy.copied {
+      background: #059669 !important;
+      border-color: #10B981 !important;
+      color: #FFFFFF !important;
+    }
+
+    /* Modal Overlays (Webcam Studio & QR Modal) */
+    .sm-modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(11, 15, 23, 0.96);
+      backdrop-filter: blur(8px);
+      z-index: 500;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sm-modal-overlay.active {
+      display: flex;
+    }
+
+    .sm-modal-header {
+      padding: 12px 16px;
+      background: #101726;
+      border-bottom: 1px solid #1C273C;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sm-modal-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* WEBCAM STUDIO VIEW */
+    .sm-webcam-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 14px;
+      gap: 12px;
+      overflow-y: auto;
+    }
+
+    .sm-camera-box {
+      position: relative;
+      width: 100%;
+      height: 240px;
+      background: #000000;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #1E2D47;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #smWebcamFeed, #smRecordedPlayback {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .sm-rec-indicator {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(220, 38, 38, 0.85);
+      color: #FFFFFF;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      display: none;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .sm-rec-indicator.active {
+      display: inline-flex;
+    }
+
+    .sm-rec-timer {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Scrolling Teleprompter Inside Camera Studio */
+    .sm-teleprompter-glass {
+      background: rgba(19, 28, 43, 0.85);
+      border: 1px solid #1E2D47;
+      border-radius: 10px;
+      padding: 12px;
+      max-height: 140px;
+      overflow-y: auto;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: #F8FAFC;
+      text-align: center;
+      font-weight: 550;
+    }
+
+    .sm-teleprompter-glass::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    .sm-webcam-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .sm-btn-start-rec {
+      width: 100%;
+      background: #DC2626;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4);
+    }
+
+    .sm-btn-start-rec:hover { background: #EF4444; }
+
+    .sm-btn-stop-rec {
+      width: 100%;
+      background: #475569;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .sm-btn-download-video {
+      width: 100%;
+      background: #10B981;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+    }
+
+    /* QR CODE MODAL VIEW */
+    .sm-qr-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      gap: 14px;
+    }
+
+    .sm-qr-frame {
+      background: #FFFFFF;
+      padding: 12px;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+      width: 190px;
+      height: 190px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sm-qr-frame img {
+      width: 166px;
+      height: 166px;
+      display: block;
+    }
+
+    .sm-qr-instructions {
+      font-size: 12.5px;
+      color: #94A3B8;
+      max-width: 280px;
+      line-height: 1.5;
+    }
+
+    .sm-btn-copy-link {
+      background: #162035;
+      border: 1px solid #23314B;
+      color: #60A5FA;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .sm-btn-copy-link:hover {
+      background: #1E2D47;
+      color: #FFFFFF;
     }
 
     /* Toast Notification */
     .sm-toast {
       position: absolute;
-      bottom: 78px;
+      bottom: 84px;
       left: 50%;
       transform: translateX(-50%) translateY(10px);
       background: #131D2E;
@@ -797,7 +980,7 @@
       display: flex;
       align-items: center;
       gap: 5px;
-      z-index: 200;
+      z-index: 600;
     }
 
     .sm-toast.show {
@@ -839,13 +1022,17 @@
     }, 2200);
   }
 
-  function getCanvasStats() {
-    const hook = sidebar.querySelector('#smHookText')?.textContent || '';
-    const body = sidebar.querySelector('#smBodyText')?.textContent || '';
-    const cta = sidebar.querySelector('#smCtaText')?.textContent || '';
-    const words = (hook + ' ' + body + ' ' + cta).trim().split(/\s+/).filter(Boolean).length;
-    const estSec = Math.max(15, Math.round(words / 2.4)); // ~145 words per minute
-    return { words, estSec };
+  function getMobileCompanionUrl() {
+    const curScript = generatedScripts[activeStyleIndex] || generatedScripts[0];
+    const params = new URLSearchParams({
+      title: currentContext.title,
+      hook: curScript.hook,
+      body: curScript.body,
+      cta: curScript.cta,
+      tags: curScript.hashtags,
+      url: currentContext.url
+    });
+    return `${WORKER_BASE}/p?${params.toString()}`;
   }
 
   // Smooth live in-place update without closing the drawer
@@ -874,23 +1061,18 @@
     if (ctaEl) ctaEl.textContent = curScript.cta;
     if (tagsEl) tagsEl.textContent = curScript.hashtags;
 
-    updateWordStats();
-
     if (animateFlash && bannerEl) {
       bannerEl.classList.add('pulse-active');
       setTimeout(() => bannerEl.classList.remove('pulse-active'), 500);
     }
   }
 
-  // Core automatic detection & live sync
   function checkAndAutoUpdate() {
     if (!isOpen) return;
 
     const newContext = detectVideoContext();
 
-    // Check if video title has changed and is valid
     if (newContext.title && newContext.title !== currentContext.title && newContext.title !== 'Active Viral Video') {
-      // Do not interrupt if user is actively editing text
       const activeEl = shadow.activeElement;
       if (activeEl && activeEl.isContentEditable) return;
 
@@ -916,7 +1098,7 @@
         </div>
         <div class="sm-header-actions">
           <span class="sm-auto-badge" title="Live automatic video tracking active">
-            <span class="sm-pulse-dot" style="width: 4px; height: 4px;"></span>
+            <span class="sm-pulse-dot"></span>
             <span>Auto-Sync</span>
           </span>
           <button class="sm-close-btn" id="smCloseBtn" title="Close Studio (Esc)">
@@ -928,7 +1110,7 @@
         </div>
       </header>
 
-      <!-- 2. Active Video Ingestion Card (The Core Live Anchor) -->
+      <!-- 2. Active Video Ingestion Card -->
       <div class="sm-video-banner" id="smVideoBanner">
         <div class="sm-video-status-row">
           <span class="sm-live-badge">
@@ -951,7 +1133,7 @@
         </div>
       </div>
 
-      <!-- 3. Zero-Dropdown Angle Selector (3 Fast Viral Styles for THIS Video) -->
+      <!-- 3. Fast Angle Tabs -->
       <div class="sm-angle-deck">
         ${generatedScripts.map((s, idx) => `
           <button class="sm-angle-tab ${idx === activeStyleIndex ? 'active' : ''}" data-idx="${idx}" title="${s.subtitle}">
@@ -960,7 +1142,7 @@
         `).join('')}
       </div>
 
-      <!-- 4. Scrollable Script Canvas (Contextual to this video!) -->
+      <!-- 4. Scrollable Script Canvas -->
       <div class="sm-canvas-area">
         
         <!-- Part 1: The Hook -->
@@ -970,13 +1152,10 @@
               <span class="sm-part-badge sm-badge-hook">Part 1</span>
               <span>The Viral Hook (0–3s)</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 6px;">
-              <span class="sm-frame-time">Stop the scroll</span>
-              <button class="sm-copy-part-btn" id="smCopyHookBtn" title="Copy hook only">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                <span>Copy</span>
-              </button>
-            </div>
+            <button class="sm-copy-part-btn" id="smCopyHookBtn" title="Copy hook only">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span>Copy</span>
+            </button>
           </div>
           <div class="sm-frame-editor" id="smHookText" contenteditable="true" spellcheck="false">${curScript.hook}</div>
         </div>
@@ -988,13 +1167,10 @@
               <span class="sm-part-badge sm-badge-body">Part 2</span>
               <span>The Story / Breakdown (4–25s)</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 6px;">
-              <span class="sm-frame-time">Hold attention</span>
-              <button class="sm-copy-part-btn" id="smCopyBodyBtn" title="Copy body only">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                <span>Copy</span>
-              </button>
-            </div>
+            <button class="sm-copy-part-btn" id="smCopyBodyBtn" title="Copy body only">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span>Copy</span>
+            </button>
           </div>
           <div class="sm-frame-editor" id="smBodyText" contenteditable="true" spellcheck="false">${curScript.body}</div>
         </div>
@@ -1006,85 +1182,125 @@
               <span class="sm-part-badge sm-badge-cta">Part 3</span>
               <span>Retention Call-To-Action (26–35s)</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 6px;">
-              <span class="sm-frame-time">Trigger comments</span>
-              <button class="sm-copy-part-btn" id="smCopyCtaBtn" title="Copy CTA only">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                <span>Copy</span>
-              </button>
-            </div>
+            <button class="sm-copy-part-btn" id="smCopyCtaBtn" title="Copy CTA only">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span>Copy</span>
+            </button>
           </div>
           <div class="sm-frame-editor" id="smCtaText" contenteditable="true" spellcheck="false">${curScript.cta}</div>
         </div>
 
-        <!-- Creator Tools: Teleprompter & Viral Hashtags -->
-        <div class="sm-tools-card">
-          <div class="sm-tool-header">
-            <span>🎙️ Teleprompter Pacing</span>
-            <span id="smWordStats" style="color: #94A3B8; font-size: 10.5px;">~70 words · ~30s</span>
-          </div>
-          <div class="sm-pacing-row">
-            <span>145 WPM · High-retention speaking pace</span>
-            <button class="sm-practice-btn" id="smTeleprompterBtn">
-              <span>▶ Practice Read</span>
-            </button>
-          </div>
-
-          <div class="sm-tool-header" style="margin-top: 2px;">
-            <span>🏷️ Trending Hashtags for this Video</span>
-          </div>
-          <div class="sm-hashtags-row">
-            <span class="sm-hashtags-text" id="smHashtagDisplay">${curScript.hashtags}</span>
-            <button class="sm-copy-tags-btn" id="smCopyHashtagsBtn">Copy Tags</button>
-          </div>
+        <!-- Trending Hashtags -->
+        <div class="sm-hashtags-row">
+          <span class="sm-hashtags-text" id="smHashtagDisplay">${curScript.hashtags}</span>
+          <button class="sm-copy-tags-btn" id="smCopyHashtagsBtn">Copy Tags</button>
         </div>
 
       </div>
 
-      <!-- 5. Sticky Action Footer -->
+      <!-- 5. Foolproof Action Deck (The 3 Options to Post) -->
       <footer class="sm-footer">
-        <!-- Big Primary 1-Click Copy -->
-        <button class="sm-btn-primary" id="smCopyFullBtn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        <!-- Option 1: Record Directly on Webcam -->
+        <button class="sm-btn-record" id="smOpenRecordBtn" title="Open webcam teleprompter and record video directly in Chrome">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="12" r="8"></circle>
           </svg>
-          <span id="smCopyFullText">Copy Full Script (Alt+C)</span>
+          <span>Record Short with Webcam</span>
         </button>
 
-        <!-- Secondary Actions -->
-        <div class="sm-footer-secondary">
-          <button class="sm-btn-secondary" id="smTryAnotherBtn" title="Cycle to next angle for this video">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="23 4 23 10 17 10"></polyline>
-              <polyline points="1 20 1 14 7 14"></polyline>
-              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+        <!-- Option 2 & 3: Send to Phone OR Copy Script -->
+        <div class="sm-btn-row-split">
+          <button class="sm-btn-phone" id="smOpenPhoneBtn" title="Scan QR code to open script & video on your phone">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+              <line x1="12" y1="18" x2="12.01" y2="18"></line>
             </svg>
-            <span>Cycle Angle</span>
+            <span>Send to Phone (QR)</span>
           </button>
 
-          <button class="sm-btn-secondary" id="smExportBtn" title="Download script as .txt">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
+          <button class="sm-btn-copy" id="smCopyFullBtn" title="Copy Full Script (Alt+C)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
             </svg>
-            <span>Export (.txt)</span>
+            <span id="smCopyFullText">Copy Full Script</span>
           </button>
         </div>
       </footer>
+
+      <!-- WEBCAM STUDIO MODAL -->
+      <div class="sm-modal-overlay" id="smWebcamModal">
+        <div class="sm-modal-header">
+          <div class="sm-modal-title">
+            <span style="color: #EF4444;">●</span>
+            <span>Webcam Teleprompter Studio</span>
+          </div>
+          <button class="sm-close-btn" id="smCloseWebcamBtn">✕</button>
+        </div>
+
+        <div class="sm-webcam-body">
+          <!-- Camera Feed / Playback Container -->
+          <div class="sm-camera-box">
+            <video id="smWebcamFeed" autoplay muted playsinline></video>
+            <video id="smRecordedPlayback" controls style="display: none;"></video>
+            <div class="sm-rec-indicator" id="smRecBadge">
+              <span class="sm-pulse-dot" style="background:#FFFFFF;"></span>
+              <span>RECORDING</span>
+            </div>
+            <div class="sm-rec-timer" id="smRecTimer">00:00 / 00:30</div>
+          </div>
+
+          <!-- Scrolling Teleprompter Display -->
+          <div class="sm-teleprompter-glass" id="smTeleprompterText">
+            <strong style="color: #60A5FA; display: block; margin-bottom: 4px;">Part 1 (Hook):</strong>
+            <span id="smCamHook">${curScript.hook}</span>
+            <br><br>
+            <strong style="color: #A5B4FC; display: block; margin-bottom: 4px;">Part 2 (Story & Product):</strong>
+            <span id="smCamBody">${curScript.body}</span>
+            <br><br>
+            <strong style="color: #34D399; display: block; margin-bottom: 4px;">Part 3 (Call-to-Action):</strong>
+            <span id="smCamCta">${curScript.cta}</span>
+          </div>
+
+          <!-- Controls -->
+          <div class="sm-webcam-controls">
+            <button class="sm-btn-start-rec" id="smStartRecBtn">
+              <span>🔴 Start 30s Recording</span>
+            </button>
+            <button class="sm-btn-stop-rec" id="smStopRecBtn">
+              <span>⏹ Stop & Review</span>
+            </button>
+            <button class="sm-btn-download-video" id="smDownloadVideoBtn">
+              <span>💾 Download Ready Video File</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEND TO PHONE QR MODAL -->
+      <div class="sm-modal-overlay" id="smPhoneModal">
+        <div class="sm-modal-header">
+          <div class="sm-modal-title">
+            <span>📱 Open on Your Phone</span>
+          </div>
+          <button class="sm-close-btn" id="smClosePhoneBtn">✕</button>
+        </div>
+
+        <div class="sm-qr-body">
+          <div class="sm-qr-frame">
+            <img id="smQrImage" src="" alt="QR Code">
+          </div>
+          <div class="sm-qr-instructions">
+            Scan this QR code with your iPhone or Android camera app to open the script teleprompter and YouTube video directly on your phone.
+          </div>
+          <button class="sm-btn-copy-link" id="smCopyMobileLinkBtn">
+            📋 Copy Mobile Web Link
+          </button>
+        </div>
+      </div>
     `;
 
     attachEventListeners();
-    updateWordStats();
-  }
-
-  function updateWordStats() {
-    const stats = getCanvasStats();
-    const statsEl = sidebar.querySelector('#smWordStats');
-    if (statsEl) {
-      statsEl.textContent = `~${stats.words} words · ~${stats.estSec}s read time`;
-    }
   }
 
   function attachEventListeners() {
@@ -1120,31 +1336,25 @@
     if (copyHookBtn) {
       copyHookBtn.onclick = () => {
         const text = sidebar.querySelector('#smHookText')?.textContent || '';
-        navigator.clipboard.writeText(text).then(() => {
-          showToast('Hook copied to clipboard!');
-        });
+        navigator.clipboard.writeText(text).then(() => showToast('Hook copied!'));
       };
     }
 
     // Copy Body Only
-    const copyBodyBtn = sidebar.querySelector('#smBodyText')?.parentElement?.querySelector('#smCopyBodyBtn');
+    const copyBodyBtn = sidebar.querySelector('#smCopyBodyBtn');
     if (copyBodyBtn) {
       copyBodyBtn.onclick = () => {
         const text = sidebar.querySelector('#smBodyText')?.textContent || '';
-        navigator.clipboard.writeText(text).then(() => {
-          showToast('Body text copied to clipboard!');
-        });
+        navigator.clipboard.writeText(text).then(() => showToast('Body copied!'));
       };
     }
 
     // Copy CTA Only
-    const copyCtaBtn = sidebar.querySelector('#smCtaText')?.parentElement?.querySelector('#smCopyCtaBtn');
+    const copyCtaBtn = sidebar.querySelector('#smCtaBtn');
     if (copyCtaBtn) {
       copyCtaBtn.onclick = () => {
         const text = sidebar.querySelector('#smCtaText')?.textContent || '';
-        navigator.clipboard.writeText(text).then(() => {
-          showToast('CTA copied to clipboard!');
-        });
+        navigator.clipboard.writeText(text).then(() => showToast('CTA copied!'));
       };
     }
 
@@ -1153,118 +1363,186 @@
     if (copyTagsBtn) {
       copyTagsBtn.onclick = () => {
         const tags = sidebar.querySelector('#smHashtagDisplay')?.textContent || '';
-        navigator.clipboard.writeText(tags).then(() => {
-          showToast('Hashtags copied to clipboard!');
-        });
+        navigator.clipboard.writeText(tags).then(() => showToast('Hashtags copied!'));
       };
     }
-
-    // Real-time text edit listener
-    ['#smHookText', '#smBodyText', '#smCtaText'].forEach(selector => {
-      const el = sidebar.querySelector(selector);
-      if (el) {
-        el.oninput = updateWordStats;
-      }
-    });
 
     // Primary Action: Copy Full Script
     const copyFullBtn = sidebar.querySelector('#smCopyFullBtn');
     const copyFullText = sidebar.querySelector('#smCopyFullText');
     if (copyFullBtn && copyFullText) {
-      copyFullBtn.onclick = () => {
-        executeCopyFullScript();
-      };
+      copyFullBtn.onclick = () => executeCopyFullScript();
     }
 
-    // Cycle Angle Button
-    const tryAnotherBtn = sidebar.querySelector('#smTryAnotherBtn');
-    if (tryAnotherBtn) {
-      tryAnotherBtn.onclick = () => {
-        activeStyleIndex = (activeStyleIndex + 1) % generatedScripts.length;
-        sidebar.querySelectorAll('.sm-angle-tab').forEach((b, i) => {
-          b.classList.toggle('active', i === activeStyleIndex);
-        });
-        updateLiveContent(false);
-        showToast(`Angle: ${generatedScripts[activeStyleIndex].title}`);
-      };
-    }
+    // =========================================================================
+    // FEATURE 1: WEBCAM STUDIO RECORDING LOGIC
+    // =========================================================================
+    const openRecordBtn = sidebar.querySelector('#smOpenRecordBtn');
+    const webcamModal = sidebar.querySelector('#smWebcamModal');
+    const closeWebcamBtn = sidebar.querySelector('#smCloseWebcamBtn');
+    const videoFeed = sidebar.querySelector('#smWebcamFeed');
+    const recordedPlayback = sidebar.querySelector('#smRecordedPlayback');
+    const startRecBtn = sidebar.querySelector('#smStartRecBtn');
+    const stopRecBtn = sidebar.querySelector('#smStopRecBtn');
+    const downloadVideoBtn = sidebar.querySelector('#smDownloadVideoBtn');
+    const recBadge = sidebar.querySelector('#smRecBadge');
+    const recTimer = sidebar.querySelector('#smRecTimer');
+    const prompterText = sidebar.querySelector('#smTeleprompterText');
 
-    // Export as .txt
-    const exportBtn = sidebar.querySelector('#smExportBtn');
-    if (exportBtn) {
-      exportBtn.onclick = () => {
-        const curScript = generatedScripts[activeStyleIndex];
-        const hook = sidebar.querySelector('#smHookText')?.textContent || curScript.hook;
-        const body = sidebar.querySelector('#smBodyText')?.textContent || curScript.body;
-        const cta = sidebar.querySelector('#smCtaText')?.textContent || curScript.cta;
-        const content = `STITCHMATRIX VIRAL SCRIPT EXPORT\n=================================\nSource Video: ${currentContext.title}\nCreator: ${currentContext.author}\nPlatform: ${currentContext.platform}\nViral Angle: ${curScript.title} (~${curScript.duration})\n\n[PART 1: THE VIRAL HOOK]\n${hook}\n\n[PART 2: THE CORE STORY]\n${body}\n\n[PART 3: RETENTION CALL-TO-ACTION]\n${cta}\n\nHASHTAGS:\n${curScript.hashtags}\n`;
+    if (openRecordBtn && webcamModal) {
+      openRecordBtn.onclick = async () => {
+        const curScript = generatedScripts[activeStyleIndex] || generatedScripts[0];
+        sidebar.querySelector('#smCamHook').textContent = curScript.hook;
+        sidebar.querySelector('#smCamBody').textContent = curScript.body;
+        sidebar.querySelector('#smCamCta').textContent = curScript.cta;
 
-        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `viral-script-${Date.now()}.txt`;
-        a.click();
-        showToast('Script downloaded as .txt!');
-      };
-    }
+        webcamModal.classList.add('active');
+        recordedPlayback.style.display = 'none';
+        videoFeed.style.display = 'block';
+        startRecBtn.style.display = 'flex';
+        stopRecBtn.style.display = 'none';
+        downloadVideoBtn.style.display = 'none';
+        recBadge.classList.remove('active');
+        recTimer.textContent = '00:00 / 00:30';
 
-    // Teleprompter Practice Read Feature
-    const practiceBtn = sidebar.querySelector('#smTeleprompterBtn');
-    if (practiceBtn) {
-      practiceBtn.onclick = () => {
-        toggleTeleprompter();
-      };
-    }
-  }
-
-  function toggleTeleprompter() {
-    isTeleprompterActive = !isTeleprompterActive;
-    const practiceBtn = sidebar.querySelector('#smTeleprompterBtn');
-    const hookCard = sidebar.querySelector('#smHookText');
-    const bodyCard = sidebar.querySelector('#smBodyText');
-    const ctaCard = sidebar.querySelector('#smCtaText');
-
-    if (!isTeleprompterActive) {
-      if (teleprompterInterval) clearInterval(teleprompterInterval);
-      if (practiceBtn) {
-        practiceBtn.classList.remove('stop');
-        practiceBtn.innerHTML = '<span>▶ Practice Read</span>';
-      }
-      if (hookCard) hookCard.classList.remove('teleprompter-active');
-      if (bodyCard) bodyCard.classList.remove('teleprompter-active');
-      if (ctaCard) ctaCard.classList.remove('teleprompter-active');
-      return;
-    }
-
-    if (practiceBtn) {
-      practiceBtn.classList.add('stop');
-      practiceBtn.innerHTML = '<span>⏹ Stop Read</span>';
-    }
-
-    showToast('Starting read practice...');
-
-    let phase = 0;
-    if (hookCard) hookCard.classList.add('teleprompter-active');
-
-    teleprompterInterval = setInterval(() => {
-      phase++;
-      if (phase === 1) {
-        if (hookCard) hookCard.classList.remove('teleprompter-active');
-        if (bodyCard) bodyCard.classList.add('teleprompter-active');
-      } else if (phase === 2) {
-        if (bodyCard) bodyCard.classList.remove('teleprompter-active');
-        if (ctaCard) ctaCard.classList.add('teleprompter-active');
-      } else {
-        clearInterval(teleprompterInterval);
-        isTeleprompterActive = false;
-        if (ctaCard) ctaCard.classList.remove('teleprompter-active');
-        if (practiceBtn) {
-          practiceBtn.classList.remove('stop');
-          practiceBtn.innerHTML = '<span>▶ Practice Read</span>';
+        try {
+          mediaStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'user' },
+            audio: true
+          });
+          videoFeed.srcObject = mediaStream;
+        } catch (err) {
+          showToast('Please allow camera & microphone permissions');
         }
-        showToast('Practice read complete!');
+      };
+    }
+
+    function cleanupWebcam() {
+      if (recordingTimer) clearInterval(recordingTimer);
+      if (teleprompterScrollInterval) clearInterval(teleprompterScrollInterval);
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
       }
-    }, 4500);
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(t => t.stop());
+        mediaStream = null;
+      }
+      if (webcamModal) webcamModal.classList.remove('active');
+    }
+
+    if (closeWebcamBtn) closeWebcamBtn.onclick = cleanupWebcam;
+
+    if (startRecBtn) {
+      startRecBtn.onclick = () => {
+        if (!mediaStream) return;
+        recordedChunks = [];
+
+        try {
+          const options = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
+            ? { mimeType: 'video/webm;codecs=vp9,opus' }
+            : { mimeType: 'video/webm' };
+          mediaRecorder = new MediaRecorder(mediaStream, options);
+        } catch (e) {
+          mediaRecorder = new MediaRecorder(mediaStream);
+        }
+
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) recordedChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(recordedChunks, { type: 'video/webm' });
+          if (recordedBlobUrl) URL.revokeObjectURL(recordedBlobUrl);
+          recordedBlobUrl = URL.createObjectURL(blob);
+
+          videoFeed.style.display = 'none';
+          recordedPlayback.src = recordedBlobUrl;
+          recordedPlayback.style.display = 'block';
+          recordedPlayback.play();
+
+          startRecBtn.style.display = 'none';
+          stopRecBtn.style.display = 'none';
+          downloadVideoBtn.style.display = 'flex';
+        };
+
+        mediaRecorder.start();
+        isRecording = true;
+        recordingSeconds = 0;
+        startRecBtn.style.display = 'none';
+        stopRecBtn.style.display = 'flex';
+        recBadge.classList.add('active');
+
+        // Teleprompter smooth auto-scroll
+        prompterText.scrollTop = 0;
+        teleprompterScrollInterval = setInterval(() => {
+          prompterText.scrollTop += 1;
+        }, 120);
+
+        // 30s Recording countdown timer
+        recordingTimer = setInterval(() => {
+          recordingSeconds++;
+          const secFormatted = String(recordingSeconds).padStart(2, '0');
+          recTimer.textContent = `00:${secFormatted} / 00:30`;
+
+          if (recordingSeconds >= 30) {
+            stopRecording();
+          }
+        }, 1000);
+      };
+    }
+
+    function stopRecording() {
+      if (recordingTimer) clearInterval(recordingTimer);
+      if (teleprompterScrollInterval) clearInterval(teleprompterScrollInterval);
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+      }
+      isRecording = false;
+      recBadge.classList.remove('active');
+    }
+
+    if (stopRecBtn) stopRecBtn.onclick = stopRecording;
+
+    if (downloadVideoBtn) {
+      downloadVideoBtn.onclick = () => {
+        if (!recordedBlobUrl) return;
+        const a = document.createElement('a');
+        a.href = recordedBlobUrl;
+        a.download = `stitchmatrix-short-${Date.now()}.webm`;
+        a.click();
+        showToast('Video downloaded! Ready to upload to Shorts.');
+      };
+    }
+
+    // =========================================================================
+    // FEATURE 2: SEND TO PHONE QR CODE MODAL
+    // =========================================================================
+    const openPhoneBtn = sidebar.querySelector('#smOpenPhoneBtn');
+    const phoneModal = sidebar.querySelector('#smPhoneModal');
+    const closePhoneBtn = sidebar.querySelector('#smClosePhoneBtn');
+    const qrImage = sidebar.querySelector('#smQrImage');
+    const copyMobileLinkBtn = sidebar.querySelector('#smCopyMobileLinkBtn');
+
+    if (openPhoneBtn && phoneModal) {
+      openPhoneBtn.onclick = () => {
+        const mobileUrl = getMobileCompanionUrl();
+        qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(mobileUrl)}`;
+        phoneModal.classList.add('active');
+      };
+    }
+
+    if (closePhoneBtn && phoneModal) {
+      closePhoneBtn.onclick = () => phoneModal.classList.remove('active');
+    }
+
+    if (copyMobileLinkBtn) {
+      copyMobileLinkBtn.onclick = () => {
+        const mobileUrl = getMobileCompanionUrl();
+        navigator.clipboard.writeText(mobileUrl).then(() => {
+          showToast('Mobile web link copied to clipboard!');
+        });
+      };
+    }
   }
 
   function executeCopyFullScript() {
@@ -1279,11 +1557,11 @@
       const copyFullText = sidebar.querySelector('#smCopyFullText');
       if (copyFullBtn && copyFullText) {
         copyFullBtn.classList.add('copied');
-        copyFullText.textContent = '✓ Copied to Clipboard!';
+        copyFullText.textContent = '✓ Copied!';
         showToast('Full script & hashtags copied!');
         setTimeout(() => {
           copyFullBtn.classList.remove('copied');
-          copyFullText.textContent = 'Copy Full Script (Alt+C)';
+          copyFullText.textContent = 'Copy Full Script';
         }, 1800);
       }
     });
@@ -1300,7 +1578,6 @@
     } else {
       sidebar.classList.remove('open');
       triggerTab.style.display = 'flex';
-      if (isTeleprompterActive) toggleTeleprompter();
     }
   }
 
@@ -1310,13 +1587,10 @@
   // =========================================================================
   // AUTOMATED REAL-TIME HANDS-FREE VIDEO DETECTION & LIVE RE-SYNC ENGINE
   // =========================================================================
-
-  // 1. Capture-phase video play listener (Fires the microsecond a new video starts playing)
   document.addEventListener('play', () => {
     setTimeout(checkAndAutoUpdate, 150);
   }, true);
 
-  // 2. YouTube custom navigation events
   window.addEventListener('yt-navigate-finish', () => {
     setTimeout(checkAndAutoUpdate, 200);
   });
@@ -1324,19 +1598,16 @@
     setTimeout(checkAndAutoUpdate, 200);
   });
 
-  // 3. Mouse wheel scroll listener (passive)
   let wheelTimer = null;
   window.addEventListener('wheel', () => {
     if (wheelTimer) clearTimeout(wheelTimer);
     wheelTimer = setTimeout(checkAndAutoUpdate, 250);
   }, { passive: true });
 
-  // 4. Keyboard arrow navigation listener (Down/Up/PageDown/PageUp/J/K)
   window.addEventListener('keydown', (e) => {
     if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'j', 'k', 'J', 'K'].includes(e.key)) {
       setTimeout(checkAndAutoUpdate, 300);
     }
-    // Global Shortcuts
     if ((e.altKey && (e.key === 's' || e.key === 'S')) || (e.ctrlKey && e.shiftKey && (e.key === 's' || e.key === 'S'))) {
       e.preventDefault();
       toggleSidebar();
@@ -1350,14 +1621,12 @@
     }
   });
 
-  // 5. Continuous high-frequency heartbeat poller (every 300ms while sidebar is open)
   setInterval(() => {
     if (isOpen) {
       checkAndAutoUpdate();
     }
   }, 300);
 
-  // Message listener from background script
   if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       if (request.action === 'TOGGLE_SIDEBAR') {
@@ -1367,5 +1636,5 @@
     });
   }
 
-  console.log('[StitchMatrix] Hands-Free Real-Time Video Tracking v3.4 loaded.');
+  console.log('[StitchMatrix] Complete 1-Click Publishing Studio v3.5 loaded.');
 })();
