@@ -1,7 +1,8 @@
 /**
- * StitchMatrix — Blendr Cyber-Cobalt Obsidian Studio v3.9.1
+ * StitchMatrix — Blendr Cyber-Cobalt Obsidian Studio v3.9.2
  * Chrome Extension Manifest V3 In-DOM Sidebar Engine
  * Features:
+ * - Smart Aspect-Ratio Engine (Zero-Cropping for TikTok, Instagram Reels 9:16 & YouTube 16:9)
  * - Viral Video Snipper & Hook Clipper (Snip 5s/10s hooks directly from playing videos for faceless shorts)
  * - 1-Click Instant Video Delete & Discard (Floating overlay button & review panel controls)
  * - 1-Click AI Voiceover Studio (Continuous MP3 Narration, zero camera/mic required)
@@ -566,10 +567,16 @@
     // 4. TikTok active video
     const ttActive = document.querySelector('[data-e2e="recommend-list-item-container"] video') ||
                      document.querySelector('div[class*="DivVideoFeedList"] video') ||
-                     document.querySelector('video[src]');
+                     (window.location.hostname.includes('tiktok.com') && (document.querySelector('video[src]') || document.querySelector('video')));
     if (ttActive) return ttActive;
 
-    // 5. Largest visible video in viewport
+    // 5. Instagram Reels active video
+    const igActive = document.querySelector('article video') ||
+                     document.querySelector('div[role="dialog"] video') ||
+                     (window.location.hostname.includes('instagram.com') && (document.querySelector('video[src]') || document.querySelector('video')));
+    if (igActive) return igActive;
+
+    // 6. Largest visible video in viewport
     const visible = videos.find(v => {
       const r = v.getBoundingClientRect();
       return r.height > 100 && r.width > 100 && r.top < window.innerHeight && r.bottom > 0;
@@ -1316,7 +1323,7 @@
     .sm-camera-box {
       position: relative;
       width: 100%;
-      height: 220px;
+      height: 235px;
       background: #000000;
       border-radius: 12px;
       overflow: hidden;
@@ -1324,11 +1331,31 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
-    #smWebcamFeed, #smRecordedPlayback {
+    /* Vertical 9:16 Mobile View Mode (TikTok, Instagram Reels, YouTube Shorts) */
+    .sm-camera-box.sm-vertical-video {
+      height: 380px;
+      border-color: #1E3A8A;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(0, 0, 0, 0.9);
+    }
+
+    #smWebcamFeed {
       width: 100%;
       height: 100%;
+      object-fit: cover;
+    }
+
+    #smRecordedPlayback {
+      width: 100%;
+      height: 100%;
+      object-fit: contain; /* Full uncropped frame: perfectly preserves vertical 9:16 and horizontal 16:9 */
+      background: #000000;
+      transition: object-fit 0.2s ease;
+    }
+
+    #smRecordedPlayback.sm-fill-mode {
       object-fit: cover;
     }
 
@@ -1706,6 +1733,60 @@
       color: #FFFFFF;
       border-color: #EF4444;
       box-shadow: 0 0 16px rgba(239, 68, 68, 0.6);
+      transform: translateY(-1px);
+    }
+
+    /* Floating Playback Top-Right Toolbar (Format Badge + Fit/Fill Mode Toggle) */
+    .sm-floating-playback-tools {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      z-index: 15;
+    }
+
+    .sm-video-format-pill {
+      background: rgba(10, 16, 29, 0.88);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(59, 130, 246, 0.45);
+      color: #93C5FD;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      letter-spacing: -0.01em;
+      pointer-events: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .sm-btn-floating-aspect {
+      background: rgba(10, 16, 29, 0.88);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(59, 130, 246, 0.45);
+      color: #60A5FA;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 10.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      letter-spacing: -0.01em;
+    }
+
+    .sm-btn-floating-aspect:hover {
+      background: rgba(37, 99, 235, 0.35);
+      color: #FFFFFF;
+      border-color: #3B82F6;
+      box-shadow: 0 0 14px rgba(37, 99, 235, 0.5);
       transform: translateY(-1px);
     }
 
@@ -2714,6 +2795,17 @@
               <span>Delete Video</span>
             </button>
 
+            <!-- Floating Playback Top-Right Toolbar (Format Badge + Fit/Fill Mode Toggle) -->
+            <div class="sm-floating-playback-tools" id="smFloatingPlaybackTools" style="display: none;">
+              <span class="sm-video-format-pill" id="smVideoFormatBadge">📱 9:16 Vertical</span>
+              <button class="sm-btn-floating-aspect" id="smFloatingAspectBtn" title="Toggle between Fit (Full Frame 100% Uncropped) and Fill (Zoom to Box)">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path>
+                </svg>
+                <span id="smFloatingAspectText">↔️ Fit</span>
+              </button>
+            </div>
+
             <!-- Snip Helper Overlay (Shown in Snip Mode before recording) -->
             <div class="sm-snip-helper-overlay" id="smSnipHelperOverlay">
               <div class="sm-snip-helper-badge">
@@ -3071,6 +3163,68 @@
     const reSnipBtn = sidebar.querySelector('#smReSnipBtn');
     const deleteClipBtn = sidebar.querySelector('#smDeleteClipBtn');
     const floatingDeleteBtn = sidebar.querySelector('#smFloatingDeleteBtn');
+    const cameraBox = sidebar.querySelector('#smCameraBox');
+    const floatingPlaybackTools = sidebar.querySelector('#smFloatingPlaybackTools');
+    const videoFormatBadge = sidebar.querySelector('#smVideoFormatBadge');
+    const floatingAspectBtn = sidebar.querySelector('#smFloatingAspectBtn');
+    const floatingAspectText = sidebar.querySelector('#smFloatingAspectText');
+    let isFillMode = false;
+
+    function updateStudioAspect() {
+      const pageVideo = getActivePageVideo();
+      const isVertPlatform = currentContext.platform === 'TikTok' ||
+                             currentContext.platform === 'Instagram Reels' ||
+                             currentContext.platform === 'YouTube Shorts' ||
+                             window.location.pathname.includes('/shorts/') ||
+                             window.location.pathname.includes('/reel/') ||
+                             window.location.hostname.includes('tiktok.com') ||
+                             window.location.hostname.includes('instagram.com');
+      const isVertVideo = pageVideo && pageVideo.videoHeight > 0 && (pageVideo.videoHeight > pageVideo.videoWidth);
+
+      // Check loaded playback dimensions if available
+      let isPlaybackVert = false;
+      if (recordedPlayback && recordedPlayback.videoHeight > 0 && recordedPlayback.videoWidth > 0) {
+        isPlaybackVert = recordedPlayback.videoHeight > recordedPlayback.videoWidth;
+      }
+
+      const isVertical = isPlaybackVert || isVertPlatform || isVertVideo;
+
+      if (cameraBox) {
+        if (studioRecordMode === 'webcam' && !recordedBlobUrl) {
+          // Standard webcam view
+          cameraBox.classList.remove('sm-vertical-video');
+          if (videoFormatBadge) videoFormatBadge.textContent = '🖥️ Webcam';
+        } else if (isVertical) {
+          cameraBox.classList.add('sm-vertical-video');
+          if (videoFormatBadge) videoFormatBadge.textContent = '📱 9:16 Vertical';
+        } else {
+          cameraBox.classList.remove('sm-vertical-video');
+          if (videoFormatBadge) videoFormatBadge.textContent = '🖥️ 16:9 Landscape';
+        }
+      }
+    }
+
+    function toggleAspectMode() {
+      if (!recordedPlayback) return;
+      isFillMode = !isFillMode;
+      if (isFillMode) {
+        recordedPlayback.classList.add('sm-fill-mode');
+        if (floatingAspectText) floatingAspectText.textContent = '↕️ Fill';
+        showToast('Framing: Fill Box (Cropped Zoom)');
+      } else {
+        recordedPlayback.classList.remove('sm-fill-mode');
+        if (floatingAspectText) floatingAspectText.textContent = '↔️ Fit';
+        showToast('Framing: Full Frame (100% Uncropped)');
+      }
+    }
+
+    if (floatingAspectBtn) floatingAspectBtn.onclick = toggleAspectMode;
+
+    if (recordedPlayback) {
+      recordedPlayback.onloadedmetadata = () => {
+        updateStudioAspect();
+      };
+    }
 
     const webcamControlsPanel = sidebar.querySelector('#smWebcamControlsPanel');
     const startRecBtn = sidebar.querySelector('#smStartRecBtn');
@@ -3108,15 +3262,20 @@
           if (snipControlsPanel) snipControlsPanel.style.display = 'none';
           if (snipReviewPanel) snipReviewPanel.style.display = 'flex';
           if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'inline-flex';
+          if (floatingPlaybackTools) floatingPlaybackTools.style.display = 'flex';
+          if (recTimer) recTimer.style.display = 'none';
         } else {
           if (recordedPlayback) recordedPlayback.style.display = 'none';
           if (snipHelperOverlay) snipHelperOverlay.style.display = 'flex';
           if (snipControlsPanel) snipControlsPanel.style.display = 'flex';
           if (snipReviewPanel) snipReviewPanel.style.display = 'none';
           if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'none';
+          if (floatingPlaybackTools) floatingPlaybackTools.style.display = 'none';
+          if (recTimer) recTimer.style.display = 'block';
         }
         if (webcamControlsPanel) webcamControlsPanel.style.display = 'none';
         if (recTimer) recTimer.textContent = '00:00 / 00:05';
+        updateStudioAspect();
       } else {
         // Webcam Mode
         if (tabWebcam) tabWebcam.classList.add('active');
@@ -3137,12 +3296,17 @@
           if (downloadVideoBtn) downloadVideoBtn.style.display = 'flex';
           if (deleteWebcamBtn) deleteWebcamBtn.style.display = 'flex';
           if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'inline-flex';
+          if (floatingPlaybackTools) floatingPlaybackTools.style.display = 'flex';
+          if (recTimer) recTimer.style.display = 'none';
         } else {
           initWebcamStream();
           if (deleteWebcamBtn) deleteWebcamBtn.style.display = 'none';
           if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'none';
+          if (floatingPlaybackTools) floatingPlaybackTools.style.display = 'none';
+          if (recTimer) recTimer.style.display = 'block';
         }
         if (recTimer) recTimer.textContent = '00:00 / 00:30';
+        updateStudioAspect();
       }
     }
 
@@ -3226,9 +3390,12 @@
           }
 
           if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'inline-flex';
+          if (floatingPlaybackTools) floatingPlaybackTools.style.display = 'flex';
+          if (recTimer) recTimer.style.display = 'none';
           if (recBadge) recBadge.classList.remove('active');
           if (snipControlsPanel) snipControlsPanel.style.display = 'none';
           if (snipReviewPanel) snipReviewPanel.style.display = 'flex';
+          updateStudioAspect();
           showToast('✂️ Viral Clip Captured!');
         };
 
@@ -3240,6 +3407,9 @@
         isSnipping = true;
         snipSeconds = 0;
         if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'none';
+        if (floatingPlaybackTools) floatingPlaybackTools.style.display = 'none';
+        if (recTimer) recTimer.style.display = 'block';
+        updateStudioAspect();
 
         if (recBadge) {
           recBadge.classList.add('active');
@@ -3408,7 +3578,10 @@
           recordedPlayback.load();
         } catch (e) {}
         recordedPlayback.style.display = 'none';
+        recordedPlayback.classList.remove('sm-fill-mode');
       }
+      isFillMode = false;
+      if (floatingAspectText) floatingAspectText.textContent = '↔️ Fit';
 
       if (snippedBlobUrl) {
         try { URL.revokeObjectURL(snippedBlobUrl); } catch (e) {}
@@ -3423,17 +3596,21 @@
       snipChunks = [];
 
       if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'none';
+      if (floatingPlaybackTools) floatingPlaybackTools.style.display = 'none';
+      if (recTimer) recTimer.style.display = 'block';
 
       if (studioRecordMode === 'snip') {
         if (snipHelperOverlay) snipHelperOverlay.style.display = 'flex';
         if (snipControlsPanel) snipControlsPanel.style.display = 'flex';
         if (snipReviewPanel) snipReviewPanel.style.display = 'none';
         if (recTimer) recTimer.textContent = '00:00 / 00:05';
+        updateStudioAspect();
         showToast('🗑️ Video clip deleted');
       } else {
         if (downloadVideoBtn) downloadVideoBtn.style.display = 'none';
         if (deleteWebcamBtn) deleteWebcamBtn.style.display = 'none';
         initWebcamStream();
+        updateStudioAspect();
         showToast('🗑️ Webcam video deleted');
       }
     }
@@ -3515,16 +3692,21 @@
           }
 
           if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'inline-flex';
+          if (floatingPlaybackTools) floatingPlaybackTools.style.display = 'flex';
+          if (recTimer) recTimer.style.display = 'none';
           if (startRecBtn) startRecBtn.style.display = 'none';
           if (stopRecBtn) stopRecBtn.style.display = 'none';
           if (downloadVideoBtn) downloadVideoBtn.style.display = 'flex';
           if (deleteWebcamBtn) deleteWebcamBtn.style.display = 'flex';
+          updateStudioAspect();
         };
 
         mediaRecorder.start();
         isRecording = true;
         recordingSeconds = 0;
         if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'none';
+        if (floatingPlaybackTools) floatingPlaybackTools.style.display = 'none';
+        if (recTimer) recTimer.style.display = 'block';
         if (deleteWebcamBtn) deleteWebcamBtn.style.display = 'none';
         if (startRecBtn) startRecBtn.style.display = 'none';
         if (stopRecBtn) stopRecBtn.style.display = 'flex';
@@ -4076,5 +4258,5 @@
     });
   }
 
-  console.log('[StitchMatrix] Blendr Cyber-Cobalt Obsidian Studio v3.9.1 loaded.');
+  console.log('[StitchMatrix] Blendr Cyber-Cobalt Obsidian Studio v3.9.2 loaded.');
 })();
