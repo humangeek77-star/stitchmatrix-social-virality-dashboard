@@ -396,11 +396,14 @@ Format strictly as 01 | Hook Element, 02 | Core Thesis, 03 | Retentive Call-To-A
     if (url.pathname === '/api/tts') {
       try {
         let text = '';
+        let voice = 'orion';
         if (request.method === 'POST') {
           const body = await request.json();
           text = body.text || '';
+          voice = body.voice || 'orion';
         } else {
           text = url.searchParams.get('text') || '';
+          voice = url.searchParams.get('voice') || 'orion';
         }
 
         if (!text || text.trim().length === 0) {
@@ -417,6 +420,68 @@ Format strictly as 01 | Hook Element, 02 | Core Thesis, 03 | Retentive Call-To-A
           .replace(/https?:\/\/\S+/g, '')
           .replace(/[*_~`]/g, '')
           .trim();
+
+        // 1. Attempt High-Fidelity Cloudflare Workers AI Deepgram Aura Neural TTS
+        if (env && env.AI) {
+          try {
+            const auraSpeakers = {
+              'orion': 'orion',
+              'asteria': 'asteria',
+              'luna': 'luna',
+              'stella': 'stella',
+              'athena': 'athena',
+              'hera': 'hera',
+              'arcas': 'arcas',
+              'perseus': 'perseus',
+              'angus': 'angus',
+              'orpheus': 'orpheus'
+            };
+
+            const selectedSpeaker = auraSpeakers[voice.toLowerCase()];
+            if (selectedSpeaker) {
+              const aiAudio = await env.AI.run('@cf/deepgram/aura-1', {
+                text: cleanText.slice(0, 1000),
+                speaker: selectedSpeaker
+              });
+
+              if (aiAudio) {
+                return new Response(aiAudio, {
+                  headers: {
+                    ...CORS_HEADERS,
+                    'Content-Type': 'audio/mpeg',
+                    'Content-Disposition': `attachment; filename="stitchmatrix-${selectedSpeaker}-voiceover.mp3"`,
+                    'Cache-Control': 'public, max-age=86400'
+                  }
+                });
+              }
+            }
+          } catch (aiErr) {
+            console.warn('[StitchMatrix] Cloudflare Workers AI Aura TTS attempt failed, falling back to dialect TTS:', aiErr);
+          }
+        }
+
+        // 2. High-Performance Dialect TTS Fallback Matrix
+        const dialectMap = {
+          'orion': 'en-US',
+          'asteria': 'en-US',
+          'luna': 'en-US',
+          'stella': 'en-US',
+          'athena': 'en-US',
+          'hera': 'en-US',
+          'arcas': 'en-US',
+          'perseus': 'en-US',
+          'angus': 'en-GB',
+          'orpheus': 'en-GB',
+          'us': 'en-US',
+          'uk': 'en-GB',
+          'au': 'en-AU',
+          'ca': 'en-CA',
+          'in': 'en-IN',
+          'es': 'es-US',
+          'fr': 'fr-FR'
+        };
+
+        const targetLang = dialectMap[voice.toLowerCase()] || (voice.includes('-') ? voice : 'en-US');
 
         // Split into sentences / chunks under 180 chars
         const chunks = [];
@@ -453,7 +518,7 @@ Format strictly as 01 | Hook Element, 02 | Core Thesis, 03 | Retentive Call-To-A
         const activeChunks = chunks.slice(0, 15);
         const audioBuffers = await Promise.all(
           activeChunks.map(async (chunk) => {
-            const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(chunk)}`;
+            const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${encodeURIComponent(targetLang)}&client=tw-ob&q=${encodeURIComponent(chunk)}`;
             const res = await fetch(ttsUrl, {
               headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
@@ -477,7 +542,7 @@ Format strictly as 01 | Hook Element, 02 | Core Thesis, 03 | Retentive Call-To-A
           headers: {
             ...CORS_HEADERS,
             'Content-Type': 'audio/mpeg',
-            'Content-Disposition': 'attachment; filename="stitchmatrix-ai-voiceover.mp3"',
+            'Content-Disposition': `attachment; filename="stitchmatrix-${voice}-voiceover.mp3"`,
             'Cache-Control': 'public, max-age=86400'
           }
         });

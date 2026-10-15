@@ -7,3 +7,6 @@ compatibility_flags = ["nodejs_compat"]
 ENVIRONMENT = "production"
 DEFAULT_ALIGNMENT_SCORE = "94.2%"
 DEFAULT_CLUSTER_NODE = "cluster://us-east-viral.stitch.matrix:8080"
+
+[ai]
+binding = "AI"

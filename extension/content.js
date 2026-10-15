@@ -1,5 +1,5 @@
 /**
- * StitchMatrix — Qubora Emerald Obsidian Studio v3.8.1
+ * StitchMatrix — Qubora Emerald Obsidian Studio v3.8.2
  * Chrome Extension Manifest V3 In-DOM Sidebar Engine
  * Features:
  * - Viral Video Snipper & Hook Clipper (Snip 5s/10s hooks directly from playing videos for faceless shorts)
@@ -608,6 +608,10 @@
   let currentVoiceBlob = null;
   let currentVoiceBlobUrl = null;
   let isGeneratingVoice = false;
+  let selectedVoiceId = localStorage.getItem('sm_selected_voice') || 'orion';
+  let voiceVolume = parseFloat(localStorage.getItem('sm_voice_volume') || '1.0');
+  let lastNonZeroVoiceVolume = voiceVolume > 0 ? voiceVolume : 1.0;
+  let snipVideoVolume = 0.0;
 
   // Create Host Container
   const host = document.createElement('div');
@@ -1980,6 +1984,191 @@
       background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
     }
 
+    /* Voice Selection & Volume Controls */
+    .sm-voice-select-card {
+      background: #090E0B;
+      border: 1px solid #16241B;
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .sm-voice-select-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .sm-voice-select-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #34D399;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .sm-voice-chip {
+      font-size: 9.5px;
+      font-weight: 600;
+      color: #6EE7B7;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      padding: 2px 7px;
+      border-radius: 9999px;
+    }
+
+    .sm-voice-dropdown {
+      width: 100%;
+      background: #040604;
+      border: 1px solid #1E3324;
+      border-radius: 7px;
+      padding: 8px 10px;
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .sm-voice-dropdown:focus {
+      border-color: #10B981;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.35);
+    }
+
+    .sm-voice-dropdown optgroup {
+      background: #060907;
+      color: #34D399;
+      font-weight: 700;
+    }
+
+    .sm-voice-dropdown option {
+      background: #080D09;
+      color: #E2E8F0;
+      padding: 6px 10px;
+    }
+
+    /* Volume Control Bars */
+    .sm-voice-volume-panel {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #070B08;
+      border: 1px solid #142018;
+      border-radius: 8px;
+      padding: 7px 12px;
+    }
+
+    .sm-vol-icon-btn {
+      background: transparent;
+      border: none;
+      color: #34D399;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      user-select: none;
+      transition: transform 0.15s ease;
+    }
+
+    .sm-vol-icon-btn:hover {
+      transform: scale(1.15);
+    }
+
+    .sm-vol-slider-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .sm-volume-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 5px;
+      background: #142217;
+      border-radius: 9999px;
+      outline: none;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .sm-volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
+      cursor: pointer;
+      border: 2px solid #FFFFFF;
+      transition: all 0.15s ease;
+    }
+
+    .sm-volume-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      background: #34D399;
+    }
+
+    .sm-vol-number {
+      font-size: 11px;
+      font-weight: 700;
+      color: #9CA3AF;
+      min-width: 34px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Snipper Dual-Track Volume Matrix */
+    .sm-snip-volume-matrix {
+      background: #070A08;
+      border: 1px solid #141F17;
+      border-radius: 8px;
+      padding: 8px 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .sm-snip-volume-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sm-snip-vol-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #94A3B8;
+      min-width: 78px;
+    }
+
+    .sm-slider-mini {
+      flex: 1;
+      height: 4px;
+    }
+
+    .sm-slider-mini::-webkit-slider-thumb {
+      width: 11px;
+      height: 11px;
+    }
+
+    .sm-snip-vol-val {
+      font-size: 10px;
+      font-weight: 700;
+      color: #34D399;
+      min-width: 36px;
+      text-align: right;
+    }
+
     /* Toast Notification */
     .sm-toast {
       position: absolute;
@@ -2062,7 +2251,7 @@
       .trim();
   }
 
-  async function fetchAudioTts(rawText) {
+  async function fetchAudioTts(rawText, voiceId = selectedVoiceId) {
     const cleanText = prepareTtsText(rawText);
     if (!cleanText) {
       throw new Error('Please enter script text to generate voiceover narration.');
@@ -2073,7 +2262,7 @@
       const res = await fetch(`${WORKER_BASE}/api/tts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: cleanText })
+        body: JSON.stringify({ text: cleanText, voice: voiceId })
       });
       if (res.ok) {
         return await res.blob();
@@ -2085,7 +2274,7 @@
     // Attempt 2: Background Service Worker Proxy (immune to web page CSP)
     return new Promise((resolve, reject) => {
       if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
-        chrome.runtime.sendMessage({ action: 'API_PROXY_TTS', text: cleanText }, (response) => {
+        chrome.runtime.sendMessage({ action: 'API_PROXY_TTS', text: cleanText, voice: voiceId }, (response) => {
           if (chrome.runtime.lastError) {
             return reject(new Error(chrome.runtime.lastError.message));
           }
@@ -2455,6 +2644,20 @@
               <span id="smSyncPlayIcon">▶</span>
               <span id="smSyncPlayText">Play with AI Voiceover</span>
             </button>
+
+            <!-- Dual-Track Volume Mixer -->
+            <div class="sm-snip-volume-matrix">
+              <div class="sm-snip-volume-row">
+                <span class="sm-snip-vol-label">🎙️ Voiceover:</span>
+                <input type="range" class="sm-volume-slider sm-slider-mini" id="smSnipVoiceVolSlider" min="0" max="100" value="${Math.round(voiceVolume * 100)}" title="AI Voiceover volume">
+                <span class="sm-snip-vol-val" id="smSnipVoiceVolVal">${Math.round(voiceVolume * 100)}%</span>
+              </div>
+              <div class="sm-snip-volume-row">
+                <span class="sm-snip-vol-label">🎬 Video Sound:</span>
+                <input type="range" class="sm-volume-slider sm-slider-mini" id="smSnipVideoVolSlider" min="0" max="100" value="0" title="Original Video volume (0% = Muted)">
+                <span class="sm-snip-vol-val" id="smSnipVideoVolVal">Muted</span>
+              </div>
+            </div>
             
             <div class="sm-snip-download-grid">
               <button class="sm-btn-download-clip" id="smDownloadClipBtn" title="Download pure HD video clip (.webm)">
@@ -2553,6 +2756,35 @@
             </div>
           </div>
 
+          <!-- Voice Selection Card -->
+          <div class="sm-voice-select-card">
+            <div class="sm-voice-select-head">
+              <span class="sm-voice-select-title">🎙️ AI Narrator Voice:</span>
+              <span class="sm-voice-chip" id="smActiveVoiceBadge">Neural AI • Ultra-Realistic</span>
+            </div>
+            <div class="sm-voice-select-wrapper">
+              <select class="sm-voice-dropdown" id="smVoiceSelect" title="Select ultra-realistic voice">
+                <optgroup label="🚀 Neural AI Voices (Ultra-Realistic Deepgram Aura)">
+                  <option value="orion" ${selectedVoiceId === 'orion' ? 'selected' : ''}>🔥 Orion — Viral Creator (Male • Punchy & High-Energy)</option>
+                  <option value="asteria" ${selectedVoiceId === 'asteria' ? 'selected' : ''}>✨ Asteria — Studio Pro (Female • Clear & Polished)</option>
+                  <option value="luna" ${selectedVoiceId === 'luna' ? 'selected' : ''}>🎙️ Luna — Conversational (Female • Warm & Natural)</option>
+                  <option value="stella" ${selectedVoiceId === 'stella' ? 'selected' : ''}>⚡ Stella — Trendy & Upbeat (Female • Dynamic)</option>
+                  <option value="perseus" ${selectedVoiceId === 'perseus' ? 'selected' : ''}>🎯 Perseus — Bold Hook (Male • Direct & Authoritative)</option>
+                  <option value="arcas" ${selectedVoiceId === 'arcas' ? 'selected' : ''}>☕ Arcas — Smooth Storyteller (Male • Calm & Intellectual)</option>
+                  <option value="athena" ${selectedVoiceId === 'athena' ? 'selected' : ''}>🏛️ Athena — Executive Leader (Female • Confident & Deep)</option>
+                  <option value="angus" ${selectedVoiceId === 'angus' ? 'selected' : ''}>🇬🇧 Angus — British Documentary (Male • Rich & Thoughtful)</option>
+                  <option value="orpheus" ${selectedVoiceId === 'orpheus' ? 'selected' : ''}>🎬 Orpheus — Cinematic Master (Male • Dramatic Hook)</option>
+                  <option value="hera" ${selectedVoiceId === 'hera' ? 'selected' : ''}>💎 Hera — Sophisticated (Female • Crisp & Elegant)</option>
+                </optgroup>
+                <optgroup label="🌍 Global Dialects & International">
+                  <option value="au" ${selectedVoiceId === 'au' ? 'selected' : ''}>🇦🇺 Liam — Australian Chill (Male • Casual Storyteller)</option>
+                  <option value="es" ${selectedVoiceId === 'es' ? 'selected' : ''}>🇪🇸 Mateo — Spanish / International (Male • Melodic)</option>
+                  <option value="fr" ${selectedVoiceId === 'fr' ? 'selected' : ''}>🇫🇷 Camille — French Elegance (Female • Chic European)</option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+
           <div class="sm-voice-script-box">
             <div class="sm-voice-script-label">NARRATION SCRIPT:</div>
             <div class="sm-voice-script-text" id="smVoiceScriptText"></div>
@@ -2561,6 +2793,17 @@
           <audio id="smTtsAudio" preload="auto" style="display:none;"></audio>
 
           <div class="sm-voice-controls">
+            <!-- Volume Control Bar -->
+            <div class="sm-voice-volume-panel">
+              <button class="sm-vol-icon-btn" id="smVoiceVolumeMuteBtn" title="Click to mute/unmute audio">
+                <span id="smVoiceVolumeIcon">🔊</span>
+              </button>
+              <div class="sm-vol-slider-wrap">
+                <input type="range" class="sm-volume-slider" id="smVoiceVolumeSlider" min="0" max="100" value="${Math.round(voiceVolume * 100)}" title="Adjust playback volume">
+              </div>
+              <span class="sm-vol-number" id="smVoiceVolumePercent">${Math.round(voiceVolume * 100)}%</span>
+            </div>
+
             <div class="sm-voice-action-row" id="smVoiceActionRow" style="display: none;">
               <button class="sm-btn-voice-play" id="smVoicePlayBtn" title="Play or pause audio preview">
                 <span id="smVoicePlayIcon">▶</span>
@@ -2915,12 +3158,14 @@
 
       if (recordedPlayback) {
         recordedPlayback.currentTime = 0;
-        recordedPlayback.muted = true; // Mute video so AI voiceover takes center stage
+        recordedPlayback.volume = snipVideoVolume;
+        recordedPlayback.muted = (snipVideoVolume === 0);
         recordedPlayback.play();
       }
 
       if (ttsAudio) {
         ttsAudio.currentTime = 0;
+        ttsAudio.volume = voiceVolume;
         ttsAudio.play().catch(e => console.log('Audio play error:', e));
       }
 
@@ -3262,13 +3507,14 @@
       if (voiceActionRow) voiceActionRow.style.display = 'none';
 
       try {
-        const blob = await fetchAudioTts(narrationText);
+        const blob = await fetchAudioTts(narrationText, selectedVoiceId);
         currentVoiceBlob = blob;
         if (currentVoiceBlobUrl) URL.revokeObjectURL(currentVoiceBlobUrl);
         currentVoiceBlobUrl = URL.createObjectURL(blob);
 
         if (ttsAudio) {
           ttsAudio.src = currentVoiceBlobUrl;
+          ttsAudio.volume = voiceVolume;
           ttsAudio.load();
         }
 
@@ -3283,6 +3529,7 @@
         // Auto-play audio preview
         if (ttsAudio) {
           try {
+            ttsAudio.volume = voiceVolume;
             await ttsAudio.play();
             if (soundwaves) soundwaves.classList.add('playing');
             if (voicePlayIcon) voicePlayIcon.textContent = '⏸';
@@ -3343,6 +3590,7 @@
     if (voicePlayBtn && ttsAudio) {
       voicePlayBtn.onclick = () => {
         if (ttsAudio.paused) {
+          ttsAudio.volume = voiceVolume;
           ttsAudio.play().catch(e => console.warn(e));
         } else {
           ttsAudio.pause();
@@ -3360,7 +3608,7 @@
           .replace(/[^a-z0-9]+/g, '-')
           .replace(/^-|-$/g, '')
           .slice(0, 32);
-        a.download = `stitchmatrix-${cleanTitle || 'voiceover'}-${Date.now()}.mp3`;
+        a.download = `stitchmatrix-${selectedVoiceId}-${cleanTitle || 'voiceover'}-${Date.now()}.mp3`;
         a.click();
         showToast('💾 Voiceover MP3 downloaded!');
       };
@@ -3384,6 +3632,95 @@
 
     if (closeVoiceoverBtn) {
       closeVoiceoverBtn.onclick = cleanupVoiceover;
+    }
+
+    // Voice Selector Listener
+    const voiceSelect = sidebar.querySelector('#smVoiceSelect');
+    const voiceBadge = sidebar.querySelector('#smActiveVoiceBadge');
+    if (voiceSelect) {
+      voiceSelect.value = selectedVoiceId;
+      voiceSelect.onchange = () => {
+        selectedVoiceId = voiceSelect.value;
+        localStorage.setItem('sm_selected_voice', selectedVoiceId);
+        if (voiceBadge) {
+          if (['orion', 'asteria', 'luna', 'stella', 'perseus', 'arcas', 'athena', 'angus', 'orpheus', 'hera'].includes(selectedVoiceId)) {
+            voiceBadge.textContent = 'Neural AI • Ultra-Realistic';
+            voiceBadge.style.color = '#6EE7B7';
+          } else {
+            voiceBadge.textContent = 'International Dialect';
+            voiceBadge.style.color = '#38BDF8';
+          }
+        }
+        const optText = voiceSelect.options[voiceSelect.selectedIndex]?.text || selectedVoiceId;
+        showToast(`🎙️ Voice: ${optText.split('—')[0].trim()}`);
+      };
+    }
+
+    // Voiceover Volume Control
+    const voiceVolSlider = sidebar.querySelector('#smVoiceVolumeSlider');
+    const voiceVolPercent = sidebar.querySelector('#smVoiceVolumePercent');
+    const voiceVolIcon = sidebar.querySelector('#smVoiceVolumeIcon');
+    const voiceVolMuteBtn = sidebar.querySelector('#smVoiceVolumeMuteBtn');
+
+    function applyVoiceVolume(vol) {
+      voiceVolume = Math.max(0, Math.min(1, vol));
+      if (ttsAudio) ttsAudio.volume = voiceVolume;
+      const pct = Math.round(voiceVolume * 100);
+      if (voiceVolSlider) voiceVolSlider.value = pct;
+      if (voiceVolPercent) voiceVolPercent.textContent = pct + '%';
+      if (voiceVolIcon) {
+        if (voiceVolume === 0) voiceVolIcon.textContent = '🔇';
+        else if (voiceVolume < 0.5) voiceVolIcon.textContent = '🔉';
+        else voiceVolIcon.textContent = '🔊';
+      }
+      localStorage.setItem('sm_voice_volume', voiceVolume.toString());
+    }
+
+    if (voiceVolSlider) {
+      voiceVolSlider.value = Math.round(voiceVolume * 100);
+      voiceVolSlider.oninput = () => {
+        const val = parseInt(voiceVolSlider.value, 10);
+        applyVoiceVolume(val / 100);
+        if (voiceVolume > 0) lastNonZeroVoiceVolume = voiceVolume;
+      };
+    }
+
+    if (voiceVolMuteBtn) {
+      voiceVolMuteBtn.onclick = () => {
+        if (voiceVolume > 0) {
+          lastNonZeroVoiceVolume = voiceVolume;
+          applyVoiceVolume(0);
+        } else {
+          applyVoiceVolume(lastNonZeroVoiceVolume || 1.0);
+        }
+      };
+    }
+
+    // Snipper Dual-Track Mixer Sliders
+    const snipVoiceVolSlider = sidebar.querySelector('#smSnipVoiceVolSlider');
+    const snipVoiceVolVal = sidebar.querySelector('#smSnipVoiceVolVal');
+    const snipVideoVolSlider = sidebar.querySelector('#smSnipVideoVolSlider');
+    const snipVideoVolVal = sidebar.querySelector('#smSnipVideoVolVal');
+
+    if (snipVoiceVolSlider) {
+      snipVoiceVolSlider.value = Math.round(voiceVolume * 100);
+      snipVoiceVolSlider.oninput = () => {
+        const val = parseInt(snipVoiceVolSlider.value, 10);
+        applyVoiceVolume(val / 100);
+        if (snipVoiceVolVal) snipVoiceVolVal.textContent = val + '%';
+      };
+    }
+
+    if (snipVideoVolSlider) {
+      snipVideoVolSlider.oninput = () => {
+        const val = parseInt(snipVideoVolSlider.value, 10);
+        snipVideoVolume = val / 100;
+        if (recordedPlayback) {
+          recordedPlayback.volume = snipVideoVolume;
+          recordedPlayback.muted = (val === 0);
+        }
+        if (snipVideoVolVal) snipVideoVolVal.textContent = val === 0 ? 'Muted' : val + '%';
+      };
     }
   }
 
@@ -3541,5 +3878,5 @@
     });
   }
 
-  console.log('[StitchMatrix] Multi-Platform Real-Time Studio v3.8.1 loaded.');
+  console.log('[StitchMatrix] Multi-Platform Real-Time Studio v3.8.2 loaded.');
 })();

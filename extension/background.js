@@ -64,7 +64,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     fetch('https://stitchmatrix-api.humangeek77.workers.dev/api/tts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: request.text })
+      body: JSON.stringify({ text: request.text, voice: request.voice || 'orion' })
     })
       .then(async r => {
         if (!r.ok) {
