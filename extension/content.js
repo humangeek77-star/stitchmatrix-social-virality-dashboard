@@ -1,8 +1,9 @@
 /**
- * StitchMatrix — Blendr Cyber-Cobalt Obsidian Studio v3.9.0
+ * StitchMatrix — Blendr Cyber-Cobalt Obsidian Studio v3.9.1
  * Chrome Extension Manifest V3 In-DOM Sidebar Engine
  * Features:
  * - Viral Video Snipper & Hook Clipper (Snip 5s/10s hooks directly from playing videos for faceless shorts)
+ * - 1-Click Instant Video Delete & Discard (Floating overlay button & review panel controls)
  * - 1-Click AI Voiceover Studio (Continuous MP3 Narration, zero camera/mic required)
  * - Dual-Playback Synced Preview (Play snipped viral video + AI Voiceover in sync)
  * - Built-in Webcam Teleprompter Studio & In-Browser Video Recorder (Face Mode)
@@ -1601,12 +1602,42 @@
       border-color: #38BDF8;
     }
 
+    .sm-snip-discard-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .sm-btn-delete-clip {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #FCA5A5;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 11.5px;
+      font-weight: 650;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      letter-spacing: -0.01em;
+    }
+
+    .sm-btn-delete-clip:hover {
+      background: rgba(239, 68, 68, 0.25);
+      color: #FFFFFF;
+      border-color: #EF4444;
+      box-shadow: 0 0 14px rgba(239, 68, 68, 0.35);
+    }
+
     .sm-btn-resnip {
       background: transparent;
       border: 1px solid #1E2E4E;
       color: #94A3B8;
       border-radius: 8px;
-      padding: 7px;
+      padding: 8px 10px;
       font-size: 11px;
       font-weight: 600;
       cursor: pointer;
@@ -1620,6 +1651,62 @@
     .sm-btn-resnip:hover {
       color: #E2E8F0;
       border-color: #60A5FA;
+    }
+
+    .sm-btn-delete-webcam {
+      width: 100%;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #FCA5A5;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 12.5px;
+      font-weight: 650;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      letter-spacing: -0.01em;
+    }
+
+    .sm-btn-delete-webcam:hover {
+      background: rgba(239, 68, 68, 0.25);
+      color: #FFFFFF;
+      border-color: #EF4444;
+      box-shadow: 0 0 14px rgba(239, 68, 68, 0.35);
+    }
+
+    /* Floating Delete Video Button inside Camera Box */
+    .sm-btn-floating-delete {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(10, 16, 29, 0.88);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      color: #FCA5A5;
+      border-radius: 6px;
+      padding: 4px 9px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      gap: 5px;
+      z-index: 15;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+      letter-spacing: -0.01em;
+    }
+
+    .sm-btn-floating-delete:hover {
+      background: rgba(220, 38, 38, 0.95);
+      color: #FFFFFF;
+      border-color: #EF4444;
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.6);
+      transform: translateY(-1px);
     }
 
     /* Webcam Controls */
@@ -2616,6 +2703,17 @@
             <video id="smWebcamFeed" autoplay muted playsinline style="display:none;"></video>
             <video id="smRecordedPlayback" controls playsinline style="display: none;"></video>
 
+            <!-- Floating Delete Video Button (Directly on Video) -->
+            <button class="sm-btn-floating-delete" id="smFloatingDeleteBtn" title="Delete & discard this video" style="display: none;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+              <span>Delete Video</span>
+            </button>
+
             <!-- Snip Helper Overlay (Shown in Snip Mode before recording) -->
             <div class="sm-snip-helper-overlay" id="smSnipHelperOverlay">
               <div class="sm-snip-helper-badge">
@@ -2707,9 +2805,20 @@
               </button>
             </div>
 
-            <button class="sm-btn-resnip" id="smReSnipBtn" title="Discard and snip another clip">
-              <span>🔄 Snip Another Clip</span>
-            </button>
+            <div class="sm-snip-discard-row">
+              <button class="sm-btn-delete-clip" id="smDeleteClipBtn" title="Permanently delete and remove this video clip">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  <line x1="10" y1="11" x2="10" y2="17"></line>
+                  <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+                <span>Delete Video</span>
+              </button>
+              <button class="sm-btn-resnip" id="smReSnipBtn" title="Snip another clip from video">
+                <span>🔄 Snip Another</span>
+              </button>
+            </div>
           </div>
 
           <!-- Controls Panel 3: Webcam Controls (Shown only in Webcam tab) -->
@@ -2722,6 +2831,9 @@
             </button>
             <button class="sm-btn-download-video" id="smDownloadVideoBtn">
               <span>💾 Download Webcam Video File</span>
+            </button>
+            <button class="sm-btn-delete-webcam" id="smDeleteWebcamBtn" style="display: none;" title="Delete recorded webcam video and re-record">
+              <span>🗑️ Delete Video & Re-Record</span>
             </button>
           </div>
         </div>
@@ -2957,11 +3069,14 @@
     const downloadClipBtn = sidebar.querySelector('#smDownloadClipBtn');
     const downloadVoiceFastBtn = sidebar.querySelector('#smDownloadVoiceFastBtn');
     const reSnipBtn = sidebar.querySelector('#smReSnipBtn');
+    const deleteClipBtn = sidebar.querySelector('#smDeleteClipBtn');
+    const floatingDeleteBtn = sidebar.querySelector('#smFloatingDeleteBtn');
 
     const webcamControlsPanel = sidebar.querySelector('#smWebcamControlsPanel');
     const startRecBtn = sidebar.querySelector('#smStartRecBtn');
     const stopRecBtn = sidebar.querySelector('#smStopRecBtn');
     const downloadVideoBtn = sidebar.querySelector('#smDownloadVideoBtn');
+    const deleteWebcamBtn = sidebar.querySelector('#smDeleteWebcamBtn');
 
     function stopSyncPlayback() {
       if (isSyncPlaying) {
@@ -2992,11 +3107,13 @@
           }
           if (snipControlsPanel) snipControlsPanel.style.display = 'none';
           if (snipReviewPanel) snipReviewPanel.style.display = 'flex';
+          if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'inline-flex';
         } else {
           if (recordedPlayback) recordedPlayback.style.display = 'none';
           if (snipHelperOverlay) snipHelperOverlay.style.display = 'flex';
           if (snipControlsPanel) snipControlsPanel.style.display = 'flex';
           if (snipReviewPanel) snipReviewPanel.style.display = 'none';
+          if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'none';
         }
         if (webcamControlsPanel) webcamControlsPanel.style.display = 'none';
         if (recTimer) recTimer.textContent = '00:00 / 00:05';
@@ -3018,8 +3135,12 @@
           if (startRecBtn) startRecBtn.style.display = 'none';
           if (stopRecBtn) stopRecBtn.style.display = 'none';
           if (downloadVideoBtn) downloadVideoBtn.style.display = 'flex';
+          if (deleteWebcamBtn) deleteWebcamBtn.style.display = 'flex';
+          if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'inline-flex';
         } else {
           initWebcamStream();
+          if (deleteWebcamBtn) deleteWebcamBtn.style.display = 'none';
+          if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'none';
         }
         if (recTimer) recTimer.textContent = '00:00 / 00:30';
       }
@@ -3104,6 +3225,7 @@
             recordedPlayback.play().catch(e => console.log(e));
           }
 
+          if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'inline-flex';
           if (recBadge) recBadge.classList.remove('active');
           if (snipControlsPanel) snipControlsPanel.style.display = 'none';
           if (snipReviewPanel) snipReviewPanel.style.display = 'flex';
@@ -3117,6 +3239,7 @@
         snipRecorder.start();
         isSnipping = true;
         snipSeconds = 0;
+        if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'none';
 
         if (recBadge) {
           recBadge.classList.add('active');
@@ -3275,19 +3398,49 @@
       };
     }
 
-    if (reSnipBtn) {
-      reSnipBtn.onclick = () => {
-        stopSyncPlayback();
-        if (recordedPlayback) {
+    function deleteCurrentVideo() {
+      stopSyncPlayback();
+
+      if (recordedPlayback) {
+        try {
           recordedPlayback.pause();
-          recordedPlayback.style.display = 'none';
-        }
+          recordedPlayback.removeAttribute('src');
+          recordedPlayback.load();
+        } catch (e) {}
+        recordedPlayback.style.display = 'none';
+      }
+
+      if (snippedBlobUrl) {
+        try { URL.revokeObjectURL(snippedBlobUrl); } catch (e) {}
+        snippedBlobUrl = null;
+      }
+
+      if (recordedBlobUrl) {
+        try { URL.revokeObjectURL(recordedBlobUrl); } catch (e) {}
+        recordedBlobUrl = null;
+      }
+      recordedChunks = [];
+      snipChunks = [];
+
+      if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'none';
+
+      if (studioRecordMode === 'snip') {
         if (snipHelperOverlay) snipHelperOverlay.style.display = 'flex';
         if (snipControlsPanel) snipControlsPanel.style.display = 'flex';
         if (snipReviewPanel) snipReviewPanel.style.display = 'none';
         if (recTimer) recTimer.textContent = '00:00 / 00:05';
-      };
+        showToast('🗑️ Video clip deleted');
+      } else {
+        if (downloadVideoBtn) downloadVideoBtn.style.display = 'none';
+        if (deleteWebcamBtn) deleteWebcamBtn.style.display = 'none';
+        initWebcamStream();
+        showToast('🗑️ Webcam video deleted');
+      }
     }
+
+    if (deleteClipBtn) deleteClipBtn.onclick = deleteCurrentVideo;
+    if (reSnipBtn) reSnipBtn.onclick = deleteCurrentVideo;
+    if (floatingDeleteBtn) floatingDeleteBtn.onclick = deleteCurrentVideo;
 
     // WEBCAM STREAM & RECORDING LOGIC
     async function initWebcamStream() {
@@ -3361,14 +3514,18 @@
             recordedPlayback.play();
           }
 
+          if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'inline-flex';
           if (startRecBtn) startRecBtn.style.display = 'none';
           if (stopRecBtn) stopRecBtn.style.display = 'none';
           if (downloadVideoBtn) downloadVideoBtn.style.display = 'flex';
+          if (deleteWebcamBtn) deleteWebcamBtn.style.display = 'flex';
         };
 
         mediaRecorder.start();
         isRecording = true;
         recordingSeconds = 0;
+        if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'none';
+        if (deleteWebcamBtn) deleteWebcamBtn.style.display = 'none';
         if (startRecBtn) startRecBtn.style.display = 'none';
         if (stopRecBtn) stopRecBtn.style.display = 'flex';
         if (recBadge) {
@@ -3415,6 +3572,8 @@
         showToast('Webcam video downloaded!');
       };
     }
+
+    if (deleteWebcamBtn) deleteWebcamBtn.onclick = deleteCurrentVideo;
 
     // QR CODE MODAL LOGIC
     const openPhoneBtn = sidebar.querySelector('#smOpenPhoneBtn');
@@ -3917,5 +4076,5 @@
     });
   }
 
-  console.log('[StitchMatrix] Blendr Cyber-Cobalt Obsidian Studio v3.9.0 loaded.');
+  console.log('[StitchMatrix] Blendr Cyber-Cobalt Obsidian Studio v3.9.1 loaded.');
 })();
