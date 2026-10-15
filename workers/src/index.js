@@ -10,6 +10,81 @@ const CORS_HEADERS = {
   'Access-Control-Max-Age': '86400',
 };
 
+// In-memory script session store for fast, scannable QR codes
+const SCRIPT_STORE = new Map();
+
+function generateShortId() {
+  return 's' + Math.random().toString(36).substring(2, 8);
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function extractSubject(rawTitle) {
+  if (!rawTitle || rawTitle === 'Active Viral Video') return 'this viral moment';
+  let clean = rawTitle
+    .replace(/#\w+/g, '')
+    .replace(/\|.*$/g, '')
+    .replace(/\[.*?\]/g, '')
+    .replace(/\(.*?\)/g, '')
+    .replace(/[-–—].*$/g, '')
+    .replace(/\b(official trailer|episode \d+|reimagined|shorts|viral|4k|hd|part \d+)\b/gi, '')
+    .replace(/[^\w\s'&]/gi, '')
+    .trim();
+  if (clean.length < 3) clean = rawTitle.slice(0, 40).trim();
+  return clean;
+}
+
+function generateDynamicHashtags(rawTitle) {
+  const words = rawTitle
+    .replace(/[^\w\s]/gi, '')
+    .split(/\s+/)
+    .filter(w => w.length > 3 && !['this', 'that', 'with', 'from', 'have', 'were', 'what', 'epic', 'part', 'episode'].includes(w.toLowerCase()));
+  
+  const tags = words.slice(0, 3).map(w => '#' + w.charAt(0).toUpperCase() + w.slice(1));
+  tags.push('#ViralShorts', '#Trending');
+  return tags.join(' ');
+}
+
+function buildViralScripts(title) {
+  const subject = extractSubject(title);
+  const hashtags = generateDynamicHashtags(title);
+
+  return [
+    {
+      id: 'curiosity',
+      title: 'Curiosity Gap',
+      hook: `Nobody realized this secret about ${subject} until now. The real story behind what you're watching is blowing everyone's mind.`,
+      body: `While 99% of people scrolled right past this, there's a crazy detail hidden in plain sight. If you look closely at how this was constructed, everything changes. The creators specifically engineered this exact moment to trigger the algorithm and keep you glued to your screen.`,
+      cta: `Did you catch that detail on your first watch? Drop your theory in the comments and save this before it's taken down.`,
+      hashtags: hashtags
+    },
+    {
+      id: 'hot_take',
+      title: 'Hot Take',
+      hook: `Everyone is talking about ${subject}, but everyone is getting the entire story completely backwards. Here is the uncomfortable truth.`,
+      body: `People think this succeeded by luck. But look at the pattern: the first 2 seconds drops you directly into peak tension without a single second wasted on introductions. That single psychological trick is why this is generating millions of views right now.`,
+      cta: `Do you agree with this take or do you see it differently? Sound off in the comments below right now.`,
+      hashtags: hashtags
+    },
+    {
+      id: 'teardown',
+      title: 'Teardown',
+      hook: `This video about ${subject} is currently breaking the algorithm. Let's break down the exact formula in 30 seconds.`,
+      body: `Notice how frame one gives you an immediate emotional punchline? Then they immediately stack 3 high-contrast visual cuts before the 8-second retention drop-off. If you're a creator trying to hit millions of views, steal this exact pacing.`,
+      cta: `Bookmark this breakdown to copy for your next upload. Hit follow for daily algorithmic teardowns.`,
+      hashtags: hashtags
+    }
+  ];
+}
+
 /**
  * Strips tracking parameters from social media URLs
  * Supports TikTok, Instagram Reels, and YouTube Shorts
@@ -317,28 +392,125 @@ Format strictly as 01 | Hook Element, 02 | Core Thesis, 03 | Retentive Call-To-A
       }
     }
 
+    // Save script session for ultra-short mobile QR code URL
+    if (url.pathname === '/api/save-script' && request.method === 'POST') {
+      try {
+        const payload = await request.json();
+        const id = generateShortId();
+        const data = {
+          id,
+          title: payload.title || 'Viral Video Remix',
+          hook: payload.hook || '',
+          body: payload.body || '',
+          cta: payload.cta || '',
+          tags: payload.tags || '#ViralShorts',
+          url: payload.url || 'https://www.youtube.com/shorts',
+          createdAt: Date.now()
+        };
+        SCRIPT_STORE.set(id, data);
+
+        // Limit memory footprint
+        if (SCRIPT_STORE.size > 1000) {
+          const oldestKey = SCRIPT_STORE.keys().next().value;
+          SCRIPT_STORE.delete(oldestKey);
+        }
+
+        // Cache for 7 days
+        try {
+          const cache = caches.default;
+          const cacheUrl = new URL(`/internal/script/${id}`, request.url);
+          const cacheRes = new Response(JSON.stringify(data), {
+            headers: {
+              'Content-Type': 'application/json',
+              'Cache-Control': 'public, max-age=604800'
+            }
+          });
+          ctx.waitUntil(cache.put(new Request(cacheUrl.toString()), cacheRes));
+        } catch (e) {
+          // Cache API error non-fatal
+        }
+
+        return new Response(
+          JSON.stringify({
+            success: true,
+            id,
+            shortUrl: `${url.origin}/p?id=${id}`
+          }),
+          { headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } }
+        );
+      } catch (err) {
+        return new Response(
+          JSON.stringify({ success: false, error: err.message }),
+          { status: 400, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
     // Mobile Teleprompter Web Companion (For "Send to Phone" QR Codes)
     if (url.pathname === '/p' || url.pathname === '/teleprompter') {
-      const title = url.searchParams.get('title') || 'Viral Video Remix';
-      const hook = url.searchParams.get('hook') || '';
-      const body = url.searchParams.get('body') || '';
-      const cta = url.searchParams.get('cta') || '';
-      const tags = url.searchParams.get('tags') || '#ViralShorts';
-      const videoUrl = url.searchParams.get('url') || 'https://www.youtube.com/shorts';
+      const id = url.searchParams.get('id');
+      let scriptData = null;
+
+      if (id) {
+        scriptData = SCRIPT_STORE.get(id);
+        if (!scriptData) {
+          try {
+            const cache = caches.default;
+            const cacheUrl = new URL(`/internal/script/${id}`, request.url);
+            const match = await cache.match(new Request(cacheUrl.toString()));
+            if (match) {
+              scriptData = await match.json();
+            }
+          } catch (e) {
+            // Ignore cache error
+          }
+        }
+      }
+
+      const shortTitle = url.searchParams.get('t') || '';
+      const angleParam = parseInt(url.searchParams.get('a') || '0', 10);
+      const videoUrlParam = url.searchParams.get('u') || url.searchParams.get('url') || 'https://www.youtube.com/shorts';
+
+      let title = scriptData?.title || url.searchParams.get('title') || shortTitle || 'Viral Video Remix';
+      let hook = scriptData?.hook || url.searchParams.get('hook') || '';
+      let body = scriptData?.body || url.searchParams.get('body') || '';
+      let cta = scriptData?.cta || url.searchParams.get('cta') || '';
+      let tags = scriptData?.tags || url.searchParams.get('tags') || '';
+      let videoUrl = scriptData?.url || videoUrlParam;
+
+      // Deterministic synthesis fallback if hook or body are empty
+      if (!hook || !body) {
+        const angleIdx = Math.max(0, Math.min(2, isNaN(angleParam) ? 0 : angleParam));
+        const synthetic = buildViralScripts(title);
+        const activeItem = synthetic[angleIdx] || synthetic[0];
+        hook = activeItem.hook;
+        body = activeItem.body;
+        cta = activeItem.cta;
+        tags = tags || activeItem.hashtags;
+      }
+
+      const safePayload = JSON.stringify({
+        title,
+        hook,
+        body,
+        cta,
+        tags,
+        url: videoUrl
+      });
 
       const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>StitchMatrix Teleprompter</title>
+  <title>${escapeHtml(title)} — Script Matrix</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background: #060806;
       color: #F8FAFC;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Plus Jakarta Sans", "Inter", "Segoe UI", Roboto, sans-serif;
-      padding: 18px 16px 36px 16px;
+      padding: 18px 16px 40px 16px;
       line-height: 1.6;
       letter-spacing: -0.015em;
       min-height: 100vh;
@@ -350,7 +522,7 @@ Format strictly as 01 | Hook Element, 02 | Core Thesis, 03 | Retentive Call-To-A
       justify-content: space-between;
       border-bottom: 1px solid #141E17;
       padding-bottom: 14px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
     .brand-wrap {
       display: flex;
@@ -407,8 +579,8 @@ Format strictly as 01 | Hook Element, 02 | Core Thesis, 03 | Retentive Call-To-A
       gap: 5px;
     }
     .pulse-dot {
-      width: 5px;
-      height: 5px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: #34D399;
       box-shadow: 0 0 8px #34D399;
@@ -438,9 +610,9 @@ Format strictly as 01 | Hook Element, 02 | Core Thesis, 03 | Retentive Call-To-A
     .tag-body { color: #8CE4B0; }
     .tag-cta  { color: #34D399; }
     .script-text {
-      font-size: 17px;
-      font-weight: 500;
-      line-height: 1.55;
+      font-size: 16.5px;
+      line-height: 1.6;
+      word-break: break-word;
     }
     .hook-text { color: #FFFFFF; font-weight: 600; }
     .body-text { color: #9CA3AF; }
@@ -477,6 +649,7 @@ Format strictly as 01 | Hook Element, 02 | Core Thesis, 03 | Retentive Call-To-A
       font-size: 12.5px;
       color: #34D399;
       font-weight: 600;
+      word-break: break-word;
     }
     .toast {
       position: fixed;
@@ -486,14 +659,15 @@ Format strictly as 01 | Hook Element, 02 | Core Thesis, 03 | Retentive Call-To-A
       background: #0A0E0B;
       border: 1px solid #10B981;
       color: #FFFFFF;
-      padding: 9px 20px;
+      padding: 10px 22px;
       border-radius: 9999px;
       font-weight: 700;
-      font-size: 13px;
+      font-size: 13.5px;
       opacity: 0;
-      transition: all 0.2s ease;
+      transition: opacity 0.2s ease;
       pointer-events: none;
-      box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.45);
+      z-index: 999;
     }
     .toast.show { opacity: 1; }
   </style>
@@ -508,7 +682,7 @@ Format strictly as 01 | Hook Element, 02 | Core Thesis, 03 | Retentive Call-To-A
       </svg>
       <div class="brand-text">Stitch<span>Matrix</span></div>
     </div>
-    <a href="${videoUrl}" target="_blank" class="btn-open-yt">▶ Open YouTube</a>
+    <a href="${escapeHtml(videoUrl)}" target="_blank" rel="noopener noreferrer" class="btn-open-yt">▶ Open YouTube</a>
   </div>
 
   <div class="video-card">
@@ -516,37 +690,65 @@ Format strictly as 01 | Hook Element, 02 | Core Thesis, 03 | Retentive Call-To-A
       <span class="pulse-dot"></span>
       <span>Remixing Active Video</span>
     </div>
-    <div class="video-title">${title}</div>
+    <div class="video-title">${escapeHtml(title)}</div>
   </div>
 
   <div class="section">
     <div class="section-tag tag-hook">Part 1: The Viral Hook (0–3s)</div>
-    <div class="script-text hook-text">${hook}</div>
+    <div class="script-text hook-text">${escapeHtml(hook)}</div>
   </div>
 
   <div class="section">
     <div class="section-tag tag-body">Part 2: The Core Story & Product Bridge</div>
-    <div class="script-text body-text">${body}</div>
+    <div class="script-text body-text">${escapeHtml(body)}</div>
   </div>
 
   <div class="section">
     <div class="section-tag tag-cta">Part 3: Call-To-Action</div>
-    <div class="script-text cta-text">${cta}</div>
+    <div class="script-text cta-text">${escapeHtml(cta)}</div>
   </div>
 
-  <div class="tags-box">${tags}</div>
+  <div class="tags-box">${escapeHtml(tags)}</div>
 
   <button class="action-btn" id="copyBtn">📋 Copy Full Script & Tags</button>
   <div class="toast" id="toast">✓ Copied to clipboard!</div>
 
   <script>
-    const fullText = "HOOK:\\n${hook.replace(/"/g, '\\"')}\\n\\nBODY:\\n${body.replace(/"/g, '\\"')}\\n\\nCTA:\\n${cta.replace(/"/g, '\\"')}\\n\\nTAGS:\\n${tags.replace(/"/g, '\\"')}";
-    document.getElementById('copyBtn').onclick = () => {
-      navigator.clipboard.writeText(fullText).then(() => {
-        const t = document.getElementById('toast');
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 2000);
-      });
+    const payload = ${safePayload};
+    const fullText = "[PART 1: THE VIRAL HOOK]\\n" + payload.hook + "\\n\\n[PART 2: THE CORE STORY]\\n" + payload.body + "\\n\\n[PART 3: RETENTION CALL-TO-ACTION]\\n" + payload.cta + "\\n\\nHASHTAGS:\\n" + payload.tags;
+
+    function showToast() {
+      const t = document.getElementById('toast');
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      ta.style.top = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast();
+      } catch (err) {
+        alert('Could not auto-copy, please copy text manually.');
+      }
+      document.body.removeChild(ta);
+    }
+
+    document.getElementById('copyBtn').onclick = function() {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(fullText).then(showToast).catch(function() {
+          fallbackCopy(fullText);
+        });
+      } else {
+        fallbackCopy(fullText);
+      }
     };
   </script>
 </body>

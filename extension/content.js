@@ -948,45 +948,81 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 20px 22px;
       text-align: center;
-      gap: 16px;
+      gap: 14px;
     }
 
     .sm-qr-frame {
       background: #FFFFFF;
-      padding: 12px;
+      padding: 10px;
       border-radius: 14px;
-      box-shadow: 0 0 30px rgba(52, 211, 153, 0.25);
-      width: 190px;
-      height: 190px;
+      box-shadow: 0 0 32px rgba(52, 211, 153, 0.35);
+      width: 212px;
+      height: 212px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     .sm-qr-frame img {
-      width: 166px;
-      height: 166px;
+      width: 192px;
+      height: 192px;
       display: block;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: pixelated;
     }
 
     .sm-qr-instructions {
-      font-size: 13px;
+      font-size: 12.5px;
       color: #9CA3AF;
-      max-width: 290px;
+      max-width: 320px;
       line-height: 1.5;
     }
 
+    .sm-qr-actions-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .sm-btn-open-direct {
+      flex: 1;
+      background: linear-gradient(135deg, #059669 0%, #10B981 100%);
+      color: #FFFFFF;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 2px 14px rgba(16, 185, 129, 0.35);
+      transition: all 0.15s ease;
+    }
+
+    .sm-btn-open-direct:hover {
+      background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+    }
+
     .sm-btn-copy-link {
+      flex: 1;
       background: #0C110E;
       border: 1px solid rgba(16, 185, 129, 0.35);
       color: #34D399;
-      padding: 9px 16px;
+      padding: 10px 14px;
       border-radius: 8px;
-      font-size: 12px;
+      font-size: 12.5px;
       font-weight: 650;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
       transition: all 0.15s ease;
     }
 
@@ -994,6 +1030,29 @@
       background: #141E17;
       color: #FFFFFF;
       border-color: #34D399;
+    }
+
+    .sm-qr-link-box {
+      width: 100%;
+    }
+
+    .sm-qr-link-box input {
+      width: 100%;
+      background: #0A0E0B;
+      border: 1px solid #16221A;
+      color: #71717A;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 10.5px;
+      font-family: monospace;
+      outline: none;
+      text-overflow: ellipsis;
+      cursor: pointer;
+    }
+
+    .sm-qr-link-box input:focus {
+      color: #8CE4B0;
+      border-color: #10B981;
     }
 
     /* Toast Notification */
@@ -1060,15 +1119,10 @@
   }
 
   function getMobileCompanionUrl() {
-    const curScript = generatedScripts[activeStyleIndex] || generatedScripts[0];
-    const fullHook = `${curScript.hookLead}${curScript.hookHighlight}${curScript.hookTail}`;
     const params = new URLSearchParams({
-      title: currentContext.title,
-      hook: fullHook,
-      body: curScript.body,
-      cta: curScript.cta,
-      tags: curScript.hashtags,
-      url: currentContext.url
+      t: currentContext.title || 'Viral Video',
+      a: activeStyleIndex.toString(),
+      u: currentContext.url || window.location.href
     });
     return `${WORKER_BASE}/p?${params.toString()}`;
   }
@@ -1331,21 +1385,32 @@
       <div class="sm-modal-overlay" id="smPhoneModal">
         <div class="sm-modal-header">
           <div class="sm-modal-title">
-            <span>📱 Open on Your Phone</span>
+            <span class="sm-pulse-dot"></span>
+            <span>📱 Mobile Teleprompter & Link</span>
           </div>
           <button class="sm-close-btn" id="smClosePhoneBtn">✕</button>
         </div>
 
         <div class="sm-qr-body">
           <div class="sm-qr-frame">
-            <img id="smQrImage" src="" alt="QR Code">
+            <img id="smQrImage" src="" alt="Teleprompter QR Code">
           </div>
           <div class="sm-qr-instructions">
-            Scan this QR code with your iPhone or Android camera app to open the script teleprompter and YouTube video directly on your phone.
+            Scan with your phone's camera to open the teleprompter on mobile, or launch/copy the direct link below.
           </div>
-          <button class="sm-btn-copy-link" id="smCopyMobileLinkBtn">
-            📋 Copy Mobile Web Link
-          </button>
+
+          <div class="sm-qr-actions-row">
+            <button class="sm-btn-open-direct" id="smOpenMobileDirectBtn" title="Open teleprompter page in a new browser tab right now">
+              <span>🔗 Open in New Tab</span>
+            </button>
+            <button class="sm-btn-copy-link" id="smCopyMobileLinkBtn" title="Copy web link">
+              <span id="smCopyMobileLinkText">📋 Copy Link</span>
+            </button>
+          </div>
+
+          <div class="sm-qr-link-box">
+            <input type="text" id="smMobileLinkInput" readonly spellcheck="false" title="Click to copy link" />
+          </div>
         </div>
       </div>
     `;
@@ -1559,12 +1624,43 @@
     const phoneModal = sidebar.querySelector('#smPhoneModal');
     const closePhoneBtn = sidebar.querySelector('#smClosePhoneBtn');
     const qrImage = sidebar.querySelector('#smQrImage');
+    const openMobileDirectBtn = sidebar.querySelector('#smOpenMobileDirectBtn');
     const copyMobileLinkBtn = sidebar.querySelector('#smCopyMobileLinkBtn');
+    const copyMobileLinkText = sidebar.querySelector('#smCopyMobileLinkText');
+    const mobileLinkInput = sidebar.querySelector('#smMobileLinkInput');
+
+    function robustCopy(text, onSuccess) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(onSuccess).catch(() => fallbackExecCopy(text, onSuccess));
+      } else {
+        fallbackExecCopy(text, onSuccess);
+      }
+    }
+
+    function fallbackExecCopy(text, onSuccess) {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        ta.style.top = '0';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        if (onSuccess) onSuccess();
+      } catch (e) {
+        window.prompt('Copy this link:', text);
+      }
+    }
 
     if (openPhoneBtn && phoneModal) {
       openPhoneBtn.onclick = () => {
         const mobileUrl = getMobileCompanionUrl();
-        qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(mobileUrl)}`;
+        // High-contrast 250x250 QR code with quiet margin
+        qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=2&data=${encodeURIComponent(mobileUrl)}`;
+        if (mobileLinkInput) mobileLinkInput.value = mobileUrl;
         phoneModal.classList.add('active');
       };
     }
@@ -1573,11 +1669,31 @@
       closePhoneBtn.onclick = () => phoneModal.classList.remove('active');
     }
 
+    if (openMobileDirectBtn) {
+      openMobileDirectBtn.onclick = () => {
+        const mobileUrl = getMobileCompanionUrl();
+        window.open(mobileUrl, '_blank');
+      };
+    }
+
     if (copyMobileLinkBtn) {
       copyMobileLinkBtn.onclick = () => {
         const mobileUrl = getMobileCompanionUrl();
-        navigator.clipboard.writeText(mobileUrl).then(() => {
-          showToast('Mobile web link copied to clipboard!');
+        robustCopy(mobileUrl, () => {
+          if (copyMobileLinkText) copyMobileLinkText.textContent = '✓ Link Copied!';
+          showToast('Teleprompter link copied!');
+          setTimeout(() => {
+            if (copyMobileLinkText) copyMobileLinkText.textContent = '📋 Copy Link';
+          }, 2000);
+        });
+      };
+    }
+
+    if (mobileLinkInput) {
+      mobileLinkInput.onclick = () => {
+        mobileLinkInput.select();
+        robustCopy(mobileLinkInput.value, () => {
+          showToast('Link copied!');
         });
       };
     }
