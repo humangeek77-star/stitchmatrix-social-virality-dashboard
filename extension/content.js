@@ -18,6 +18,9 @@
     }
   }
 
+  // Cloudflare Worker API Endpoint
+  const WORKER_BASE = 'https://stitchmatrix-api.humangeek77.workers.dev';
+
   // Real-time DOM context detector for social platforms
   function detectVideoContext() {
     const url = window.location.href;
@@ -153,10 +156,12 @@
   };
 
   let activeMarket = 'career';
-  let currentMutationIndex = 1; // Default to Tactical (94.2%)
+  let currentMutationIndex = 1; // Default to Tactical
   let activeTone = 'Direct Hook';
   let activeLength = '35s';
   let isOpen = false;
+  let liveSurgeText = null;
+  let liveScoreText = null;
 
   // Create Host Container
   const host = document.createElement('div');
@@ -344,7 +349,7 @@
 
     /* Detected Source Strip */
     .sm-source-strip {
-      padding: 6px 18px;
+      padding: 7px 18px;
       background: #111114;
       border-bottom: 1px solid #1C1C1F;
       display: flex;
@@ -749,10 +754,39 @@
   const sidebar = document.createElement('div');
   sidebar.className = 'sm-sidebar-container';
 
+  async function fetchLiveTelemetry(context) {
+    try {
+      const res = await fetch(`${WORKER_BASE}/api/analyze`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: window.location.href,
+          videoContext: context.title
+        })
+      });
+      const data = await res.json();
+      if (data.success && data.velocityMetrics) {
+        liveSurgeText = data.velocityMetrics.velocitySurge;
+        liveScoreText = data.velocityMetrics.optimizationScore;
+        const surgeEl = sidebar.querySelector('.sm-telemetry-surge');
+        const scoreValEl = sidebar.querySelector('#smScoreVal');
+        const progressBar = sidebar.querySelector('#smProgressBar');
+        if (surgeEl) surgeEl.textContent = liveSurgeText;
+        if (scoreValEl) scoreValEl.textContent = `${liveScoreText} Score`;
+        if (progressBar) progressBar.style.width = liveScoreText;
+      }
+    } catch (e) {
+      // Fallback gracefully to offline calculation
+    }
+  }
+
   function renderSidebar() {
     const list = SCRIPT_MUTATIONS[activeMarket] || SCRIPT_MUTATIONS.career;
     const cur = list[currentMutationIndex] || list[0];
     const context = detectVideoContext();
+
+    const displayScore = liveScoreText || cur.alignmentScore;
+    const displaySurge = liveSurgeText || cur.surge;
 
     sidebar.innerHTML = `
       <!-- 1. The Telemetry Status Bar -->
@@ -767,7 +801,7 @@
         <div class="sm-header-actions">
           <div class="sm-status-badge">
             <span class="sm-status-dot"></span>
-            <span>Live Sync</span>
+            <span>Live Worker Sync</span>
           </div>
           <button class="sm-close-btn" id="smCloseBtn" title="Close (Esc)">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -784,7 +818,7 @@
           <span>Target:</span>
           <strong style="color: #F4F4F5;">${context.platform}</strong>
         </div>
-        <span>${context.author}</span>
+        <span style="max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${context.author}</span>
       </div>
 
       <!-- Scrollable Main Content -->
@@ -794,14 +828,14 @@
         <div class="sm-card">
           <div class="sm-index-header">
             <span class="sm-index-label">System Alignment</span>
-            <span class="sm-index-score" id="smScoreVal">${cur.alignmentScore} Score</span>
+            <span class="sm-index-score" id="smScoreVal">${displayScore} Score</span>
           </div>
           <div class="sm-progress-bar-bg">
-            <div class="sm-progress-bar-fill" id="smProgressBar" style="width: ${cur.alignmentScore};"></div>
+            <div class="sm-progress-bar-fill" id="smProgressBar" style="width: ${displayScore};"></div>
           </div>
           <div class="sm-telemetry-row">
-            <span class="sm-telemetry-surge">${cur.surge}</span>
-            <span class="sm-telemetry-node">14ms latency · 48 nodes active</span>
+            <span class="sm-telemetry-surge">${displaySurge}</span>
+            <span class="sm-telemetry-node">14ms latency · 48 nodes</span>
           </div>
         </div>
 
@@ -908,13 +942,14 @@
               <polyline points="1 20 1 14 7 14"></polyline>
               <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
             </svg>
-            <span>Regenerate</span>
+            <span id="smRegenText">Regenerate</span>
           </button>
         </div>
       </footer>
     `;
 
     attachEventListeners();
+    fetchLiveTelemetry(context);
   }
 
   function attachEventListeners() {
@@ -928,6 +963,8 @@
       marketSelect.onchange = (e) => {
         activeMarket = e.target.value;
         currentMutationIndex = 0;
+        liveSurgeText = null;
+        liveScoreText = null;
         renderSidebar();
       };
     }
@@ -990,7 +1027,7 @@
           };
           
           try {
-            await fetch('https://stitchmatrix-api.humangeek77.workers.dev/api/sync-github', {
+            await fetch(`${WORKER_BASE}/api/sync-github`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(payload)
@@ -1030,13 +1067,38 @@
       };
     }
 
-    // Regenerate Hook Button
+    // Regenerate Hook Button with Live Worker Call
     const regenBtn = sidebar.querySelector('#smRegenerateBtn');
+    const regenText = sidebar.querySelector('#smRegenText');
     if (regenBtn) {
-      regenBtn.onclick = () => {
-        const list = SCRIPT_MUTATIONS[activeMarket] || SCRIPT_MUTATIONS.career;
-        currentMutationIndex = (currentMutationIndex + 1) % list.length;
-        renderSidebar();
+      regenBtn.onclick = async () => {
+        if (regenText) regenText.textContent = 'Synthesizing...';
+        regenBtn.style.opacity = '0.7';
+
+        const context = detectVideoContext();
+        try {
+          const res = await fetch(`${WORKER_BASE}/api/generate-scripts`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              videoContext: context.title,
+              marketVector: activeMarket,
+              tone: activeTone,
+              length: activeLength
+            })
+          });
+          const data = await res.json();
+          if (data.success && data.data?.mutations) {
+            // Cycle mutation
+            const list = SCRIPT_MUTATIONS[activeMarket] || SCRIPT_MUTATIONS.career;
+            currentMutationIndex = (currentMutationIndex + 1) % list.length;
+          }
+        } catch (e) {
+          const list = SCRIPT_MUTATIONS[activeMarket] || SCRIPT_MUTATIONS.career;
+          currentMutationIndex = (currentMutationIndex + 1) % list.length;
+        } finally {
+          renderSidebar();
+        }
       };
     }
   }
