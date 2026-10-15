@@ -1,7 +1,8 @@
 /**
- * StitchMatrix — Script Matrix Studio v3.0
+ * StitchMatrix — Creator Script Studio v3.1
  * Chrome Extension Manifest V3 In-DOM Sidebar Engine
- * Ergonomic High-Efficiency Architecture & Multi-Palette Theme Engine
+ * Clean Crisp Light Theme (Notion / Apple / Loom Aesthetic)
+ * Creator-First Simplified Flow: Intuitive labels, teleprompter pacing, viral hashtags, zero jargon.
  * Injected on: TikTok, YouTube Shorts, and Instagram Reels
  */
 
@@ -24,8 +25,8 @@
   // Real-time DOM context detector for social platforms
   function detectVideoContext() {
     const url = window.location.href;
-    let platform = 'Social Video';
-    let title = 'Algorithmic Inbound Pattern';
+    let platform = 'YouTube Shorts';
+    let title = 'Viral Video Framework';
     let author = '@creator';
 
     try {
@@ -55,130 +56,142 @@
     return { platform, title, author, url };
   }
 
-  // Multi-Vector Script Mutation Library
-  const SCRIPT_MUTATIONS = {
-    career: [
-      {
-        id: 'c_contrarian',
-        tabLabel: 'Contrarian',
-        alignmentScore: '95.8%',
-        surge: '+482% surge',
-        duration: '32s',
-        hook: "Stop updating your LinkedIn headline. If you're still relying on inbound recruiter DMs in 2026, you're already 8 months behind the curve.",
-        thesis: "The top 1% of tech earners don't apply to public listings. They build an asynchronous Proof-of-Work pipeline that triggers algorithmic inbound. Here is the exact 3-step architecture our cohort deployed last week to bypass the recruiter filter completely.",
-        cta: 'Drop the word "PIPELINE" below and I\'ll send you our unlisted high-density career framework doc before the open window closes tonight.'
-      },
-      {
-        id: 'c_tactical',
-        tabLabel: 'Tactical',
-        alignmentScore: '94.2%',
-        surge: '+450% surge',
-        duration: '35s',
-        hook: "Most engineers think getting promoted requires 60-hour workweeks. Here is the exact spreadsheet matrix I used to double senior salary in 90 days.",
-        thesis: "Rule one: Quantify organizational leverage, not raw ticket output. Rule two: Replace status updates with asymmetric business KPI reports that reach VP-level visibility within 48 hours. Rule three: Own the deployment choke-points.",
-        cta: "Bookmark this breakdown before it's taken down. Full repository templates are pinned in the bio."
-      },
-      {
-        id: 'c_teardown',
-        tabLabel: 'Teardown',
-        alignmentScore: '92.7%',
-        surge: '+390% surge',
-        duration: '28s',
-        hook: "This one viral framework generated 4.2M impressions and $180K in organic pipeline with zero paid ad spend. Let's inspect the telemetry.",
-        thesis: "Notice how the first 1.8 seconds eliminates preamble? No intro animations, zero throat-clearing. You deliver the punchline in frame one, stack 3 high-contrast proof points, and deliver immediate utility before the 12-second retention cliff.",
-        cta: 'Run this exact prompt script through your own studio today. Comment "MATRIX" for the copy-paste prompt bundle.'
-      }
-    ],
-    saas: [
-      {
-        id: 's_contrarian',
-        tabLabel: 'Contrarian',
-        alignmentScore: '96.4%',
-        surge: '+510% surge',
-        duration: '34s',
-        hook: "Your SaaS landing page isn't losing conversions because of your copy. It's leaking churn because you're pricing features instead of leverage.",
-        thesis: "When you tier users by seats, you penalize team adoption. When you tier users by programmatic throughput metrics, usage scales automatically with customer ARR. Here is how we flipped our billing model in 48 hours.",
-        cta: 'Comment "PRICING" and I will DM you the open-source monetization architecture.'
-      },
-      {
-        id: 's_tactical',
-        tabLabel: 'Tactical',
-        alignmentScore: '93.9%',
-        surge: '+430% surge',
-        duration: '36s',
-        hook: "Zero to $100K MRR in 6 months without cold email or paid ads. Here is the exact organic distribution flywheel we engineered.",
-        thesis: "Step one: Scrape viral industry anomalies every 4 hours. Step two: Repackage the data into high-contrast single-chart teardowns. Step three: Embed an interactive calculator link directly in the top pinned reply.",
-        cta: "Save this post. The Notion template and automation scripts are in the bio link."
-      },
-      {
-        id: 's_teardown',
-        tabLabel: 'Teardown',
-        alignmentScore: '91.5%',
-        surge: '+380% surge',
-        duration: '30s',
-        hook: "Here is why 90% of AI wrappers will be dead by Q4, and the 1 architectural moat that survives.",
-        thesis: "API wrappers compete on latency and cost margins to zero. Proprietary distribution layers that ingest and own user workflow state cannot be commoditized by base LLM releases.",
-        cta: 'Drop "MOAT" below to get the full enterprise retention audit checklist.'
-      }
-    ],
-    fintech: [
-      {
-        id: 'f_contrarian',
-        tabLabel: 'Contrarian',
-        alignmentScore: '95.1%',
-        surge: '+470% surge',
-        duration: '33s',
-        hook: "Stop locking your capital in generic index funds if your net worth is under $250K. Here is why high-earners pivot.",
-        thesis: "The math is simple: a 7% return on $50K is $3,500 a year. That won't buy your freedom. Reinvesting that same $50K into high-leverage distribution infrastructure yields 10x-50x enterprise equity in 24 months.",
-        cta: 'Comment "ALLOCATION" for our private wealth velocity spreadsheet.'
-      },
-      {
-        id: 'f_tactical',
-        tabLabel: 'Tactical',
-        alignmentScore: '94.6%',
-        surge: '+460% surge',
-        duration: '35s',
-        hook: "The 3 tax loopholes top tech executives use before exercising pre-IPO options in 2026.",
-        thesis: "First: Section 1202 QSBS exclusion. Second: 83(b) timely election within 30 days of grant. Third: Donor-advised fund transfers to offset short-term capital gains at peak valuation.",
-        cta: 'Bookmark this guide. Pinned link has our estate attorney vetting sheet.'
-      },
-      {
-        id: 'f_teardown',
-        tabLabel: 'Teardown',
-        alignmentScore: '93.2%',
-        surge: '+410% surge',
-        duration: '29s',
-        hook: "We audited 40 high-net-worth portfolios this quarter. Here is the #1 mistake costing operators six figures.",
-        thesis: "They leave cash in low-yield operational accounts instead of treasury sweep accounts generating risk-free 5.2% daily liquidity yield.",
-        cta: 'Comment "TREASURY" to receive our cash management SOP.'
-      }
-    ]
+  // Creator-Friendly Multi-Niche Script Library
+  const SCRIPT_DATA = {
+    career: {
+      nicheLabel: 'Tech & Career Growth',
+      hashtags: '#CareerAdvice #TechCareers #SalaryNegotiation #JobSearch #Productivity',
+      styles: [
+        {
+          id: 'myth_buster',
+          title: 'Myth Buster',
+          badge: '⚡ High Comments',
+          description: 'Challenges conventional wisdom to spark debates in the comments',
+          duration: '32s',
+          viralScore: '96/100',
+          trendingFactor: '+480% surge',
+          hook: "Stop updating your resume every 6 months. If you're still relying on public job postings in 2026, you're competing against 400 applicants for every single seat.",
+          body: "The highest-earning 1% never apply cold. Instead, they publish weekly Proof-of-Work teardowns that trigger inbound recruiter DMs automatically. Here is the exact 3-step outreach playbook to land unlisted executive interviews.",
+          cta: 'Comment "PLAYBOOK" below and I\'ll send you the exact template we use to bypass the recruiter filters tonight.'
+        },
+        {
+          id: 'step_by_step',
+          title: 'Step-by-Step Guide',
+          badge: '🛠️ High Saves',
+          description: 'Actionable 3-part framework that viewers bookmark to re-watch',
+          duration: '35s',
+          viralScore: '94/100',
+          trendingFactor: '+450% surge',
+          hook: "Most professionals think getting promoted requires 60-hour workweeks. Here is the exact 3-step spreadsheet I used to double senior compensation in 90 days.",
+          body: "Step one: Stop reporting raw completed tasks. Step two: Start delivering weekly business impact KPI reports directly to leadership. Step three: Own one critical deployment choke-point that nobody else wants to touch.",
+          cta: "Bookmark this video before your next review cycle. Full spreadsheet template link is in my bio."
+        },
+        {
+          id: 'case_study',
+          title: 'Case Study Breakdown',
+          badge: '🔍 High Authority',
+          description: 'Behind-the-scenes teardown that builds instant credibility',
+          duration: '28s',
+          viralScore: '93/100',
+          trendingFactor: '+390% surge',
+          hook: "This exact video format generated 4.2M views and 18,000 email subscribers with zero ad budget. Let's break down why it worked.",
+          body: "Look at the first 2 seconds: zero intro logo, zero throat-clearing. You deliver the punchline in frame one, show 2 undeniable proof points, and deliver direct value before the 10-second attention drop-off.",
+          cta: 'Save this post to reference when filming your next short. Comment "FRAMEWORK" for the script template.'
+        }
+      ]
+    },
+    business: {
+      nicheLabel: 'Business & AI Founders',
+      hashtags: '#SaaS #BuildInPublic #StartupLife #AItools #Entrepreneurship',
+      styles: [
+        {
+          id: 'myth_buster',
+          title: 'Myth Buster',
+          badge: '⚡ High Comments',
+          description: 'Challenges conventional wisdom to spark debates in the comments',
+          duration: '34s',
+          viralScore: '97/100',
+          trendingFactor: '+510% surge',
+          hook: "Your landing page isn't failing because of your design. It's failing because you're pricing software features instead of customer outcome leverage.",
+          body: "When you bill by user seats, you penalize your client for growing their team. When you bill by programmatic output value, your revenue automatically expands as their business scales. Here is how we flipped our billing model in 48 hours.",
+          cta: 'Comment "PRICING" and I will DM you our open-source SaaS monetization architecture.'
+        },
+        {
+          id: 'step_by_step',
+          title: 'Step-by-Step Guide',
+          badge: '🛠️ High Saves',
+          description: 'Actionable 3-part framework that viewers bookmark to re-watch',
+          duration: '36s',
+          viralScore: '95/100',
+          trendingFactor: '+430% surge',
+          hook: "Zero to $10,000 monthly recurring revenue in 6 months with zero cold outreach. Here is our 3-step flywheel.",
+          body: "Step one: Monitor trending industry questions every morning. Step two: Repackage the solution into a high-contrast single-chart breakdown video. Step three: Put an interactive free calculator link in the top pinned comment.",
+          cta: "Save this breakdown for when you build your next product. The Notion automation checklist is in my bio."
+        },
+        {
+          id: 'case_study',
+          title: 'Case Study Breakdown',
+          badge: '🔍 High Authority',
+          description: 'Behind-the-scenes teardown that builds instant credibility',
+          duration: '30s',
+          viralScore: '92/100',
+          trendingFactor: '+380% surge',
+          hook: "Here is why 90% of AI wrapper companies will disappear this year, and the one defensible moat that survives.",
+          body: "Simple API wrappers compete on cost and speed margins down to zero. Companies that ingest and own the user's proprietary daily workflow state cannot be replaced by foundation model releases.",
+          cta: 'Drop the word "MOAT" below to get our private retention audit checklist.'
+        }
+      ]
+    },
+    finance: {
+      nicheLabel: 'Finance & Wealth Tips',
+      hashtags: '#PersonalFinance #WealthBuilding #InvestingTips #MoneyMindset #SmartMoney',
+      styles: [
+        {
+          id: 'myth_buster',
+          title: 'Myth Buster',
+          badge: '⚡ High Comments',
+          description: 'Challenges conventional wisdom to spark debates in the comments',
+          duration: '33s',
+          viralScore: '95/100',
+          trendingFactor: '+470% surge',
+          hook: "Stop keeping your emergency cash in a standard checking account earning 0.01%. You're literally giving away hundreds of dollars in free interest.",
+          body: "Automated treasury sweep accounts currently generate 4.8% to 5.2% daily yield with full FDIC insurance. If you have $20,000 sitting idle, you are forfeiting $1,000 a year in risk-free yield.",
+          cta: 'Comment "TREASURY" and I\'ll send you our vetted list of the top 3 high-yield accounts for 2026.'
+        },
+        {
+          id: 'step_by_step',
+          title: 'Step-by-Step Guide',
+          badge: '🛠️ High Saves',
+          description: 'Actionable 3-part framework that viewers bookmark to re-watch',
+          duration: '35s',
+          viralScore: '94/100',
+          trendingFactor: '+460% surge',
+          hook: "The 3 tax strategies top tech professionals use before the end of the fiscal year.",
+          body: "Rule one: Maximize backdoor Roth IRA conversions before the annual deadline. Rule two: Check eligibility for Section 1202 capital gains exclusion. Rule three: Fund an HSA to get the triple tax-advantaged retirement benefit.",
+          cta: 'Bookmark this guide to review with your CPA before filing season. Link in bio has our worksheet.'
+        },
+        {
+          id: 'case_study',
+          title: 'Case Study Breakdown',
+          badge: '🔍 High Authority',
+          description: 'Behind-the-scenes teardown that builds instant credibility',
+          duration: '29s',
+          viralScore: '93/100',
+          trendingFactor: '+410% surge',
+          hook: "We reviewed 40 investor portfolios this quarter. Here is the #1 mistake quietly costing high-earners six figures.",
+          body: "They over-index on speculative retail investments while neglecting basic tax-loss harvesting and low-fee index rebalancing that historically outperforms 85% of active day traders.",
+          cta: 'Save this post. Comment "AUDIT" to receive our private wealth allocation template.'
+        }
+      ]
+    }
   };
 
-  // State Management
-  let activeMarket = 'career';
-  let currentMutationIndex = 1; // Default to Tactical
-  let activeTone = 'Direct Hook';
-  let activeLength = '35s';
+  // State
+  let activeNiche = 'career';
+  let activeStyleIndex = 1; // Default to Step-by-Step Guide
   let isOpen = false;
-  let liveSurgeText = null;
-  let liveScoreText = null;
-  let showThemeMenu = false;
-
-  // Saved theme preference (default: linear)
-  let currentTheme = 'linear';
-  try {
-    currentTheme = localStorage.getItem('sm_active_theme') || 'linear';
-  } catch (e) {
-    currentTheme = 'linear';
-  }
-
-  const THEMES = [
-    { id: 'linear', name: 'Linear Indigo', previewColor: '#6366F1' },
-    { id: 'carbon', name: 'Carbon Mono', previewColor: '#FFFFFF' },
-    { id: 'slate', name: 'Executive Slate', previewColor: '#38BDF8' },
-    { id: 'titanium', name: 'Studio Light', previewColor: '#4F46E5' }
-  ];
+  let isTeleprompterActive = false;
+  let teleprompterInterval = null;
 
   // Create Host Container
   const host = document.createElement('div');
@@ -188,7 +201,7 @@
   // Attach Shadow DOM for complete CSS encapsulation
   const shadow = host.attachShadow({ mode: 'open' });
 
-  // Inject Scoped Styles into Shadow DOM
+  // Inject Clean Light Mode Scoped Styles into Shadow DOM
   const styleEl = document.createElement('style');
   styleEl.textContent = `
     :host {
@@ -196,6 +209,7 @@
       font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       font-size: 13px;
       line-height: 1.5;
+      color: #0F172A;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
@@ -206,176 +220,67 @@
       padding: 0;
     }
 
-    /* THEME SYSTEM (CSS Variables) */
-    .sm-sidebar-container, .sm-floating-trigger {
-      /* Default: Linear Indigo Theme */
-      --sm-bg: #0C0D11;
-      --sm-header-bg: #111218;
-      --sm-subbar-bg: #0E0F14;
-      --sm-card-bg: #14151C;
-      --sm-card-hover: #1A1C25;
-      --sm-border: #20222C;
-      --sm-border-subtle: #181922;
-      --sm-primary: #6366F1;
-      --sm-primary-hover: #4F46E5;
-      --sm-primary-text: #FFFFFF;
-      --sm-accent-cyan: #38BDF8;
-      --sm-accent-emerald: #10B981;
-      --sm-text-primary: #F3F4F6;
-      --sm-text-secondary: #9CA3AF;
-      --sm-text-muted: #6B7280;
-      --sm-tag-bg: #1B1D26;
-      --sm-active-pill: #252836;
-      --sm-active-pill-border: #3A3E52;
-      --sm-frame-hook-border: #6366F1;
-      --sm-frame-thesis-border: #38BDF8;
-      --sm-frame-cta-border: #10B981;
-      --sm-input-bg: #12131A;
-      --sm-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
-    }
-
-    /* Carbon Monochrome Theme */
-    .sm-sidebar-container[data-theme="carbon"] {
-      --sm-bg: #000000;
-      --sm-header-bg: #0A0A0A;
-      --sm-subbar-bg: #050505;
-      --sm-card-bg: #0E0E0E;
-      --sm-card-hover: #161616;
-      --sm-border: #242424;
-      --sm-border-subtle: #1A1A1A;
-      --sm-primary: #FFFFFF;
-      --sm-primary-hover: #E5E5E5;
-      --sm-primary-text: #000000;
-      --sm-accent-cyan: #D4D4D8;
-      --sm-accent-emerald: #10B981;
-      --sm-text-primary: #FAFAFA;
-      --sm-text-secondary: #A1A1AA;
-      --sm-text-muted: #71717A;
-      --sm-tag-bg: #171717;
-      --sm-active-pill: #262626;
-      --sm-active-pill-border: #404040;
-      --sm-frame-hook-border: #E4E4E7;
-      --sm-frame-thesis-border: #A1A1AA;
-      --sm-frame-cta-border: #10B981;
-      --sm-input-bg: #0A0A0A;
-      --sm-shadow: 0 16px 40px rgba(0, 0, 0, 0.85);
-    }
-
-    /* Executive Slate Theme */
-    .sm-sidebar-container[data-theme="slate"] {
-      --sm-bg: #0B0F19;
-      --sm-header-bg: #0F172A;
-      --sm-subbar-bg: #080D16;
-      --sm-card-bg: #141E30;
-      --sm-card-hover: #1A263D;
-      --sm-border: #253347;
-      --sm-border-subtle: #192435;
-      --sm-primary: #0284C7;
-      --sm-primary-hover: #0369A1;
-      --sm-primary-text: #FFFFFF;
-      --sm-accent-cyan: #38BDF8;
-      --sm-accent-emerald: #34D399;
-      --sm-text-primary: #F8FAFC;
-      --sm-text-secondary: #94A3B8;
-      --sm-text-muted: #64748B;
-      --sm-tag-bg: #1E293B;
-      --sm-active-pill: #29394E;
-      --sm-active-pill-border: #3B506B;
-      --sm-frame-hook-border: #0284C7;
-      --sm-frame-thesis-border: #38BDF8;
-      --sm-frame-cta-border: #34D399;
-      --sm-input-bg: #101826;
-      --sm-shadow: 0 16px 40px rgba(2, 6, 23, 0.75);
-    }
-
-    /* Studio Light Theme */
-    .sm-sidebar-container[data-theme="titanium"] {
-      --sm-bg: #F8FAFC;
-      --sm-header-bg: #FFFFFF;
-      --sm-subbar-bg: #F1F5F9;
-      --sm-card-bg: #FFFFFF;
-      --sm-card-hover: #F8FAFC;
-      --sm-border: #E2E8F0;
-      --sm-border-subtle: #EDF2F7;
-      --sm-primary: #4F46E5;
-      --sm-primary-hover: #4338CA;
-      --sm-primary-text: #FFFFFF;
-      --sm-accent-cyan: #0284C7;
-      --sm-accent-emerald: #059669;
-      --sm-text-primary: #0F172A;
-      --sm-text-secondary: #475569;
-      --sm-text-muted: #94A3B8;
-      --sm-tag-bg: #F1F5F9;
-      --sm-active-pill: #E2E8F0;
-      --sm-active-pill-border: #CBD5E1;
-      --sm-frame-hook-border: #4F46E5;
-      --sm-frame-thesis-border: #0284C7;
-      --sm-frame-cta-border: #059669;
-      --sm-input-bg: #F8FAFC;
-      --sm-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
-    }
-
-    /* Floating Edge Tab Trigger */
+    /* Floating Edge Tab Trigger (Clean Minimal Pill) */
     .sm-floating-trigger {
       position: fixed;
       top: 50%;
       right: 0;
       transform: translateY(-50%);
-      width: 32px;
-      height: 80px;
-      background: var(--sm-header-bg);
-      border: 1px solid var(--sm-border);
+      width: 38px;
+      height: 90px;
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
       border-right: none;
-      border-radius: 8px 0 0 8px;
+      border-radius: 12px 0 0 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 7px;
+      gap: 8px;
       cursor: pointer;
       z-index: 2147483646;
-      box-shadow: -4px 0 16px rgba(0, 0, 0, 0.4);
+      box-shadow: -4px 4px 16px rgba(15, 23, 42, 0.12);
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .sm-floating-trigger:hover {
-      background: var(--sm-card-hover);
-      width: 36px;
-      border-color: var(--sm-primary);
+      background: #F8FAFC;
+      width: 44px;
+      border-color: #4F46E5;
     }
 
     .sm-floating-trigger svg {
-      width: 15px;
-      height: 15px;
+      width: 18px;
+      height: 18px;
       fill: none;
-      stroke: var(--sm-text-secondary);
-      stroke-width: 1.75;
+      stroke: #4F46E5;
+      stroke-width: 2;
     }
 
-    .sm-floating-trigger .trigger-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--sm-accent-emerald);
-      box-shadow: 0 0 6px var(--sm-accent-emerald);
+    .sm-floating-trigger .trigger-pill {
+      font-size: 9px;
+      font-weight: 700;
+      color: #4F46E5;
+      writing-mode: vertical-rl;
+      letter-spacing: 0.05em;
     }
 
-    /* Main Sidebar Drawer */
+    /* Main Sidebar Drawer (Clean Crisp Light Theme) */
     .sm-sidebar-container {
       position: fixed;
       top: 0;
       right: 0;
-      width: 395px;
+      width: 410px;
       height: 100vh;
-      background: var(--sm-bg) !important;
-      border-left: 1px solid var(--sm-border);
-      color: var(--sm-text-primary);
+      background: #F8FAFC !important;
+      border-left: 1px solid #E2E8F0;
+      color: #0F172A;
       z-index: 2147483647;
-      transform: translateX(395px);
+      transform: translateX(410px);
       transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       flex-direction: column;
-      box-shadow: var(--sm-shadow);
+      box-shadow: -10px 0 30px rgba(15, 23, 42, 0.1);
       overflow: hidden;
       user-select: text;
     }
@@ -384,369 +289,323 @@
       transform: translateX(0);
     }
 
-    /* 1. Header Bar (Clean, Compact, Modern) */
+    /* 1. Header (Clean White Bar) */
     .sm-header {
-      padding: 11px 16px;
-      background: var(--sm-header-bg);
-      border-bottom: 1px solid var(--sm-border);
+      padding: 12px 18px;
+      background: #FFFFFF;
+      border-bottom: 1px solid #E2E8F0;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      position: relative;
     }
 
-    .sm-header-left {
+    .sm-header-brand {
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 10px;
     }
 
-    .sm-brand-badge {
-      width: 22px;
-      height: 22px;
-      border-radius: 6px;
-      background: var(--sm-tag-bg);
-      border: 1px solid var(--sm-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--sm-primary);
-      font-weight: 700;
-      font-size: 11.5px;
-    }
-
-    .sm-brand-name {
-      font-size: 13px;
-      font-weight: 650;
-      color: var(--sm-text-primary);
-      letter-spacing: -0.015em;
-    }
-
-    .sm-platform-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 7px;
-      background: var(--sm-tag-bg);
-      border: 1px solid var(--sm-border);
-      border-radius: 9999px;
-      font-size: 10.5px;
-      font-weight: 500;
-      color: var(--sm-text-secondary);
-    }
-
-    .sm-live-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--sm-accent-emerald);
-      box-shadow: 0 0 5px var(--sm-accent-emerald);
-    }
-
-    .sm-header-actions {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .sm-icon-btn {
-      background: transparent;
-      border: 1px solid transparent;
-      color: var(--sm-text-muted);
-      cursor: pointer;
-      padding: 5px 6px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      font-size: 11px;
-      font-weight: 500;
-      transition: all 0.15s ease;
-    }
-
-    .sm-icon-btn:hover {
-      color: var(--sm-text-primary);
-      background: var(--sm-tag-bg);
-      border-color: var(--sm-border);
-    }
-
-    /* Theme Picker Dropdown Menu */
-    .sm-theme-menu {
-      position: absolute;
-      top: 45px;
-      right: 42px;
-      width: 160px;
-      background: var(--sm-header-bg);
-      border: 1px solid var(--sm-border);
+    .sm-logo-icon {
+      width: 28px;
+      height: 28px;
       border-radius: 8px;
-      padding: 4px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
-      z-index: 100;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .sm-theme-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 10px;
-      border-radius: 6px;
-      font-size: 11.5px;
-      font-weight: 500;
-      color: var(--sm-text-secondary);
-      cursor: pointer;
-      border: none;
-      background: transparent;
-      width: 100%;
-      text-align: left;
-      transition: all 0.12s ease;
-    }
-
-    .sm-theme-item:hover {
-      background: var(--sm-card-hover);
-      color: var(--sm-text-primary);
-    }
-
-    .sm-theme-item.active {
-      background: var(--sm-active-pill);
-      color: var(--sm-text-primary);
-      font-weight: 600;
-    }
-
-    .sm-theme-swatch {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    /* 2. Micro Telemetry Bar (Ultra-Compact, Replaces Bulky Card) */
-    .sm-telemetry-bar {
-      padding: 6px 16px;
-      background: var(--sm-subbar-bg);
-      border-bottom: 1px solid var(--sm-border-subtle);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 11px;
-      position: relative;
-    }
-
-    .sm-telemetry-stat {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      color: var(--sm-text-secondary);
-      font-weight: 500;
-    }
-
-    .sm-telemetry-stat strong {
-      color: var(--sm-text-primary);
-    }
-
-    .sm-surge-val {
-      color: var(--sm-accent-emerald);
-      font-weight: 600;
-    }
-
-    /* Hairline Alignment Progress Beam */
-    .sm-telemetry-beam {
-      position: absolute;
-      bottom: -1px;
-      left: 0;
-      height: 2px;
-      background: var(--sm-primary);
-      width: 94.2%;
-      transition: width 0.5s ease;
-      box-shadow: 0 0 6px var(--sm-primary);
-    }
-
-    /* 3. Streamlined Control Deck */
-    .sm-control-deck {
-      padding: 10px 14px;
-      background: var(--sm-bg);
-      border-bottom: 1px solid var(--sm-border-subtle);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .sm-deck-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .sm-market-select {
-      flex: 1;
-      background: var(--sm-input-bg);
-      border: 1px solid var(--sm-border);
-      border-radius: 6px;
-      padding: 6px 26px 6px 10px;
-      color: var(--sm-text-primary);
-      font-size: 11.5px;
-      font-weight: 500;
-      outline: none;
-      cursor: pointer;
-      appearance: none;
-      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2210%22%20height%3D%226%22%20viewBox%3D%220%200%2010%206%22%3E%3Cpath%20fill%3D%22%2371717A%22%20d%3D%22M0%200l5%205%205-5z%22%2F%3E%3C%2Fsvg%3E");
-      background-repeat: no-repeat;
-      background-position: right 9px center;
-      transition: border-color 0.15s ease;
-    }
-
-    .sm-market-select:hover {
-      border-color: var(--sm-active-pill-border);
-    }
-
-    .sm-market-select:focus {
-      border-color: var(--sm-primary);
-    }
-
-    .sm-pill-toggle {
-      background: var(--sm-input-bg);
-      border: 1px solid var(--sm-border);
-      border-radius: 6px;
-      padding: 5px 9px;
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--sm-text-secondary);
-      cursor: pointer;
-      white-space: nowrap;
-      user-select: none;
-      transition: all 0.15s ease;
-    }
-
-    .sm-pill-toggle:hover {
-      color: var(--sm-text-primary);
-      border-color: var(--sm-active-pill-border);
-    }
-
-    .sm-pill-toggle.active {
-      color: var(--sm-primary);
-      border-color: var(--sm-primary);
-      background: var(--sm-tag-bg);
-    }
-
-    /* Mutation Tabs Segmented Slider */
-    .sm-tabs-segmented {
-      display: flex;
-      background: var(--sm-header-bg);
-      border: 1px solid var(--sm-border);
-      border-radius: 7px;
-      padding: 2px;
-      gap: 2px;
-    }
-
-    .sm-tab-pill {
-      flex: 1;
-      background: transparent;
-      border: none;
-      padding: 5px 8px;
-      font-size: 11.5px;
-      font-weight: 500;
-      color: var(--sm-text-muted);
-      cursor: pointer;
-      border-radius: 5px;
-      text-align: center;
-      transition: all 0.15s ease;
+      background: #EEF2FF;
+      border: 1px solid #C7D2FE;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 4px;
+      color: #4F46E5;
+      font-weight: 750;
+      font-size: 14px;
     }
 
-    .sm-tab-pill:hover {
-      color: var(--sm-text-primary);
+    .sm-header-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0F172A;
+      letter-spacing: -0.015em;
+      line-height: 1.2;
     }
 
-    .sm-tab-pill.active {
-      background: var(--sm-card-bg);
-      color: var(--sm-text-primary);
+    .sm-header-subtitle {
+      font-size: 11px;
+      color: #64748B;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .sm-platform-tag {
+      background: #F1F5F9;
+      color: #334155;
+      padding: 1px 6px;
+      border-radius: 4px;
       font-weight: 600;
-      border: 1px solid var(--sm-border);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+      font-size: 10.5px;
     }
 
-    .sm-tab-pill .tab-badge {
-      font-size: 9.5px;
-      opacity: 0.7;
+    .sm-close-btn {
+      background: #F1F5F9;
+      border: 1px solid #E2E8F0;
+      color: #64748B;
+      cursor: pointer;
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
     }
 
-    /* 4. Full-Height Ergonomic Script Studio Canvas */
-    .sm-canvas-body {
+    .sm-close-btn:hover {
+      background: #E2E8F0;
+      color: #0F172A;
+    }
+
+    /* 2. Quick Value Summary Banner */
+    .sm-summary-banner {
+      background: #FFFFFF;
+      padding: 10px 18px;
+      border-bottom: 1px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+    }
+
+    .sm-summary-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #64748B;
+    }
+
+    .sm-summary-item strong {
+      color: #0F172A;
+      font-weight: 650;
+    }
+
+    .sm-score-pill {
+      background: #ECFDF5;
+      color: #059669;
+      border: 1px solid #A7F3D0;
+      padding: 2px 7px;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    /* 3. Scrollable Studio Canvas */
+    .sm-content-area {
       flex: 1;
       overflow-y: auto;
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .sm-content-area::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .sm-content-area::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 9999px;
+    }
+
+    /* Step Selector Cards */
+    .sm-control-box {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
       padding: 12px 14px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
 
-    .sm-canvas-body::-webkit-scrollbar {
-      width: 4px;
+    .sm-step-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
-    .sm-canvas-body::-webkit-scrollbar-thumb {
-      background: var(--sm-border);
-      border-radius: 4px;
+    .sm-step-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #0F172A;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    /* Script Block Card (Linear / Editorial Clean Look) */
-    .sm-frame-card {
-      background: var(--sm-card-bg);
-      border: 1px solid var(--sm-border);
+    .sm-step-number {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #4F46E5;
+      color: #FFFFFF;
+      font-size: 10.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    .sm-step-hint {
+      font-size: 11px;
+      color: #64748B;
+    }
+
+    /* Niche Select Input */
+    .sm-niche-select {
+      width: 100%;
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
       border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12.5px;
+      font-weight: 550;
+      color: #0F172A;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .sm-niche-select:hover {
+      border-color: #94A3B8;
+    }
+
+    .sm-niche-select:focus {
+      border-color: #4F46E5;
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.12);
+    }
+
+    /* Script Style Pills */
+    .sm-style-cards {
       display: flex;
       flex-direction: column;
+      gap: 6px;
+    }
+
+    .sm-style-btn {
+      background: #F8FAFC;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sm-style-btn:hover {
+      background: #F1F5F9;
+      border-color: #CBD5E1;
+    }
+
+    .sm-style-btn.active {
+      background: #EEF2FF;
+      border-color: #4F46E5;
+      box-shadow: 0 1px 4px rgba(79, 70, 229, 0.12);
+    }
+
+    .sm-style-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .sm-style-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: #0F172A;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sm-style-desc {
+      font-size: 11px;
+      color: #64748B;
+    }
+
+    .sm-style-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 9999px;
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      color: #334155;
+    }
+
+    .sm-style-btn.active .sm-style-badge {
+      background: #4F46E5;
+      color: #FFFFFF;
+      border-color: #4F46E5;
+    }
+
+    /* Script Frames (Hook, Body, CTA) */
+    .sm-frames-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sm-frame-card {
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
       overflow: hidden;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
-      position: relative;
     }
 
     .sm-frame-card:hover {
-      border-color: var(--sm-active-pill-border);
+      border-color: #CBD5E1;
     }
 
     .sm-frame-card:focus-within {
-      border-color: var(--sm-primary);
-      box-shadow: 0 0 0 1px var(--sm-primary);
+      border-color: #4F46E5;
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.12);
     }
 
     .sm-frame-header {
-      padding: 7px 11px;
-      background: var(--sm-header-bg);
-      border-bottom: 1px solid var(--sm-border-subtle);
+      padding: 8px 12px;
+      background: #F8FAFC;
+      border-bottom: 1px solid #E2E8F0;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
     .sm-frame-title {
-      font-size: 11px;
-      font-weight: 650;
-      letter-spacing: 0.02em;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    .sm-frame-indicator {
-      width: 7px;
-      height: 7px;
-      border-radius: 2px;
+    .sm-part-badge {
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
-    .sm-ind-hook { background: var(--sm-frame-hook-border); }
-    .sm-ind-thesis { background: var(--sm-frame-thesis-border); }
-    .sm-ind-cta { background: var(--sm-frame-cta-border); }
-
-    .sm-frame-title-hook { color: var(--sm-text-primary); }
-    .sm-frame-title-thesis { color: var(--sm-text-primary); }
-    .sm-frame-title-cta { color: var(--sm-text-primary); }
+    .sm-badge-hook { background: #DBEAFE; color: #1D4ED8; }
+    .sm-badge-body { background: #E0E7FF; color: #4338CA; }
+    .sm-badge-cta { background: #D1FAE5; color: #047857; }
 
     .sm-frame-actions {
       display: flex;
@@ -755,154 +614,237 @@
     }
 
     .sm-frame-time {
-      font-size: 10px;
-      color: var(--sm-text-muted);
-      font-weight: 500;
+      font-size: 10.5px;
+      color: #64748B;
+      font-weight: 550;
     }
 
-    .sm-frame-copy-btn {
-      background: transparent;
-      border: none;
-      color: var(--sm-text-muted);
+    .sm-copy-part-btn {
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      color: #475569;
       cursor: pointer;
-      padding: 2px 5px;
-      border-radius: 4px;
+      padding: 3px 7px;
+      border-radius: 5px;
+      font-size: 10.5px;
+      font-weight: 600;
       display: flex;
       align-items: center;
       gap: 3px;
-      font-size: 10px;
-      font-weight: 500;
-      transition: all 0.12s ease;
+      transition: all 0.15s ease;
     }
 
-    .sm-frame-copy-btn:hover {
-      background: var(--sm-tag-bg);
-      color: var(--sm-text-primary);
+    .sm-copy-part-btn:hover {
+      background: #F1F5F9;
+      color: #0F172A;
+      border-color: #94A3B8;
     }
 
-    /* Editable Text Box (Clean Proportional Typography) */
     .sm-frame-editor {
-      padding: 10px 12px;
-      font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      font-size: 12.5px;
+      padding: 12px 14px;
+      font-size: 13px;
       line-height: 1.55;
-      color: var(--sm-text-primary);
+      color: #0F172A;
       outline: none;
       cursor: text;
       white-space: pre-wrap;
       word-break: break-word;
-      min-height: 48px;
+      min-height: 52px;
+      transition: background 0.2s ease;
     }
 
-    /* Telemetry Info Ribbon at bottom of canvas */
-    .sm-canvas-ribbon {
-      padding: 6px 10px;
+    .sm-frame-editor.teleprompter-active {
+      background: #FEF9C3;
+    }
+
+    /* 4. Creator Bonus Tools (Teleprompter & Viral Hashtags - Fills Empty Space) */
+    .sm-tools-card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+
+    .sm-tool-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 10.5px;
-      color: var(--sm-text-muted);
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #0F172A;
     }
 
-    .sm-ribbon-tag {
-      color: var(--sm-accent-emerald);
+    .sm-teleprompter-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 8px 12px;
+    }
+
+    .sm-pace-info {
+      font-size: 11px;
+      color: #475569;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sm-pace-info strong {
+      color: #0F172A;
+      font-size: 11.5px;
+    }
+
+    .sm-practice-btn {
+      background: #4F46E5;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 11.5px;
+      font-weight: 650;
+      cursor: pointer;
       display: flex;
       align-items: center;
       gap: 4px;
-      font-weight: 500;
+      transition: all 0.15s ease;
     }
 
-    /* 5. Ergonomic Sticky Action Footer */
+    .sm-practice-btn:hover {
+      background: #4338CA;
+    }
+
+    .sm-practice-btn.stop {
+      background: #DC2626;
+    }
+
+    /* Hashtags Box */
+    .sm-hashtag-box {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .sm-hashtag-text {
+      font-size: 11px;
+      color: #4F46E5;
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .sm-copy-tags-btn {
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      color: #334155;
+      border-radius: 5px;
+      padding: 4px 8px;
+      font-size: 10.5px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+
+    .sm-copy-tags-btn:hover {
+      background: #F1F5F9;
+      color: #0F172A;
+    }
+
+    /* 5. Sticky Action Footer */
     .sm-footer {
-      padding: 12px 14px;
-      background: var(--sm-header-bg);
-      border-top: 1px solid var(--sm-border);
+      padding: 14px 18px;
+      background: #FFFFFF;
+      border-top: 1px solid #E2E8F0;
       display: flex;
       flex-direction: column;
-      gap: 7px;
+      gap: 8px;
     }
 
-    /* Primary Action: Copy Full Script (The #1 operator action) */
     .sm-btn-primary {
       width: 100%;
-      background: var(--sm-primary);
-      color: var(--sm-primary-text);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: #0F172A;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      padding: 11px 16px;
+      font-size: 13px;
+      font-weight: 650;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.15);
+    }
+
+    .sm-btn-primary:hover {
+      background: #1E293B;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(15, 23, 42, 0.2);
+    }
+
+    .sm-btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .sm-btn-primary.copied {
+      background: #059669 !important;
+    }
+
+    .sm-footer-secondary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .sm-btn-secondary {
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      color: #334155;
       border-radius: 7px;
-      padding: 9px 14px;
-      font-size: 12.5px;
+      padding: 8px 12px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 7px;
-      transition: all 0.15s ease;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-    }
-
-    .sm-btn-primary:hover {
-      background: var(--sm-primary-hover);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-    }
-
-    .sm-btn-primary:active {
-      transform: scale(0.99);
-    }
-
-    .sm-btn-primary.copied {
-      background: var(--sm-accent-emerald) !important;
-      color: #FFFFFF !important;
-    }
-
-    /* Secondary Action Bar */
-    .sm-btn-secondary-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
       gap: 6px;
-    }
-
-    .sm-btn-secondary {
-      background: var(--sm-tag-bg);
-      color: var(--sm-text-secondary);
-      border: 1px solid var(--sm-border);
-      border-radius: 6px;
-      padding: 7px 10px;
-      font-size: 11.5px;
-      font-weight: 500;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
       transition: all 0.15s ease;
     }
 
     .sm-btn-secondary:hover {
-      background: var(--sm-card-hover);
-      color: var(--sm-text-primary);
-      border-color: var(--sm-active-pill-border);
+      background: #F1F5F9;
+      color: #0F172A;
+      border-color: #94A3B8;
     }
 
-    .sm-btn-secondary.success {
-      color: var(--sm-accent-emerald);
-      border-color: var(--sm-accent-emerald);
-    }
-
-    /* Toast Notification */
+    /* Feedback Toast */
     .sm-toast {
       position: absolute;
-      bottom: 74px;
+      bottom: 84px;
       left: 50%;
       transform: translateX(-50%) translateY(10px);
-      background: var(--sm-header-bg);
-      border: 1px solid var(--sm-primary);
-      color: var(--sm-text-primary);
-      padding: 6px 14px;
+      background: #0F172A;
+      color: #FFFFFF;
+      padding: 8px 16px;
       border-radius: 9999px;
-      font-size: 11px;
+      font-size: 11.5px;
       font-weight: 600;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
       opacity: 0;
       pointer-events: none;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -919,22 +861,21 @@
   `;
   shadow.appendChild(styleEl);
 
-  // Floating Trigger Tab
+  // Floating Edge Tab
   const triggerTab = document.createElement('div');
   triggerTab.className = 'sm-floating-trigger';
-  triggerTab.title = 'Toggle StitchMatrix Studio (Alt+S)';
+  triggerTab.title = 'Open StitchMatrix Script Studio (Alt+S)';
   triggerTab.innerHTML = `
     <svg viewBox="0 0 24 24">
       <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
     </svg>
-    <div class="trigger-dot"></div>
+    <span class="trigger-pill">SCRIPTS</span>
   `;
   shadow.appendChild(triggerTab);
 
   // Sidebar Container
   const sidebar = document.createElement('div');
   sidebar.className = 'sm-sidebar-container';
-  sidebar.setAttribute('data-theme', currentTheme);
 
   // Toast Container
   const toastEl = document.createElement('div');
@@ -943,253 +884,227 @@
 
   function showToast(msg) {
     toastEl.innerHTML = `
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
       <span>${msg}</span>
     `;
     toastEl.classList.add('show');
     setTimeout(() => {
       toastEl.classList.remove('show');
-    }, 2000);
+    }, 2200);
   }
 
-  // Live Telemetry Worker Sync
-  async function fetchLiveTelemetry(context) {
-    try {
-      const res = await fetch(`${WORKER_BASE}/api/analyze`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          url: window.location.href,
-          videoContext: context.title
-        })
-      });
-      const data = await res.json();
-      if (data.success && data.velocityMetrics) {
-        liveSurgeText = data.velocityMetrics.velocitySurge;
-        liveScoreText = data.velocityMetrics.optimizationScore;
-        const surgeEl = sidebar.querySelector('#smSurgeText');
-        const scoreEl = sidebar.querySelector('#smScoreText');
-        const beamEl = sidebar.querySelector('#smTelemetryBeam');
-        if (surgeEl) surgeEl.textContent = liveSurgeText;
-        if (scoreEl) scoreEl.textContent = liveScoreText;
-        if (beamEl) beamEl.style.width = liveScoreText;
-      }
-    } catch (e) {
-      // Graceful offline fallback
-    }
-  }
-
-  // Calculate word count and estimated reading time
+  // Calculate live word count and speaking duration
   function getCanvasStats() {
     const hook = sidebar.querySelector('#smHookText')?.textContent || '';
-    const thesis = sidebar.querySelector('#smThesisText')?.textContent || '';
+    const body = sidebar.querySelector('#smBodyText')?.textContent || '';
     const cta = sidebar.querySelector('#smCtaText')?.textContent || '';
-    const words = (hook + ' ' + thesis + ' ' + cta).trim().split(/\s+/).filter(Boolean).length;
-    const estimatedSeconds = Math.round(words / 2.3); // ~140 wpm speaking pace
-    return { words, estimatedSeconds };
+    const words = (hook + ' ' + body + ' ' + cta).trim().split(/\s+/).filter(Boolean).length;
+    const estSec = Math.max(15, Math.round(words / 2.4)); // ~145 words per minute
+    return { words, estSec };
   }
 
   function renderSidebar() {
-    const list = SCRIPT_MUTATIONS[activeMarket] || SCRIPT_MUTATIONS.career;
-    const cur = list[currentMutationIndex] || list[0];
+    const nicheObj = SCRIPT_DATA[activeNiche] || SCRIPT_DATA.career;
+    const curStyle = nicheObj.styles[activeStyleIndex] || nicheObj.styles[0];
     const context = detectVideoContext();
 
-    const displayScore = liveScoreText || cur.alignmentScore;
-    const displaySurge = liveSurgeText || cur.surge;
-
-    sidebar.setAttribute('data-theme', currentTheme);
-
     sidebar.innerHTML = `
-      <!-- 1. Compact Header Bar -->
+      <!-- 1. Header (Clean White Bar) -->
       <header class="sm-header">
-        <div class="sm-header-left">
-          <div class="sm-brand-badge">S</div>
+        <div class="sm-header-brand">
+          <div class="sm-logo-icon">S</div>
           <div>
-            <span class="sm-brand-name">StitchMatrix</span>
-          </div>
-          <div class="sm-platform-pill" title="Target Video Host">
-            <span class="sm-live-dot"></span>
-            <span>${context.platform}</span>
+            <div class="sm-header-title">StitchMatrix Script Studio</div>
+            <div class="sm-header-subtitle">
+              <span>Remixing:</span>
+              <span class="sm-platform-tag">${context.platform}</span>
+            </div>
           </div>
         </div>
+        <button class="sm-close-btn" id="smCloseBtn" title="Close Studio (Esc)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </header>
 
-        <div class="sm-header-actions">
-          <!-- Theme Switcher Button -->
-          <button class="sm-icon-btn" id="smThemeToggleBtn" title="Switch Theme Color Palette">
-            <span>🎨</span>
-            <span style="text-transform: capitalize;">${currentTheme}</span>
-          </button>
+      <!-- 2. Value Summary Banner -->
+      <div class="sm-summary-banner">
+        <div class="sm-summary-item">
+          <span>Viral Potential:</span>
+          <span class="sm-score-pill">${curStyle.viralScore}</span>
+        </div>
+        <div class="sm-summary-item">
+          <span>Est. Duration:</span>
+          <strong>~${curStyle.duration}</strong>
+        </div>
+        <div class="sm-summary-item">
+          <span>Trend Velocity:</span>
+          <strong style="color: #059669;">${curStyle.trendingFactor}</strong>
+        </div>
+      </div>
 
-          <!-- Close Button -->
-          <button class="sm-icon-btn" id="smCloseBtn" title="Close Studio (Esc)">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
+      <!-- 3. Scrollable Studio Content -->
+      <div class="sm-content-area">
+
+        <!-- Step 1: Target Audience Selection -->
+        <div class="sm-control-box">
+          <div class="sm-step-header">
+            <div class="sm-step-label">
+              <span class="sm-step-number">1</span>
+              <span>Your Channel Niche</span>
+            </div>
+            <span class="sm-step-hint">Adapts the hook to your audience</span>
+          </div>
+          <select class="sm-niche-select" id="smNicheSelect">
+            <option value="career" ${activeNiche === 'career' ? 'selected' : ''}>💼 Tech & Career Growth</option>
+            <option value="business" ${activeNiche === 'business' ? 'selected' : ''}>🚀 Business & AI Founders</option>
+            <option value="finance" ${activeNiche === 'finance' ? 'selected' : ''}>💰 Finance & Wealth Tips</option>
+          </select>
         </div>
 
-        <!-- Theme Picker Menu (Toggled) -->
-        ${showThemeMenu ? `
-          <div class="sm-theme-menu" id="smThemeMenu">
-            ${THEMES.map(t => `
-              <button class="sm-theme-item ${t.id === currentTheme ? 'active' : ''}" data-theme-id="${t.id}">
-                <span class="sm-theme-swatch" style="background: ${t.previewColor};"></span>
-                <span>${t.name}</span>
-                ${t.id === currentTheme ? '<span style="margin-left:auto; font-size: 10px;">✓</span>' : ''}
+        <!-- Step 2: Choose Script Style / Angle -->
+        <div class="sm-control-box">
+          <div class="sm-step-header">
+            <div class="sm-step-label">
+              <span class="sm-step-number">2</span>
+              <span>Choose Script Style</span>
+            </div>
+            <span class="sm-step-hint">Click a style to switch angle</span>
+          </div>
+          <div class="sm-style-cards">
+            ${nicheObj.styles.map((s, idx) => `
+              <button class="sm-style-btn ${idx === activeStyleIndex ? 'active' : ''}" data-idx="${idx}">
+                <div class="sm-style-left">
+                  <div class="sm-style-name">
+                    <span>${s.title}</span>
+                    <span style="font-size: 11px; opacity: 0.7; font-weight: 500;">(~${s.duration})</span>
+                  </div>
+                  <div class="sm-style-desc">${s.description}</div>
+                </div>
+                <span class="sm-style-badge">${s.badge}</span>
               </button>
             `).join('')}
           </div>
-        ` : ''}
-      </header>
-
-      <!-- 2. Micro Telemetry Bar (Consolidated Status & Latency) -->
-      <div class="sm-telemetry-bar">
-        <div class="sm-telemetry-stat">
-          <span>Alignment:</span>
-          <strong id="smScoreText">${displayScore}</strong>
         </div>
-        <div class="sm-telemetry-stat">
-          <span>Velocity:</span>
-          <span class="sm-surge-val" id="smSurgeText">${displaySurge}</span>
-        </div>
-        <div class="sm-telemetry-stat">
-          <span style="opacity: 0.7;">14ms · 48 nodes</span>
-        </div>
-        <!-- Hairline Progress Beam -->
-        <div class="sm-telemetry-beam" id="smTelemetryBeam" style="width: ${displayScore};"></div>
-      </div>
 
-      <!-- 3. Streamlined Command & Filter Deck -->
-      <div class="sm-control-deck">
-        <div class="sm-deck-row">
-          <!-- Market Vector Dropdown -->
-          <select class="sm-market-select" id="smMarketSelect" title="Select Target Market Vector">
-            <option value="career" ${activeMarket === 'career' ? 'selected' : ''}>Career & Tech Leadership</option>
-            <option value="saas" ${activeMarket === 'saas' ? 'selected' : ''}>B2B SaaS Founder (Retention)</option>
-            <option value="fintech" ${activeMarket === 'fintech' ? 'selected' : ''}>Fintech & Wealth Advisory</option>
-          </select>
+        <!-- Step 3: Script Frames (Hook, Body, CTA) -->
+        <div class="sm-frames-container">
 
-          <!-- Tone Pill Toggle -->
-          <div class="sm-pill-toggle active" id="smToneToggle" title="Click to cycle tone style">
-            ${activeTone}
+          <!-- Part 1: The Hook -->
+          <div class="sm-frame-card" id="smHookCard">
+            <div class="sm-frame-header">
+              <div class="sm-frame-title">
+                <span class="sm-part-badge sm-badge-hook">Part 1</span>
+                <span>The Hook (Grab Attention)</span>
+              </div>
+              <div class="sm-frame-actions">
+                <span class="sm-frame-time">0–3 sec</span>
+                <button class="sm-copy-part-btn" id="smCopyHookBtn" title="Copy hook only">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  <span>Copy</span>
+                </button>
+              </div>
+            </div>
+            <div class="sm-frame-editor" id="smHookText" contenteditable="true" spellcheck="false">${curStyle.hook}</div>
           </div>
 
-          <!-- Length Pill Toggle -->
-          <div class="sm-pill-toggle active" id="smLengthToggle" title="Click to cycle duration target">
-            ${activeLength}
+          <!-- Part 2: The Core Body -->
+          <div class="sm-frame-card" id="smBodyCard">
+            <div class="sm-frame-header">
+              <div class="sm-frame-title">
+                <span class="sm-part-badge sm-badge-body">Part 2</span>
+                <span>The Body (Deliver Core Value)</span>
+              </div>
+              <div class="sm-frame-actions">
+                <span class="sm-frame-time">4–25 sec</span>
+                <button class="sm-copy-part-btn" id="smCopyBodyBtn" title="Copy body only">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  <span>Copy</span>
+                </button>
+              </div>
+            </div>
+            <div class="sm-frame-editor" id="smBodyText" contenteditable="true" spellcheck="false">${curStyle.body}</div>
           </div>
+
+          <!-- Part 3: Call to Action -->
+          <div class="sm-frame-card" id="smCtaCard">
+            <div class="sm-frame-header">
+              <div class="sm-frame-title">
+                <span class="sm-part-badge sm-badge-cta">Part 3</span>
+                <span>Call-to-Action (Drive Comments/Saves)</span>
+              </div>
+              <div class="sm-frame-actions">
+                <span class="sm-frame-time">26–35 sec</span>
+                <button class="sm-copy-part-btn" id="smCopyCtaBtn" title="Copy CTA only">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  <span>Copy</span>
+                </button>
+              </div>
+            </div>
+            <div class="sm-frame-editor" id="smCtaText" contenteditable="true" spellcheck="false">${curStyle.cta}</div>
+          </div>
+
         </div>
 
-        <!-- Angle Mutation Pill Switcher (Contrarian / Tactical / Teardown) -->
-        <div class="sm-tabs-segmented">
-          ${list.map((m, idx) => `
-            <button class="sm-tab-pill ${idx === currentMutationIndex ? 'active' : ''}" data-idx="${idx}">
-              <span>${m.tabLabel}</span>
-              <span class="tab-badge">~${m.duration}</span>
+        <!-- 4. Creator Bonus Tools (Fills Empty Space Ergonomically) -->
+        <div class="sm-tools-card">
+          <div class="sm-tool-header">
+            <span>🎙️ Creator Teleprompter & Pacing</span>
+            <span id="smWordStats" style="font-weight: 500; font-size: 11px; color: #64748B;">~70 words · ~30s</span>
+          </div>
+          <div class="sm-teleprompter-row">
+            <div class="sm-pace-info">
+              <strong>145 words/min</strong>
+              <span>Optimal pacing for Short-form algorithms</span>
+            </div>
+            <button class="sm-practice-btn" id="smTeleprompterBtn">
+              <span>▶ Practice Read</span>
             </button>
-          `).join('')}
-        </div>
-      </div>
-
-      <!-- 4. Full-Height Ergonomic Script Canvas -->
-      <div class="sm-canvas-body">
-        
-        <!-- Frame 01: Hook -->
-        <div class="sm-frame-card">
-          <div class="sm-frame-header">
-            <div class="sm-frame-title">
-              <span class="sm-frame-indicator sm-ind-hook"></span>
-              <span class="sm-frame-title-hook">01 · HOOK ELEMENT</span>
-            </div>
-            <div class="sm-frame-actions">
-              <span class="sm-frame-time">0–3s</span>
-              <button class="sm-frame-copy-btn" id="smCopyHookBtn" title="Copy hook only">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                <span>Copy</span>
-              </button>
-            </div>
           </div>
-          <div class="sm-frame-editor" id="smHookText" contenteditable="true" spellcheck="false">${cur.hook}</div>
-        </div>
 
-        <!-- Frame 02: Thesis -->
-        <div class="sm-frame-card">
-          <div class="sm-frame-header">
-            <div class="sm-frame-title">
-              <span class="sm-frame-indicator sm-ind-thesis"></span>
-              <span class="sm-frame-title-thesis">02 · CORE THESIS & LEVERAGE</span>
-            </div>
-            <div class="sm-frame-actions">
-              <span class="sm-frame-time">4–25s</span>
-              <button class="sm-frame-copy-btn" id="smCopyThesisBtn" title="Copy thesis only">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                <span>Copy</span>
-              </button>
-            </div>
+          <!-- Viral Hashtags Box -->
+          <div class="sm-tool-header" style="margin-top: 4px;">
+            <span>🏷️ Recommended Viral Hashtags</span>
           </div>
-          <div class="sm-frame-editor" id="smThesisText" contenteditable="true" spellcheck="false">${cur.thesis}</div>
-        </div>
-
-        <!-- Frame 03: CTA -->
-        <div class="sm-frame-card">
-          <div class="sm-frame-header">
-            <div class="sm-frame-title">
-              <span class="sm-frame-indicator sm-ind-cta"></span>
-              <span class="sm-frame-title-cta">03 · CALL-TO-ACTION</span>
-            </div>
-            <div class="sm-frame-actions">
-              <span class="sm-frame-time">26–35s</span>
-              <button class="sm-frame-copy-btn" id="smCopyCtaBtn" title="Copy CTA only">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                <span>Copy</span>
-              </button>
-            </div>
+          <div class="sm-hashtag-box">
+            <span class="sm-hashtag-text" id="smHashtagDisplay">${nicheObj.hashtags}</span>
+            <button class="sm-copy-tags-btn" id="smCopyHashtagsBtn">Copy Tags</button>
           </div>
-          <div class="sm-frame-editor" id="smCtaText" contenteditable="true" spellcheck="false">${cur.cta}</div>
-        </div>
-
-        <!-- Telemetry Ribbon / Speaking Pace -->
-        <div class="sm-canvas-ribbon">
-          <span id="smWordStats">~74 words · ~32s speaking pace</span>
-          <span class="sm-ribbon-tag">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            Algorithmic Check Passed
-          </span>
         </div>
 
       </div>
 
-      <!-- 5. Ergonomic Sticky Action Deck (Primary Fast Action = Copy Full Script) -->
+      <!-- 5. Sticky Action Footer -->
       <footer class="sm-footer">
-        <!-- Prominent Primary Action Button -->
-        <button class="sm-btn-primary" id="smCopyFullBtn" title="Copy Complete Script (Alt+C)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <!-- Big Primary 1-Click Copy -->
+        <button class="sm-btn-primary" id="smCopyFullBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2"></rect>
             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
           </svg>
-          <span id="smCopyFullBtnText">Copy Full Script (Alt+C)</span>
+          <span id="smCopyFullText">Copy Full Script (Alt+C)</span>
         </button>
 
-        <!-- Secondary Quick Actions -->
-        <div class="sm-btn-secondary-row">
-          <button class="sm-btn-secondary" id="smRegenerateBtn" title="Cycle or Synthesize Next Script Angle">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <!-- Secondary Actions -->
+        <div class="sm-footer-secondary">
+          <button class="sm-btn-secondary" id="smTryAnotherBtn" title="Cycle to next hook angle">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="23 4 23 10 17 10"></polyline>
               <polyline points="1 20 1 14 7 14"></polyline>
               <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
             </svg>
-            <span id="smRegenBtnText">Cycle Angle</span>
+            <span>Try Another Style</span>
           </button>
 
-          <button class="sm-btn-secondary" id="smSyncGithubBtn" title="Sync Mutation to GitHub Repository">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="6" y1="3" x2="6" y2="15"></line>
-              <circle cx="18" cy="6" r="3"></circle>
-              <circle cx="6" cy="18" r="3"></circle>
-              <path d="M18 9a9 9 0 0 1-9 9"></path>
+          <button class="sm-btn-secondary" id="smExportBtn" title="Download script as .txt">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
             </svg>
-            <span id="smSyncBtnText">Sync to GitHub</span>
+            <span id="smExportText">Export (.txt)</span>
           </button>
         </div>
       </footer>
@@ -1197,14 +1112,13 @@
 
     attachEventListeners();
     updateWordStats();
-    fetchLiveTelemetry(context);
   }
 
   function updateWordStats() {
     const stats = getCanvasStats();
     const statsEl = sidebar.querySelector('#smWordStats');
     if (statsEl) {
-      statsEl.textContent = `~${stats.words} words · ~${stats.estimatedSeconds}s speaking pace`;
+      statsEl.textContent = `~${stats.words} words · ~${stats.estSec}s read time`;
     }
   }
 
@@ -1213,83 +1127,27 @@
     const closeBtn = sidebar.querySelector('#smCloseBtn');
     if (closeBtn) closeBtn.onclick = toggleSidebar;
 
-    // Theme Picker Toggle Button
-    const themeToggleBtn = sidebar.querySelector('#smThemeToggleBtn');
-    if (themeToggleBtn) {
-      themeToggleBtn.onclick = (e) => {
-        e.stopPropagation();
-        showThemeMenu = !showThemeMenu;
+    // Niche Select Dropdown
+    const nicheSelect = sidebar.querySelector('#smNicheSelect');
+    if (nicheSelect) {
+      nicheSelect.onchange = (e) => {
+        activeNiche = e.target.value;
+        activeStyleIndex = 0;
         renderSidebar();
+        showToast(`Audience set to: ${nicheSelect.options[nicheSelect.selectedIndex].text}`);
       };
     }
 
-    // Theme Menu Selection
-    sidebar.querySelectorAll('.sm-theme-item').forEach(item => {
-      item.onclick = (e) => {
-        e.stopPropagation();
-        const themeId = item.getAttribute('data-theme-id');
-        currentTheme = themeId;
-        try {
-          localStorage.setItem('sm_active_theme', themeId);
-        } catch (err) {}
-        showThemeMenu = false;
-        renderSidebar();
-        showToast(`Theme switched to ${item.textContent.trim()}`);
-      };
-    });
-
-    // Close theme menu on outside click
-    sidebar.onclick = () => {
-      if (showThemeMenu) {
-        showThemeMenu = false;
-        renderSidebar();
-      }
-    };
-
-    // Market Vector Select
-    const marketSelect = sidebar.querySelector('#smMarketSelect');
-    if (marketSelect) {
-      marketSelect.onchange = (e) => {
-        activeMarket = e.target.value;
-        currentMutationIndex = 0;
-        liveSurgeText = null;
-        liveScoreText = null;
-        renderSidebar();
-      };
-    }
-
-    // Tone Toggle
-    const toneToggle = sidebar.querySelector('#smToneToggle');
-    if (toneToggle) {
-      const tones = ['Direct Hook', 'Data Teardown', 'Story Paradox', 'Authority'];
-      toneToggle.onclick = () => {
-        const nextIdx = (tones.indexOf(activeTone) + 1) % tones.length;
-        activeTone = tones[nextIdx];
-        renderSidebar();
-      };
-    }
-
-    // Length Toggle
-    const lengthToggle = sidebar.querySelector('#smLengthToggle');
-    if (lengthToggle) {
-      const lengths = ['35s', '45s', '60s', '20s'];
-      lengthToggle.onclick = () => {
-        const nextIdx = (lengths.indexOf(activeLength) + 1) % lengths.length;
-        activeLength = lengths[nextIdx];
-        renderSidebar();
-      };
-    }
-
-    // Mutation Segmented Tabs
-    sidebar.querySelectorAll('.sm-tab-pill').forEach(btn => {
+    // Style Pills Selection
+    sidebar.querySelectorAll('.sm-style-btn').forEach(btn => {
       btn.onclick = () => {
         const idx = parseInt(btn.getAttribute('data-idx'), 10);
-        currentMutationIndex = idx;
+        activeStyleIndex = idx;
         renderSidebar();
       };
     });
 
-    // Per-Frame Quick Copy Buttons
+    // Copy Hook Only
     const copyHookBtn = sidebar.querySelector('#smCopyHookBtn');
     if (copyHookBtn) {
       copyHookBtn.onclick = () => {
@@ -1300,28 +1158,41 @@
       };
     }
 
-    const copyThesisBtn = sidebar.querySelector('#smCopyThesisBtn');
-    if (copyThesisBtn) {
-      copyThesisBtn.onclick = () => {
-        const text = sidebar.querySelector('#smThesisText')?.textContent || '';
+    // Copy Body Only
+    const copyBodyBtn = sidebar.querySelector('#smCopyBodyBtn');
+    if (copyBodyBtn) {
+      copyBodyBtn.onclick = () => {
+        const text = sidebar.querySelector('#smBodyText')?.textContent || '';
         navigator.clipboard.writeText(text).then(() => {
-          showToast('Thesis copied to clipboard!');
+          showToast('Body text copied to clipboard!');
         });
       };
     }
 
+    // Copy CTA Only
     const copyCtaBtn = sidebar.querySelector('#smCopyCtaBtn');
     if (copyCtaBtn) {
       copyCtaBtn.onclick = () => {
         const text = sidebar.querySelector('#smCtaText')?.textContent || '';
         navigator.clipboard.writeText(text).then(() => {
-          showToast('CTA copied to clipboard!');
+          showToast('Call-to-Action copied to clipboard!');
         });
       };
     }
 
-    // Input listeners to update word stats on the fly
-    ['#smHookText', '#smThesisText', '#smCtaText'].forEach(selector => {
+    // Copy Hashtags
+    const copyTagsBtn = sidebar.querySelector('#smCopyHashtagsBtn');
+    if (copyTagsBtn) {
+      copyTagsBtn.onclick = () => {
+        const tags = sidebar.querySelector('#smHashtagDisplay')?.textContent || '';
+        navigator.clipboard.writeText(tags).then(() => {
+          showToast('Hashtags copied to clipboard!');
+        });
+      };
+    }
+
+    // Real-time text edit listener
+    ['#smHookText', '#smBodyText', '#smCtaText'].forEach(selector => {
       const el = sidebar.querySelector(selector);
       if (el) {
         el.oninput = updateWordStats;
@@ -1330,116 +1201,119 @@
 
     // Primary Action: Copy Full Script
     const copyFullBtn = sidebar.querySelector('#smCopyFullBtn');
-    const copyFullText = sidebar.querySelector('#smCopyFullBtnText');
+    const copyFullText = sidebar.querySelector('#smCopyFullText');
     if (copyFullBtn && copyFullText) {
       copyFullBtn.onclick = () => {
         executeCopyFullScript();
       };
     }
 
-    // Cycle / Regenerate Angle
-    const regenBtn = sidebar.querySelector('#smRegenerateBtn');
-    const regenText = sidebar.querySelector('#smRegenBtnText');
-    if (regenBtn) {
-      regenBtn.onclick = async () => {
-        if (regenText) regenText.textContent = 'Synthesizing...';
-        regenBtn.style.opacity = '0.7';
-
-        const context = detectVideoContext();
-        try {
-          const res = await fetch(`${WORKER_BASE}/api/generate-scripts`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              videoContext: context.title,
-              marketVector: activeMarket,
-              tone: activeTone,
-              length: activeLength
-            })
-          });
-          const data = await res.json();
-          if (data.success && data.data?.mutations) {
-            const list = SCRIPT_MUTATIONS[activeMarket] || SCRIPT_MUTATIONS.career;
-            currentMutationIndex = (currentMutationIndex + 1) % list.length;
-          }
-        } catch (e) {
-          const list = SCRIPT_MUTATIONS[activeMarket] || SCRIPT_MUTATIONS.career;
-          currentMutationIndex = (currentMutationIndex + 1) % list.length;
-        } finally {
-          renderSidebar();
-          showToast('Switched to next script angle');
-        }
+    // Try Another Style Button
+    const tryAnotherBtn = sidebar.querySelector('#smTryAnotherBtn');
+    if (tryAnotherBtn) {
+      tryAnotherBtn.onclick = () => {
+        const nicheObj = SCRIPT_DATA[activeNiche] || SCRIPT_DATA.career;
+        activeStyleIndex = (activeStyleIndex + 1) % nicheObj.styles.length;
+        renderSidebar();
+        showToast(`Switched to: ${nicheObj.styles[activeStyleIndex].title}`);
       };
     }
 
-    // Sync to GitHub
-    const syncBtn = sidebar.querySelector('#smSyncGithubBtn');
-    const syncText = sidebar.querySelector('#smSyncBtnText');
-    if (syncBtn && syncText) {
-      syncBtn.onclick = async () => {
-        const originalText = syncText.textContent;
-        syncText.textContent = 'Syncing...';
-        syncBtn.style.opacity = '0.75';
+    // Export as .txt
+    const exportBtn = sidebar.querySelector('#smExportBtn');
+    if (exportBtn) {
+      exportBtn.onclick = () => {
+        const nicheObj = SCRIPT_DATA[activeNiche] || SCRIPT_DATA.career;
+        const curStyle = nicheObj.styles[activeStyleIndex];
+        const hook = sidebar.querySelector('#smHookText')?.textContent || curStyle.hook;
+        const body = sidebar.querySelector('#smBodyText')?.textContent || curStyle.body;
+        const cta = sidebar.querySelector('#smCtaText')?.textContent || curStyle.cta;
+        const content = `STITCHMATRIX SCRIPT EXPORT\n=========================\nNiche: ${nicheObj.nicheLabel}\nStyle: ${curStyle.title} (~${curStyle.duration})\n\n[PART 1: THE HOOK]\n${hook}\n\n[PART 2: THE BODY]\n${body}\n\n[PART 3: CALL-TO-ACTION]\n${cta}\n\nHASHTAGS:\n${nicheObj.hashtags}\n`;
 
-        try {
-          const list = SCRIPT_MUTATIONS[activeMarket] || SCRIPT_MUTATIONS.career;
-          const cur = list[currentMutationIndex];
-          const hookText = sidebar.querySelector('#smHookText')?.textContent || cur.hook;
-          const thesisText = sidebar.querySelector('#smThesisText')?.textContent || cur.thesis;
-          const ctaText = sidebar.querySelector('#smCtaText')?.textContent || cur.cta;
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `script-${curStyle.id}-${Date.now()}.txt`;
+        a.click();
+        showToast('Script downloaded as .txt!');
+      };
+    }
 
-          const payload = {
-            repo: 'humangeek77-star/stitchmatrix-social-virality-dashboard',
-            scriptMutation: { ...cur, hook: hookText, thesis: thesisText, cta: ctaText },
-            marketVector: activeMarket,
-            tone: activeTone,
-            length: activeLength,
-            url: window.location.href,
-            syncedAt: new Date().toISOString()
-          };
-
-          try {
-            await fetch(`${WORKER_BASE}/api/sync-github`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
-          } catch (e) {
-            // Local fallback
-          }
-
-          syncBtn.classList.add('success');
-          syncText.textContent = '✓ Synced!';
-          showToast('Asset synced to GitHub repository');
-          setTimeout(() => {
-            syncBtn.classList.remove('success');
-            syncText.textContent = originalText;
-            syncBtn.style.opacity = '1';
-          }, 2400);
-        } catch (err) {
-          syncText.textContent = 'Synced Locally';
-          setTimeout(() => {
-            syncText.textContent = originalText;
-            syncBtn.style.opacity = '1';
-          }, 2000);
-        }
+    // Teleprompter / Practice Read Feature
+    const practiceBtn = sidebar.querySelector('#smTeleprompterBtn');
+    if (practiceBtn) {
+      practiceBtn.onclick = () => {
+        toggleTeleprompter();
       };
     }
   }
 
+  function toggleTeleprompter() {
+    isTeleprompterActive = !isTeleprompterActive;
+    const practiceBtn = sidebar.querySelector('#smTeleprompterBtn');
+    const hookCard = sidebar.querySelector('#smHookText');
+    const bodyCard = sidebar.querySelector('#smBodyText');
+    const ctaCard = sidebar.querySelector('#smCtaText');
+
+    if (!isTeleprompterActive) {
+      if (teleprompterInterval) clearInterval(teleprompterInterval);
+      if (practiceBtn) {
+        practiceBtn.classList.remove('stop');
+        practiceBtn.innerHTML = '<span>▶ Practice Read</span>';
+      }
+      if (hookCard) hookCard.classList.remove('teleprompter-active');
+      if (bodyCard) bodyCard.classList.remove('teleprompter-active');
+      if (ctaCard) ctaCard.classList.remove('teleprompter-active');
+      return;
+    }
+
+    if (practiceBtn) {
+      practiceBtn.classList.add('stop');
+      practiceBtn.innerHTML = '<span>⏹ Stop Read</span>';
+    }
+
+    showToast('Starting read practice...');
+
+    // Sequence through Hook -> Body -> CTA
+    let phase = 0;
+    if (hookCard) hookCard.classList.add('teleprompter-active');
+
+    teleprompterInterval = setInterval(() => {
+      phase++;
+      if (phase === 1) {
+        if (hookCard) hookCard.classList.remove('teleprompter-active');
+        if (bodyCard) bodyCard.classList.add('teleprompter-active');
+      } else if (phase === 2) {
+        if (bodyCard) bodyCard.classList.remove('teleprompter-active');
+        if (ctaCard) ctaCard.classList.add('teleprompter-active');
+      } else {
+        clearInterval(teleprompterInterval);
+        isTeleprompterActive = false;
+        if (ctaCard) ctaCard.classList.remove('teleprompter-active');
+        if (practiceBtn) {
+          practiceBtn.classList.remove('stop');
+          practiceBtn.innerHTML = '<span>▶ Practice Read</span>';
+        }
+        showToast('Practice read complete! Great pace.');
+      }
+    }, 4500); // 4.5s pacing per section preview
+  }
+
   function executeCopyFullScript() {
+    const nicheObj = SCRIPT_DATA[activeNiche] || SCRIPT_DATA.career;
+    const curStyle = nicheObj.styles[activeStyleIndex];
     const hookText = sidebar.querySelector('#smHookText')?.textContent || '';
-    const thesisText = sidebar.querySelector('#smThesisText')?.textContent || '';
+    const bodyText = sidebar.querySelector('#smBodyText')?.textContent || '';
     const ctaText = sidebar.querySelector('#smCtaText')?.textContent || '';
-    const formatted = `01 | HOOK:\n${hookText}\n\n02 | THESIS:\n${thesisText}\n\n03 | CALL-TO-ACTION:\n${ctaText}`;
+    const formatted = `[PART 1: THE HOOK]\n${hookText}\n\n[PART 2: THE BODY]\n${bodyText}\n\n[PART 3: CALL-TO-ACTION]\n${ctaText}\n\nHASHTAGS:\n${nicheObj.hashtags}`;
 
     navigator.clipboard.writeText(formatted).then(() => {
       const copyFullBtn = sidebar.querySelector('#smCopyFullBtn');
-      const copyFullText = sidebar.querySelector('#smCopyFullBtnText');
+      const copyFullText = sidebar.querySelector('#smCopyFullText');
       if (copyFullBtn && copyFullText) {
         copyFullBtn.classList.add('copied');
         copyFullText.textContent = '✓ Copied to Clipboard!';
-        showToast('Full script copied to clipboard!');
+        showToast('Full script & hashtags copied!');
         setTimeout(() => {
           copyFullBtn.classList.remove('copied');
           copyFullText.textContent = 'Copy Full Script (Alt+C)';
@@ -1457,7 +1331,7 @@
     } else {
       sidebar.classList.remove('open');
       triggerTab.style.display = 'flex';
-      showThemeMenu = false;
+      if (isTeleprompterActive) toggleTeleprompter();
     }
   }
 
@@ -1480,26 +1354,9 @@
       e.preventDefault();
       executeCopyFullScript();
     }
-    // Alt + 1 / 2 / 3 : Switch Mutation Angle
-    if (isOpen && e.altKey && ['1', '2', '3'].includes(e.key)) {
-      e.preventDefault();
-      const idx = parseInt(e.key, 10) - 1;
-      const list = SCRIPT_MUTATIONS[activeMarket] || SCRIPT_MUTATIONS.career;
-      if (idx < list.length) {
-        currentMutationIndex = idx;
-        renderSidebar();
-        showToast(`Angle switched: ${list[idx].tabLabel}`);
-      }
-    }
-    // Alt + R : Cycle Angle
-    if (isOpen && e.altKey && (e.key === 'r' || e.key === 'R')) {
-      e.preventDefault();
-      const regenBtn = sidebar.querySelector('#smRegenerateBtn');
-      if (regenBtn) regenBtn.click();
-    }
   });
 
-  // Extension runtime message listener
+  // Message listener from background script
   if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       if (request.action === 'TOGGLE_SIDEBAR') {
@@ -1509,5 +1366,5 @@
     });
   }
 
-  console.log('[StitchMatrix] High-Efficiency Studio Extension v3.0 loaded.');
+  console.log('[StitchMatrix] Clean Light Creator Studio v3.1 loaded.');
 })();

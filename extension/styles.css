@@ -1,5 +1,5 @@
-/* StitchMatrix — Enterprise Studio v3.0 Design Tokens & Stylesheet
-   Themes: Linear Indigo, Carbon Mono, Executive Slate, Studio Light
+/* StitchMatrix — Creator Script Studio v3.1 Clean Light Theme
+   Apple / Notion / Loom Minimalist Design System
 */
 
 :host {
@@ -7,6 +7,7 @@
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: 13px;
   line-height: 1.5;
+  color: #0F172A;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -17,107 +18,24 @@
   padding: 0;
 }
 
-/* THEME SYSTEM (CSS Variables) */
-.sm-sidebar-container, .sm-floating-trigger {
-  --sm-bg: #0C0D11;
-  --sm-header-bg: #111218;
-  --sm-subbar-bg: #0E0F14;
-  --sm-card-bg: #14151C;
-  --sm-card-hover: #1A1C25;
-  --sm-border: #20222C;
-  --sm-border-subtle: #181922;
-  --sm-primary: #6366F1;
-  --sm-primary-hover: #4F46E5;
-  --sm-primary-text: #FFFFFF;
-  --sm-accent-cyan: #38BDF8;
-  --sm-accent-emerald: #10B981;
-  --sm-text-primary: #F3F4F6;
-  --sm-text-secondary: #9CA3AF;
-  --sm-text-muted: #6B7280;
-  --sm-tag-bg: #1B1D26;
-  --sm-active-pill: #252836;
-  --sm-active-pill-border: #3A3E52;
-  --sm-frame-hook-border: #6366F1;
-  --sm-frame-thesis-border: #38BDF8;
-  --sm-frame-cta-border: #10B981;
-  --sm-input-bg: #12131A;
-  --sm-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
-}
-
-.sm-sidebar-container[data-theme="carbon"] {
-  --sm-bg: #000000;
-  --sm-header-bg: #0A0A0A;
-  --sm-subbar-bg: #050505;
-  --sm-card-bg: #0E0E0E;
-  --sm-card-hover: #161616;
-  --sm-border: #242424;
-  --sm-border-subtle: #1A1A1A;
-  --sm-primary: #FFFFFF;
-  --sm-primary-hover: #E5E5E5;
-  --sm-primary-text: #000000;
-  --sm-accent-cyan: #D4D4D8;
-  --sm-accent-emerald: #10B981;
-  --sm-text-primary: #FAFAFA;
-  --sm-text-secondary: #A1A1AA;
-  --sm-text-muted: #71717A;
-  --sm-tag-bg: #171717;
-  --sm-active-pill: #262626;
-  --sm-active-pill-border: #404040;
-  --sm-frame-hook-border: #E4E4E7;
-  --sm-frame-thesis-border: #A1A1AA;
-  --sm-frame-cta-border: #10B981;
-  --sm-input-bg: #0A0A0A;
-  --sm-shadow: 0 16px 40px rgba(0, 0, 0, 0.85);
-}
-
-.sm-sidebar-container[data-theme="slate"] {
-  --sm-bg: #0B0F19;
-  --sm-header-bg: #0F172A;
-  --sm-subbar-bg: #080D16;
-  --sm-card-bg: #141E30;
-  --sm-card-hover: #1A263D;
-  --sm-border: #253347;
-  --sm-border-subtle: #192435;
-  --sm-primary: #0284C7;
-  --sm-primary-hover: #0369A1;
-  --sm-primary-text: #FFFFFF;
-  --sm-accent-cyan: #38BDF8;
-  --sm-accent-emerald: #34D399;
-  --sm-text-primary: #F8FAFC;
-  --sm-text-secondary: #94A3B8;
-  --sm-text-muted: #64748B;
-  --sm-tag-bg: #1E293B;
-  --sm-active-pill: #29394E;
-  --sm-active-pill-border: #3B506B;
-  --sm-frame-hook-border: #0284C7;
-  --sm-frame-thesis-border: #38BDF8;
-  --sm-frame-cta-border: #34D399;
-  --sm-input-bg: #101826;
-  --sm-shadow: 0 16px 40px rgba(2, 6, 23, 0.75);
-}
-
-.sm-sidebar-container[data-theme="titanium"] {
+/* Base Light Theme Tokens */
+.sm-sidebar-container {
   --sm-bg: #F8FAFC;
-  --sm-header-bg: #FFFFFF;
-  --sm-subbar-bg: #F1F5F9;
   --sm-card-bg: #FFFFFF;
-  --sm-card-hover: #F8FAFC;
+  --sm-header-bg: #FFFFFF;
   --sm-border: #E2E8F0;
-  --sm-border-subtle: #EDF2F7;
-  --sm-primary: #4F46E5;
-  --sm-primary-hover: #4338CA;
-  --sm-primary-text: #FFFFFF;
-  --sm-accent-cyan: #0284C7;
-  --sm-accent-emerald: #059669;
+  --sm-border-focus: #4F46E5;
   --sm-text-primary: #0F172A;
   --sm-text-secondary: #475569;
-  --sm-text-muted: #94A3B8;
-  --sm-tag-bg: #F1F5F9;
-  --sm-active-pill: #E2E8F0;
-  --sm-active-pill-border: #CBD5E1;
-  --sm-frame-hook-border: #4F46E5;
-  --sm-frame-thesis-border: #0284C7;
-  --sm-frame-cta-border: #059669;
-  --sm-input-bg: #F8FAFC;
-  --sm-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+  --sm-text-muted: #64748B;
+  --sm-primary-btn: #0F172A;
+  --sm-primary-hover: #1E293B;
+  --sm-accent-indigo: #4F46E5;
+  --sm-accent-emerald: #059669;
+  --sm-badge-blue-bg: #DBEAFE;
+  --sm-badge-blue-text: #1D4ED8;
+  --sm-badge-indigo-bg: #E0E7FF;
+  --sm-badge-indigo-text: #4338CA;
+  --sm-badge-emerald-bg: #D1FAE5;
+  --sm-badge-emerald-text: #047857;
 }
