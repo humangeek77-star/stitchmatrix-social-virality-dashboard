@@ -501,16 +501,18 @@
 
   const shadow = host.attachShadow({ mode: 'open' });
 
-  // --- Inject Scoped Cyber-Cobalt Obsidian Styles ---
+  // --- Inject Scoped Deep Navy & Electric Cyan Dark Mode Styles ---
   const styleEl = document.createElement('style');
   styleEl.textContent = `
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap');
+
     :host {
       all: initial;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Plus Jakarta Sans", "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       font-size: 13.5px;
       line-height: 1.5;
-      color: #F8FAFC;
-      letter-spacing: -0.025em;
+      color: #94A3B8;
+      letter-spacing: -0.015em;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
@@ -521,7 +523,7 @@
       padding: 0;
     }
 
-    /* Floating Edge Tab Trigger (Blendr Cyber Glowing Pill) */
+    /* Floating Edge Tab Trigger (Deep Navy & Electric Cyan Pill) */
     .sm-floating-trigger {
       position: fixed;
       top: 50%;
@@ -529,8 +531,8 @@
       transform: translateY(-50%);
       width: 38px;
       height: 92px;
-      background: #020408;
-      border: 1px solid #15223C;
+      background: #0D1117;
+      border: 1px solid #30363D;
       border-right: none;
       border-radius: 12px 0 0 12px;
       display: flex;
@@ -540,22 +542,22 @@
       gap: 8px;
       cursor: pointer;
       z-index: 2147483646;
-      box-shadow: -4px 0 24px rgba(37, 99, 235, 0.25);
+      box-shadow: -4px 0 24px rgba(0, 229, 255, 0.15);
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .sm-floating-trigger:hover {
-      background: #070B16;
+      background: #161B22;
       width: 42px;
-      border-color: #3B82F6;
-      box-shadow: -6px 0 28px rgba(37, 99, 235, 0.45);
+      border-color: #00E5FF;
+      box-shadow: -6px 0 28px rgba(0, 229, 255, 0.35);
     }
 
     .sm-floating-trigger svg {
       width: 17px;
       height: 17px;
       fill: none;
-      stroke: #38BDF8;
+      stroke: #00E5FF;
       stroke-width: 2;
     }
 
@@ -563,11 +565,11 @@
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: #38BDF8;
-      box-shadow: 0 0 10px #38BDF8;
+      background: #00E5FF;
+      box-shadow: 0 0 10px #00E5FF;
     }
 
-    /* Main Sidebar Drawer (Deep Obsidian Void & Silicon Microchip Glow) */
+    /* Main Sidebar Drawer (Deep Navy Base Background #0D1117) */
     .sm-sidebar-container {
       position: fixed;
       top: 0;
@@ -575,9 +577,9 @@
       width: 416px;
       max-width: 100vw;
       height: 100vh;
-      background: #020408;
-      border-left: 1px solid #15223C;
-      box-shadow: -12px 0 45px rgba(2, 4, 8, 0.95), 0 0 40px rgba(37, 99, 235, 0.15);
+      background: #0D1117;
+      border-left: 1px solid #30363D;
+      box-shadow: -12px 0 45px rgba(13, 17, 23, 0.95), 0 0 40px rgba(0, 229, 255, 0.08);
       z-index: 2147483647;
       display: flex;
       flex-direction: column;
@@ -590,11 +592,11 @@
       transform: translateX(0);
     }
 
-    /* 1. Sleek Blendr Header */
+    /* 1. Header (#161B22 with subtle 1px border #30363D) */
     .sm-header {
       padding: 14px 18px;
-      background: #070B16;
-      border-bottom: 1px solid #15223C;
+      background: #161B22;
+      border-bottom: 1px solid #30363D;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -611,27 +613,32 @@
     .sm-logo-icon {
       width: 28px;
       height: 28px;
-      background: linear-gradient(135deg, #1E40AF 0%, #2563EB 50%, #38BDF8 100%);
+      background: #0D1117;
+      border: 1px solid #30363D;
       border-radius: 7px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #FFFFFF;
-      box-shadow: 0 0 14px rgba(37, 99, 235, 0.45);
+      color: #00E5FF;
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
+    }
+
+    .sm-logo-icon svg {
+      stroke: #00E5FF;
     }
 
     .sm-brand-title {
       font-size: 15px;
-      font-weight: 800;
+      font-weight: 700;
       color: #FFFFFF;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.02em;
       display: flex;
       align-items: center;
       gap: 2px;
     }
 
     .sm-brand-title span {
-      color: #38BDF8;
+      color: #00E5FF;
     }
 
     .sm-header-actions {
@@ -644,22 +651,23 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(37, 99, 235, 0.16);
-      border: 1px solid rgba(59, 130, 246, 0.4);
-      color: #60A5FA;
+      background: rgba(0, 229, 255, 0.1);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      color: #00E5FF;
       font-size: 10.5px;
-      font-weight: 700;
+      font-weight: 600;
       padding: 4px 10px;
       border-radius: 9999px;
       letter-spacing: 0.02em;
+      font-family: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', Consolas, monospace;
     }
 
     .sm-pulse-dot {
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: #38BDF8;
-      box-shadow: 0 0 8px #38BDF8;
+      background: #00E5FF;
+      box-shadow: 0 0 8px #00E5FF;
       animation: smPulse 1.8s infinite;
     }
 
@@ -672,8 +680,8 @@
       width: 28px;
       height: 28px;
       border-radius: 7px;
-      background: #0A1122;
-      border: 1px solid #1E2E4E;
+      background: #0D1117;
+      border: 1px solid #30363D;
       color: #94A3B8;
       display: flex;
       align-items: center;
@@ -684,22 +692,22 @@
     }
 
     .sm-close-btn:hover {
-      background: #15223C;
+      background: #161B22;
       color: #FFFFFF;
-      border-color: #3B82F6;
+      border-color: #00E5FF;
     }
 
     /* 2. Active Video Live Intelligence Card (WHERE RED ARROWS POINT) */
     .sm-video-banner {
       margin: 12px 16px 0 16px;
       padding: 13px 15px;
-      background: #070B16;
-      border: 1px solid #15223C;
+      background: #161B22;
+      border: 1px solid #30363D;
       border-radius: 12px;
       display: flex;
       flex-direction: column;
       gap: 8px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 4px 20px rgba(13, 17, 23, 0.6);
       position: relative;
       overflow: hidden;
       flex-shrink: 0;
@@ -713,7 +721,7 @@
       left: 0;
       width: 3px;
       height: 100%;
-      background: linear-gradient(180deg, #38BDF8 0%, #2563EB 100%);
+      background: #00E5FF;
     }
 
     .sm-banner-header {
@@ -727,19 +735,20 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      font-size: 11px;
-      font-weight: 750;
-      color: #60A5FA;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #00E5FF;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
+      font-family: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', Consolas, monospace;
     }
 
     .sm-btn-rescan {
-      background: #0A1122;
-      border: 1px solid rgba(59, 130, 246, 0.35);
-      color: #93C5FD;
+      background: #0D1117;
+      border: 1px solid #30363D;
+      color: #00E5FF;
       font-size: 10.5px;
-      font-weight: 700;
+      font-weight: 600;
       padding: 4px 9px;
       border-radius: 6px;
       cursor: pointer;
@@ -747,25 +756,26 @@
       align-items: center;
       gap: 5px;
       transition: all 0.15s ease;
+      font-family: 'Inter', sans-serif;
     }
 
     .sm-btn-rescan:hover {
-      background: #15223C;
+      background: #161B22;
       color: #FFFFFF;
-      border-color: #38BDF8;
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+      border-color: #00E5FF;
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
     }
 
     .sm-video-title {
       font-size: 13.5px;
-      font-weight: 750;
+      font-weight: 700;
       color: #FFFFFF;
       line-height: 1.4;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.015em;
     }
 
     .sm-video-meta {
@@ -775,21 +785,39 @@
       font-size: 11px;
       color: #94A3B8;
       flex-wrap: wrap;
-      font-variant-numeric: tabular-nums;
     }
 
     .sm-video-meta strong {
-      color: #E2E8F0;
-      font-weight: 700;
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+
+    /* Data font for metrics, numbers, and data points */
+    .sm-data-font {
+      font-family: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', Consolas, monospace !important;
+      letter-spacing: -0.02em;
     }
 
     .sm-meta-views-pill {
-      color: #38BDF8 !important;
-      font-weight: 750;
+      color: #00E5FF !important;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', Consolas, monospace;
     }
 
     .sm-meta-views-pill strong {
-      color: #38BDF8 !important;
+      color: #00E5FF !important;
+      font-family: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', Consolas, monospace;
+    }
+
+    .sm-meta-score-pill {
+      color: #94A3B8;
+      font-weight: 500;
+    }
+
+    .sm-meta-score {
+      color: #00E5FF !important;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', Consolas, monospace;
     }
 
     /* 3. THE ONE MASTER VIRAL SCRIPT CARD */
@@ -798,17 +826,17 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      background: #070B16;
-      border: 1px solid #1E2E4E;
+      background: #161B22;
+      border: 1px solid #30363D;
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.65), 0 0 25px rgba(37, 99, 235, 0.1);
+      box-shadow: 0 8px 30px rgba(13, 17, 23, 0.7);
     }
 
     .sm-output-header {
       padding: 12px 14px;
-      background: #0A1122;
-      border-bottom: 1px solid #15223C;
+      background: #161B22;
+      border-bottom: 1px solid #30363D;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -820,15 +848,15 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      color: #60A5FA;
+      color: #FFFFFF;
       font-size: 11.5px;
-      font-weight: 800;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
 
     .sm-output-badge svg {
-      color: #38BDF8;
+      color: #00E5FF;
     }
 
     .sm-output-metrics {
@@ -839,18 +867,22 @@
 
     .sm-metric-pill {
       font-size: 10px;
-      font-weight: 700;
+      font-weight: 600;
       color: #94A3B8;
-      background: #020408;
-      border: 1px solid #15223C;
+      background: #0D1117;
+      border: 1px solid #30363D;
       padding: 3px 7px;
       border-radius: 6px;
+      font-family: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', Consolas, monospace;
     }
 
+    /* Gamified Badge: Pink/Red (#FF3366) and warm orange strictly for gamification */
     .sm-pill-highlight {
-      color: #38BDF8;
-      border-color: rgba(56, 189, 248, 0.35);
-      background: rgba(37, 99, 235, 0.15);
+      color: #FF3366 !important;
+      border-color: rgba(255, 51, 102, 0.45);
+      background: rgba(255, 51, 102, 0.12);
+      font-weight: 700;
+      font-family: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', Consolas, monospace;
     }
 
     /* Unified Script Canvas */
@@ -862,8 +894,8 @@
       flex-direction: column;
       gap: 14px;
       outline: none;
-      font-family: inherit;
-      background: #040711;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0D1117;
     }
 
     .sm-unified-script-editor::-webkit-scrollbar {
@@ -875,105 +907,130 @@
     }
 
     .sm-unified-script-editor::-webkit-scrollbar-thumb {
-      background: #1E2E4E;
+      background: #30363D;
       border-radius: 4px;
     }
 
     .sm-script-section {
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 6px;
     }
 
+    /* Section headers: bold, uppercase, tracked out, reduced font size (10px) */
     .sm-section-label {
-      font-size: 10.5px;
-      font-weight: 800;
-      color: #60A5FA;
+      font-size: 10px;
+      font-weight: 700;
+      color: #FFFFFF;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.08em;
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
     }
 
+    .sm-section-timing {
+      font-family: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', Consolas, monospace;
+      color: #00E5FF;
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    /* Script body copy: Slate Gray (#94A3B8), regular weight (400) */
     .sm-section-body {
       font-size: 13.5px;
       line-height: 1.6;
-      color: #F8FAFC;
-      letter-spacing: -0.015em;
+      color: #94A3B8;
+      font-weight: 400;
+      letter-spacing: -0.01em;
     }
 
     .sm-hook-lead {
-      color: #E2E8F0;
-      font-weight: 750;
+      color: #94A3B8;
+      font-weight: 400;
     }
 
     .sm-hook-highlight {
-      color: #38BDF8;
-      font-weight: 800;
-      text-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+      color: #00E5FF;
+      font-weight: 400;
+      text-shadow: 0 0 10px rgba(0, 229, 255, 0.25);
     }
 
     .sm-hook-tail {
-      color: #F1F5F9;
-      font-weight: 700;
+      color: #94A3B8;
+      font-weight: 400;
     }
 
     .sm-body-text {
-      color: #CBD5E1;
-      font-weight: 450;
+      color: #94A3B8;
+      font-weight: 400;
     }
 
     .sm-cta-text {
-      color: #93C5FD;
-      font-weight: 600;
+      color: #94A3B8;
+      font-weight: 400;
     }
 
     .sm-tags-text {
-      color: #38BDF8;
-      font-weight: 600;
+      color: #00E5FF;
+      font-weight: 500;
       font-size: 12px;
       word-spacing: 3px;
+      font-family: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', Consolas, monospace;
     }
 
     /* 4. Action Controls Bar */
     .sm-output-actions {
       padding: 12px 14px;
-      background: #070B16;
-      border-top: 1px solid #15223C;
+      background: #161B22;
+      border-top: 1px solid #30363D;
       display: flex;
       flex-direction: column;
       gap: 8px;
       flex-shrink: 0;
     }
 
+    /* Main "Copy Full Viral Script" button:
+       - Full width of container
+       - Inter Semi-Bold (600)
+       - Electric Cyan (#00E5FF) background with dark text (#0D1117)
+       - Distinct hover state (brightness increase & glow effect)
+    */
     .sm-btn-copy-master {
       width: 100%;
-      background: linear-gradient(135deg, #1E40AF 0%, #2563EB 50%, #3B82F6 100%);
-      color: #FFFFFF;
+      background: #00E5FF;
+      color: #0D1117;
       border: none;
-      border-radius: 9px;
+      border-radius: 8px;
       padding: 12px 14px;
       font-size: 13.5px;
-      font-weight: 750;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      box-shadow: 0 4px 18px rgba(37, 99, 235, 0.45);
+      box-shadow: 0 4px 14px rgba(0, 229, 255, 0.35);
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      letter-spacing: -0.015em;
+      letter-spacing: -0.01em;
     }
 
     .sm-btn-copy-master:hover {
-      background: linear-gradient(135deg, #2563EB 0%, #3B82F6 50%, #60A5FA 100%);
+      filter: brightness(1.08);
+      box-shadow: 0 0 22px rgba(0, 229, 255, 0.55);
       transform: translateY(-1px);
-      box-shadow: 0 6px 22px rgba(37, 99, 235, 0.6);
+    }
+
+    .sm-btn-copy-master:active {
+      transform: translateY(0);
+      filter: brightness(0.95);
     }
 
     .sm-btn-copy-master.copied {
       background: #10B981 !important;
+      color: #FFFFFF !important;
       box-shadow: 0 0 20px rgba(16, 185, 129, 0.5) !important;
     }
 
@@ -983,14 +1040,15 @@
       gap: 8px;
     }
 
-    .sm-btn-remix-angle {
-      background: #0A1122;
-      border: 1px solid rgba(59, 130, 246, 0.4);
-      color: #93C5FD;
-      border-radius: 8px;
+    .sm-btn-remix-angle, .sm-btn-copy-tags {
+      background: #0D1117;
+      border: 1px solid #30363D;
+      color: #00E5FF;
+      border-radius: 7px;
       padding: 9px 10px;
       font-size: 11.5px;
-      font-weight: 700;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -999,34 +1057,11 @@
       transition: all 0.15s ease;
     }
 
-    .sm-btn-remix-angle:hover {
-      background: #15223C;
+    .sm-btn-remix-angle:hover, .sm-btn-copy-tags:hover {
+      background: #161B22;
       color: #FFFFFF;
-      border-color: #38BDF8;
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
-    }
-
-    .sm-btn-copy-tags {
-      background: #0A1122;
-      border: 1px solid rgba(59, 130, 246, 0.4);
-      color: #93C5FD;
-      border-radius: 8px;
-      padding: 9px 10px;
-      font-size: 11.5px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.15s ease;
-    }
-
-    .sm-btn-copy-tags:hover {
-      background: #15223C;
-      color: #FFFFFF;
-      border-color: #38BDF8;
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+      border-color: #00E5FF;
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
     }
 
     /* 5. Minimalist Toast Alerts */
@@ -1035,18 +1070,18 @@
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%) translateY(30px);
-      background: rgba(10, 16, 29, 0.95);
-      backdrop-filter: blur(12px);
-      border: 1px solid #3B82F6;
+      background: #161B22;
+      border: 1px solid #00E5FF;
       color: #FFFFFF;
       padding: 8px 16px;
       border-radius: 8px;
       font-size: 11.5px;
-      font-weight: 700;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
       opacity: 0;
       pointer-events: none;
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(37, 99, 235, 0.4);
+      box-shadow: 0 10px 30px rgba(13, 17, 23, 0.8), 0 0 20px rgba(0, 229, 255, 0.35);
       z-index: 1000;
       white-space: nowrap;
     }
@@ -1146,9 +1181,9 @@
     if (tagsEl) tagsEl.textContent = curScript.hashtags;
 
     if (flash && bannerEl) {
-      bannerEl.style.borderColor = '#38BDF8';
+      bannerEl.style.borderColor = '#00E5FF';
       setTimeout(() => {
-        bannerEl.style.borderColor = '#15223C';
+        bannerEl.style.borderColor = '#30363D';
       }, 500);
     }
   }
@@ -1234,9 +1269,9 @@
           <span>•</span>
           <span>Creator: <strong id="smMetaAuthor">${currentContext.author}</strong></span>
           <span>•</span>
-          <span class="sm-meta-views-pill">Views: <strong id="smMetaViews">${currentContext.views || 'Trending'}</strong></span>
+          <span class="sm-meta-views-pill sm-data-font">Views: <strong id="smMetaViews" class="sm-data-font">${currentContext.views || 'Trending'}</strong></span>
           <span>•</span>
-          <span style="color: #60A5FA;">Viral Score: <strong id="smMetaScore">${curScript.viralScore}</strong></span>
+          <span class="sm-meta-score-pill sm-data-font">Viral Score: <strong id="smMetaScore" class="sm-meta-score sm-data-font">${curScript.viralScore}</strong></span>
         </div>
       </div>
 
@@ -1250,8 +1285,8 @@
             <span id="smScriptAngleTitle">${curScript.title} Formula</span>
           </div>
           <div class="sm-output-metrics">
-            <span class="sm-metric-pill">⏱️ ${curScript.duration} Pacing</span>
-            <span class="sm-metric-pill sm-pill-highlight">🔥 Top 1% Retention</span>
+            <span class="sm-metric-pill sm-data-font">⏱️ ${curScript.duration} Pacing</span>
+            <span class="sm-metric-pill sm-pill-highlight sm-data-font">🔥 Top 1% Retention</span>
           </div>
         </div>
 
@@ -1259,7 +1294,7 @@
         <div class="sm-unified-script-editor" id="smUnifiedScript" contenteditable="true" spellcheck="false">
           <!-- Hook Section -->
           <div class="sm-script-section sm-section-hook">
-            <div class="sm-section-label">🎣 01 · THE VIRAL HOOK (0–3s)</div>
+            <div class="sm-section-label">🎣 01 — THE VIRAL HOOK <span class="sm-section-timing">(0–3s)</span></div>
             <div class="sm-section-body">
               <span class="sm-hook-lead" id="smHookLead">${curScript.hookLead}</span><span class="sm-hook-highlight" id="smHookHighlight">${curScript.hookHighlight}</span><span class="sm-hook-tail" id="smHookTail">${curScript.hookTail}</span>
             </div>
@@ -1267,20 +1302,20 @@
 
           <!-- Body / Story Section -->
           <div class="sm-script-section sm-section-body">
-            <div class="sm-section-label">⚡ 02 · THE CORE STORY (4–25s)</div>
+            <div class="sm-section-label">⚡ 02 — THE CORE STORY <span class="sm-section-timing">(4–25s)</span></div>
             <div class="sm-section-body sm-body-text" id="smBodyText">${curScript.body}</div>
           </div>
 
           <!-- Call to Action Section -->
           <div class="sm-script-section sm-section-cta">
-            <div class="sm-section-label">🚀 03 · RETENTION CALL-TO-ACTION (26–35s)</div>
+            <div class="sm-section-label">🚀 03 — RETENTION CALL-TO-ACTION <span class="sm-section-timing">(26–35s)</span></div>
             <div class="sm-section-body sm-cta-text" id="smCtaText">${curScript.cta}</div>
           </div>
 
           <!-- Viral Hashtags Section -->
           <div class="sm-script-section sm-section-tags">
-            <div class="sm-section-label">🏷️ VIRAL HASHTAGS</div>
-            <div class="sm-section-body sm-tags-text" id="smTagsText">${curScript.hashtags}</div>
+            <div class="sm-section-label">🏷️ 04 — VIRAL HASHTAGS</div>
+            <div class="sm-section-body sm-tags-text sm-data-font" id="smTagsText">${curScript.hashtags}</div>
           </div>
         </div>
 
