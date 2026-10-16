@@ -286,7 +286,7 @@
       .replace(/\|.*$/g, '')
       .replace(/\[.*?\]/g, '')
       .replace(/\(.*?\)/g, '')
-      .replace(/[-–—].*$/g, '')
+      .replace(/\s+[-–—]\s+.*$/g, '')
       .replace(/\b(official trailer|episode \d+|reimagined|shorts|viral|4k|hd|part \d+)\b/gi, '')
       .replace(/[^\p{L}\p{N}\s'&.,!?-]/gu, '')
       .trim();
@@ -514,9 +514,266 @@
     return { platform, title, displayTitle, author, views, url, videoId };
   }
 
+  function formatSubjectForSentence(subject) {
+    if (!subject || subject === 'this viral moment') return 'this viral moment';
+    const words = subject.split(' ');
+    return words.map((w, idx) => {
+      if (w.length > 1 && w === w.toUpperCase() && !/[a-z]/.test(w)) return w;
+      if (['El', 'Niño', 'God', 'Earth', 'Mars', 'Apple', 'Tesla', 'YouTube', 'TikTok', 'Google', 'Roman', 'Rome', 'Egypt', 'America', 'Rockstar', 'OpenAI', 'NASA', 'ChatGPT', 'AI', 'GTA'].includes(w)) return w;
+      return idx === 0 ? w.toLowerCase() : w;
+    }).join(' ');
+  }
+
+  function detectVideoNiche(title, author) {
+    const text = `${title} ${author}`.toLowerCase();
+    
+    // 1. Gaming & Entertainment
+    if (/\b(game|gaming|gamer|gta|minecraft|fortnite|roblox|zelda|playstation|xbox|nintendo|movie|film|trailer|marvel|actor|anime|celebrity|easter egg|hollywood)\b/i.test(text)) {
+      return 'gaming_entertainment';
+    }
+    // 2. Tech & AI
+    if (/\b(ai|artificial intelligence|chatgpt|openai|apple|iphone|tech|technology|robot|coding|software|hardware|computer|cyber|algorithm|elon|musk|tesla|nvidia|crypto|bitcoin|phone|app|gadget)\b/i.test(text)) {
+      return 'tech_ai';
+    }
+    // 3. Money & Business
+    if (/\b(money|millionaire|billionaire|business|invest|investing|wealth|rich|startup|finance|passive income|stocks|sales|economy|career|salary|ecommerce|hustle|side hustle|real estate|revenue)\b/i.test(text)) {
+      return 'money_business';
+    }
+    // 4. Fitness & Health
+    if (/\b(gym|workout|muscle|fitness|diet|weight|health|testosterone|food|sleep|doctor|body|exercise|protein|fasting|fat loss|bodybuilding|nutrition|metabolism|strength|cardio)\b/i.test(text)) {
+      return 'fitness_health';
+    }
+    // 5. Science & Nature
+    if (/\b(el ni[ñn]o|space|nasa|galaxy|earth|climate|ocean|animal|nature|physics|universe|planet|black hole|startalk|weather|dna|biology|storm|volcano|dinosaur|quantum|telescope|mars|sun|solar|moon|wildlife|deep sea|asteroid|magnet|copper|chemical|chemistry)\b/i.test(text)) {
+      return 'science_nature';
+    }
+    // 6. Psychology & Mindset
+    if (/\b(psychology|habit|habits|brain|mindset|study|focus|toxic|manipulation|rule|signs|behavior|discipline|motivation|stoic|dopamine|adhd|memory|mental|subconscious|lies)\b/i.test(text)) {
+      return 'psychology_mindset';
+    }
+    // 7. History & Mysteries
+    if (/\b(history|ancient|war|roman|egypt|mystery|unsolved|bizarre|creepy|dark|crime|murder|conspiracy|forbidden|pyramid|civilization|archaeology|lost|cia|fbi|scary)\b/i.test(text)) {
+      return 'history_mystery';
+    }
+    return 'general_curiosity';
+  }
+
+  const NICHE_SCRIPTS = {
+    science_nature: {
+      curiosity: {
+        lead: "Almost nobody understands the terrifying scale of ",
+        tail: " until you look at what actually happened to the ocean.",
+        body: "In a matter of weeks, an unimaginable surge of superheated ocean water surged across thousands of miles. Entire global storm systems reversed direction overnight, triggering monster droughts on one side of the planet while drowning deserts in historic floods. The craziest part? Atmospheric scientists warned that the thermal energy released was equivalent to millions of megatons of heat detonating into the upper atmosphere.",
+        cta: "Could our modern power grid survive if another mega-event hit today? Drop your theory in the comments and save this before it's taken down.",
+        duration: "30s",
+        tags: "#ScienceFacts #EarthWonders #PlanetaryWonders #ViralShorts #Trending"
+      },
+      hot_take: {
+        lead: "You were taught that ",
+        tail: " was just an ordinary natural cycle. That is completely backwards.",
+        body: "Most textbooks explain this like a predictable seasonal event. But look at the raw thermal measurements: the rapid acceleration defied every computer model meteorologists had spent decades building. We aren't looking at random weather—we are watching a fundamental tipping point in planetary thermodynamics unfolding in real-time.",
+        cta: "Do you think scientists are underplaying how dangerous this cycle really is? Sound off in the comments below.",
+        duration: "34s",
+        tags: "#ClimateScience #ScienceDebunk #EarthMystery #ViralShorts #Trending"
+      },
+      teardown: {
+        lead: "The official reports leave out the most shocking part about ",
+        tail: ". Here is what they discovered.",
+        body: "Deep beneath the surface, ocean sensors registered an abrupt pressure drop followed by massive heat transfer to the upper troposphere. While the general public only saw satellite graphics, research teams were tracking radical biological shifts and deep-sea temperature spikes that hadn't been recorded in over a century.",
+        cta: "Bookmark this to share with someone who loves deep science. Follow for daily breakdowns of our planet's wildest phenomena.",
+        duration: "32s",
+        tags: "#DeepScience #NatureBreakdown #ScienceLovers #ViralShorts #Trending"
+      }
+    },
+    tech_ai: {
+      curiosity: {
+        lead: "Silicon Valley doesn't want regular people to understand what ",
+        tail: " actually means for our future.",
+        body: "Behind closed doors, the benchmark scores for this architecture didn't just climb incrementally—they shattered every latency and reasoning curve on the leaderboard. What used to take a team of senior engineers three months is now compiling autonomously in four seconds flat. We are no longer watching an incremental update; we are watching the dawn of real-time synthetic intelligence.",
+        cta: "Will this technology replace more jobs than it creates in the next 24 months? Cast your vote in the comments right now.",
+        duration: "30s",
+        tags: "#TechNews #AIBreakthrough #FutureTech #ViralShorts #Trending"
+      },
+      hot_take: {
+        lead: "Everyone is hyping up ",
+        tail: ", but 99% of people are completely blind to the real danger.",
+        body: "The headlines are distracted by user interface redesigns and consumer gimmicks. But the real shift is happening at the data layer: total centralization of algorithmic compute. The companies controlling this infrastructure aren't just selling a product—they are securing an unbreakable monopoly on the next decade of human knowledge.",
+        cta: "Is open-source our only chance to fight back or is it already too late? Drop your take below.",
+        duration: "34s",
+        tags: "#TechDebate #SiliconValley #AIFuture #ViralShorts #Trending"
+      },
+      teardown: {
+        lead: "Here is the exact reverse-engineered breakdown of ",
+        tail: " in 30 seconds.",
+        body: "Notice the hardware pipeline: by bypassing traditional CPU bottlenecks and shifting matrix multiplication directly into high-bandwidth memory chips, compute efficiency jumped by 400%. That single engineering breakthrough is why this system operates at speeds that seemed physically impossible last year.",
+        cta: "Save this breakdown before the algorithm hides it. Hit follow for daily tech teardowns.",
+        duration: "32s",
+        tags: "#ReverseEngineered #TechExplained #HardwareHacks #ViralShorts #Trending"
+      }
+    },
+    money_business: {
+      curiosity: {
+        lead: "The top 1% never reveal the real strategy behind ",
+        tail: ", but the math exposes everything.",
+        body: "Most people are taught to trade their time for a paycheck and save whatever is left over. But self-made titans play an entirely different game: they leverage asymmetric debt, compound cash-flowing assets, and engineer tax structures that legally protect every single dollar. While the middle class works for currency, the ultra-wealthy build asset machines that print capital while they sleep.",
+        cta: "Which asset class are you building right now to escape the rat race? Comment your answer below.",
+        duration: "30s",
+        tags: "#WealthSecrets #FinancialFreedom #MoneyMindset #ViralShorts #Trending"
+      },
+      hot_take: {
+        lead: "Financial gurus are lying to you about ",
+        tail: ", and it's keeping millions of people broke.",
+        body: "They tell you to cut out coffee and budget every penny. That is pure poverty psychology. You cannot save your way to freedom—wealth is exclusively created through aggressive skill acquisition, equity ownership, and building distribution networks. The moment you stop saving pennies and start capturing market share, your entire financial trajectory flips.",
+        cta: "Do you agree with this mindset or are you sticking to traditional saving? Debate in the comments.",
+        duration: "34s",
+        tags: "#MoneyTruth #BusinessStrategy #WealthBuilding #ViralShorts #Trending"
+      },
+      teardown: {
+        lead: "Let's dissect the exact multi-million dollar business model behind ",
+        tail: " in 30 seconds.",
+        body: "Notice the customer acquisition flywheel: zero upfront ad spend, 100% organic short-form viral loops, and a high-margin backend offer that converts attention directly into recurring monthly revenue. That is the exact modern blueprint for generating eight-figure enterprise value with virtually zero overhead.",
+        cta: "Bookmark this business breakdown to copy for your next venture. Follow for daily revenue blueprints.",
+        duration: "32s",
+        tags: "#BusinessModel #Entrepreneurship #GrowthHacks #ViralShorts #Trending"
+      }
+    },
+    psychology_mindset: {
+      curiosity: {
+        lead: "Psychologists discovered a dark pattern about ",
+        tail: " that almost nobody talks about.",
+        body: "Your brain isn't actually wired to make you happy—it is hardwired for survival and conserving energy. The moment you attempt to break through comfort zones, your subconscious releases stress chemicals designed to trick you into self-sabotage. But once you understand how to short-circuit this neurological trap, you gain total command over your focus and actions.",
+        cta: "Have you ever caught your own mind self-sabotaging right before a breakthrough? Share your story below.",
+        duration: "30s",
+        tags: "#PsychologyTricks #MindsetShift #BrainHacks #ViralShorts #Trending"
+      },
+      hot_take: {
+        lead: "Everything society taught you about ",
+        tail: " is designed to keep you obedient and exhausted.",
+        body: "We are conditioned to believe that burnout is a badge of honor and that rest must be earned through exhaustion. But high performers know the opposite: relentless boundary setting, deep sleep, and ruthless prioritization beat frantic hustle 100 times out of 100. Stop glorifying being busy and start demanding high-leverage clarity.",
+        cta: "Are you working smart or are you just burning out? Be brutally honest in the comments.",
+        duration: "34s",
+        tags: "#MentalHealth #UncomfortableTruths #StoicWisdom #ViralShorts #Trending"
+      },
+      teardown: {
+        lead: "Here is the 3-step cognitive framework to master ",
+        tail: " starting today.",
+        body: "Step one: eliminate dopamine traps in the first 60 minutes of waking up. Step two: batch high-friction cognitive work into uninterrupted 90-minute sprints. Step three: conduct a 5-minute evening debrief to reset your neural baselines. If you execute this protocol consistently for 21 days, you will outperform 95% of your peers.",
+        cta: "Save this protocol right now and test it tomorrow morning. Hit follow for daily mental upgrades.",
+        duration: "32s",
+        tags: "#CognitivePerformance #DailyHabits #LifeHacks #ViralShorts #Trending"
+      }
+    },
+    fitness_health: {
+      curiosity: {
+        lead: "Doctors are finally admitting the shocking truth about ",
+        tail: " that changes everything.",
+        body: "For decades, the fitness industry pushed calorie deprivation and endless cardio routines that ruined hormonal baselines. But modern metabolic scans reveal that mitochondrial density and progressive mechanical tension are the real drivers of longevity and rapid body recomposition. It's not about working harder—it's about triggering the correct cellular signals.",
+        cta: "Did you fall for old fitness myths in the past? Drop your biggest lesson in the comments.",
+        duration: "30s",
+        tags: "#HealthScience #FitnessTruth #MuscleBuilding #ViralShorts #Trending"
+      },
+      hot_take: {
+        lead: "The supplement industry is praying you never learn the reality behind ",
+        tail: ".",
+        body: "They sell you hundreds of dollars of fancy powders and proprietary blends, but 90% of your hormonal health, energy, and muscle growth comes down to three non-negotiables: heavy compound lifting, single-ingredient whole foods, and optimizing REM sleep. Stop looking for magic pills and master the boring biological fundamentals.",
+        cta: "What is the single most overhyped supplement you've ever bought? Expose it below.",
+        duration: "34s",
+        tags: "#FitnessMyths #GymTok #HealthyLifestyle #ViralShorts #Trending"
+      },
+      teardown: {
+        lead: "The exact biological blueprint to optimize ",
+        tail: " in 30 seconds.",
+        body: "Focus on mechanical tension during the eccentric phase to trigger maximum satellite cell activation. Pair that with 1.6 grams of bioavailable protein per kilogram of body weight, and keep cortisol low during recovery windows. That simple protocol is the gold standard for sustainable, elite-level conditioning.",
+        cta: "Bookmark this routine for your next training session. Follow for science-backed fitness breakdowns.",
+        duration: "32s",
+        tags: "#WorkoutProtocol #Hypertrophy #GymMotivation #ViralShorts #Trending"
+      }
+    },
+    history_mystery: {
+      curiosity: {
+        lead: "Historians kept this bizarre revelation about ",
+        tail: " buried for generations.",
+        body: "When researchers finally decoded the original archive records and unredacted expedition logs, they discovered a series of events that completely contradicts the mainstream timeline. Ancient builders possessed architectural techniques and mathematical precision that we only recently rediscovered with modern laser mapping. What they left behind wasn't a primitive culture—it was a lost era of astonishing sophistication.",
+        cta: "Why do you think mainstream institutions resist rewriting history? Drop your theory below.",
+        duration: "30s",
+        tags: "#HiddenHistory #AncientMysteries #LostCivilizations #ViralShorts #Trending"
+      },
+      hot_take: {
+        lead: "The official story you were taught in school about ",
+        tail: " is almost entirely fabricated.",
+        body: "History is always written by the victors, and the narratives we accept as fact were carefully sanitized to protect political reputations. If you cross-reference primary source letters and archaeological dig records, the real motivations were driven by covert trade routes, untold wealth, and forbidden power struggles that never made it into the textbooks.",
+        cta: "Which historical event do you think has the biggest cover-up? Tell us in the comments.",
+        duration: "34s",
+        tags: "#UntoldHistory #HistoricalTruth #DeepRabbitHoles #ViralShorts #Trending"
+      },
+      teardown: {
+        lead: "Here is the chilling timeline of what really happened during ",
+        tail: " in 30 seconds.",
+        body: "Day one began with a series of undetected warning signs that officials dismissed as routine. By hour 48, communications were severed and a chain reaction of catastrophic failures unfolded in total secrecy. By the time the truth finally emerged decades later, the entire balance of power had shifted forever.",
+        cta: "Save this deep dive before it gets buried. Hit follow for daily uncovered historical files.",
+        duration: "32s",
+        tags: "#HistoryUncovered #TrueStory #TimelineBreakdown #ViralShorts #Trending"
+      }
+    },
+    gaming_entertainment: {
+      curiosity: {
+        lead: "Fans just discovered a hidden detail inside ",
+        tail: " that completely rewrites the storyline.",
+        body: "If you pause frame by frame during the background sequence, there is a coded Easter egg that developers hid in plain sight. When players matched the audio frequency and visual coordinate markers with earlier releases, it confirmed a massive lore connection that changes the entire canonical universe.",
+        cta: "Did you catch this Easter egg when you first experienced it? Comment your reaction below.",
+        duration: "30s",
+        tags: "#GamingLore #EasterEggs #HiddenDetails #ViralShorts #Trending"
+      },
+      hot_take: {
+        lead: "Everyone is hyping up ",
+        tail: ", but the community is completely ignoring the real problem.",
+        body: "Behind the flashy graphics and marketing trailers, the core progression mechanics have been stripped down to incentivize microtransactions and artificial engagement loops. Studios are prioritizing quarterly retention charts over passion-driven storytelling, and it's time players demanded real creative innovation again.",
+        cta: "Is modern gaming losing its soul or are games better than ever? Sound off in the comments.",
+        duration: "34s",
+        tags: "#GamingCommunity #HotTake #GamerDebate #ViralShorts #Trending"
+      },
+      teardown: {
+        lead: "The genius psychological design behind ",
+        tail: " explained in 30 seconds.",
+        body: "Notice how the audiovisual pacing uses variable reward schedules to keep your dopamine levels elevated. Every milestone triggers a micro-satisfaction loop right before friction occurs, creating an addictive flow state that makes hours feel like minutes. It is a masterpiece of interactive cognitive architecture.",
+        cta: "Save this breakdown for your next gaming session. Follow for daily game development insights.",
+        duration: "32s",
+        tags: "#GameDesign #LevelDesign #PsychologyInGaming #ViralShorts #Trending"
+      }
+    },
+    general_curiosity: {
+      curiosity: {
+        lead: "Almost nobody realizes the unbelievable truth behind ",
+        tail: " until they see it for themselves.",
+        body: "At first glance, it looks like something ordinary that millions of people scroll right past. But when you examine the exact mechanics of how this occurred, the sheer odds of it happening are practically one in a billion. There are unseen forces at play that completely defy conventional common sense.",
+        cta: "Would you have believed this if you didn't see the evidence with your own eyes? Drop your reaction below.",
+        duration: "30s",
+        tags: "#MindBlowing #UnbelievableFacts #DidYouKnow #ViralShorts #Trending"
+      },
+      hot_take: {
+        lead: "The common explanation for ",
+        tail: " is completely wrong, and here is why.",
+        body: "People love accepting the easiest story that gets repeated online. But if you dig just one layer deeper into the verifiable facts, the popular narrative collapses instantly. The reality is far more fascinating—and far more counter-intuitive—than what everyone is repeating.",
+        cta: "Do you agree with this breakdown or do you see it differently? Debate in the comments below.",
+        duration: "34s",
+        tags: "#MythBusted #RealityCheck #DeepDive #ViralShorts #Trending"
+      },
+      teardown: {
+        lead: "Here is the exact step-by-step breakdown of ",
+        tail: " in 30 seconds.",
+        body: "Notice the exact progression: phase one sets the high-stakes foundation with zero wasted time. Phase two introduces an unexpected turning point that forces complete re-evaluation. And phase three delivers a high-impact revelation that sticks in your mind long after the video ends.",
+        cta: "Bookmark this breakdown so you can revisit it later. Hit follow for daily viral deep-dives.",
+        duration: "32s",
+        tags: "#DeepBreakdown #StorytellingFormula #ViralWisdom #ViralShorts #Trending"
+      }
+    }
+  };
+
   function buildViralScripts(videoContext) {
-    const subject = extractSubject(videoContext.title);
-    const hashtags = generateDynamicHashtags(videoContext.title);
+    const rawSubject = extractSubject(videoContext.title);
+    const subject = formatSubjectForSentence(rawSubject);
+    const niche = detectVideoNiche(videoContext.title, videoContext.author);
+    const nicheData = NICHE_SCRIPTS[niche] || NICHE_SCRIPTS.general_curiosity;
     const metrics = calculateRetentionMetrics(videoContext.views);
 
     return [
@@ -524,46 +781,46 @@
         id: 'curiosity',
         title: 'Curiosity Gap',
         subtitle: 'High Intrigue & Scroll-Stopping Hook',
-        duration: '30s',
+        duration: nicheData.curiosity.duration,
         viralScore: `${metrics.baseScore}/100`,
         retentionBadge: metrics.retentionBadge,
         retentionClass: metrics.retentionClass,
-        hookLead: `Nobody realized this secret about `,
-        hookHighlight: `${subject}`,
-        hookTail: ` until now. The real story behind what you're watching is blowing everyone's mind.`,
-        body: `While 99% of people scrolled right past this, there's a crazy detail hidden in plain sight. If you look closely at how this was constructed, everything changes. The creators specifically engineered this exact moment to trigger the algorithm and keep you glued to your screen.`,
-        cta: `Did you catch that detail on your first watch? Drop your theory in the comments and save this before it's taken down.`,
-        hashtags: hashtags
+        hookLead: nicheData.curiosity.lead,
+        hookHighlight: subject,
+        hookTail: nicheData.curiosity.tail,
+        body: nicheData.curiosity.body,
+        cta: nicheData.curiosity.cta,
+        hashtags: nicheData.curiosity.tags
       },
       {
         id: 'hot_take',
         title: 'Hot Take',
         subtitle: 'Controversial Angle for Maximum Comments',
-        duration: '34s',
+        duration: nicheData.hot_take.duration,
         viralScore: `${Math.max(60, metrics.baseScore - 2)}/100`,
         retentionBadge: metrics.retentionBadge,
         retentionClass: metrics.retentionClass,
-        hookLead: `Everyone is talking about `,
-        hookHighlight: `${subject}`,
-        hookTail: `, but everyone is getting the entire story completely backwards. Here is the uncomfortable truth.`,
-        body: `People think this succeeded by luck. But look at the pattern: the first 2 seconds drops you directly into peak tension without a single second wasted on introductions. That single psychological trick is why this is generating millions of views right now.`,
-        cta: `Do you agree with this take or do you see it differently? Sound off in the comments below right now.`,
-        hashtags: hashtags
+        hookLead: nicheData.hot_take.lead,
+        hookHighlight: subject,
+        hookTail: nicheData.hot_take.tail,
+        body: nicheData.hot_take.body,
+        cta: nicheData.hot_take.cta,
+        hashtags: nicheData.hot_take.tags
       },
       {
         id: 'teardown',
         title: 'Teardown',
         subtitle: 'Breakdown of Why It Worked',
-        duration: '32s',
+        duration: nicheData.teardown.duration,
         viralScore: `${Math.max(60, metrics.baseScore - 3)}/100`,
         retentionBadge: metrics.retentionBadge,
         retentionClass: metrics.retentionClass,
-        hookLead: `This video about `,
-        hookHighlight: `${subject}`,
-        hookTail: ` is currently breaking the algorithm. Let's break down the exact formula in 30 seconds.`,
-        body: `Notice how frame one gives you an immediate emotional punchline? Then they immediately stack 3 high-contrast visual cuts before the 8-second retention drop-off. If you're a creator trying to hit millions of views, steal this exact pacing.`,
-        cta: `Bookmark this breakdown to copy for your next upload. Hit follow for daily algorithmic teardowns.`,
-        hashtags: hashtags
+        hookLead: nicheData.teardown.lead,
+        hookHighlight: subject,
+        hookTail: nicheData.teardown.tail,
+        body: nicheData.teardown.body,
+        cta: nicheData.teardown.cta,
+        hashtags: nicheData.teardown.tags
       }
     ];
   }
