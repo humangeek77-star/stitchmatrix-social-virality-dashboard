@@ -1,37 +1,25 @@
 /**
- * StitchMatrix — Blendr Cyber-Cobalt Obsidian Studio v3.9.2
- * Chrome Extension Manifest V3 In-DOM Sidebar Engine
+ * StitchMatrix — Streamlined Viral Script Engine v4.0.0
+ * Chrome Extension Manifest V3 In-DOM Sidebar
+ * 
  * Features:
- * - Smart Aspect-Ratio Engine (Zero-Cropping for TikTok, Instagram Reels 9:16 & YouTube 16:9)
- * - Viral Video Snipper & Hook Clipper (Snip 5s/10s hooks directly from playing videos for faceless shorts)
- * - 1-Click Instant Video Delete & Discard (Floating overlay button & review panel controls)
- * - 1-Click AI Voiceover Studio (Continuous MP3 Narration, zero camera/mic required)
- * - Dual-Playback Synced Preview (Play snipped viral video + AI Voiceover in sync)
- * - Built-in Webcam Teleprompter Studio & In-Browser Video Recorder (Face Mode)
- * - Send-to-Phone Companion Link & High-Resolution QR Code
- * - Multi-Platform Real-Time Active Video Auto-Detection (YouTube Shorts, TikTok, Instagram Reels)
- * - Blendr Cyber-Cobalt & Electric Sapphire / Deep Obsidian Void (#020408) Design System
+ * - Instant Video & Live View Count Detection (TikTok, YouTube Shorts, YouTube, Instagram Reels)
+ * - Real-Time Video Context Analysis in Seconds
+ * - One Master Viral Output (Hook + Story + CTA + Hashtags in 1 cohesive, ready-to-post script)
+ * - 1-Click Master Script Copy (Alt+C) & Instant Angle Remixing
+ * - Blendr Cyber-Cobalt & Deep Obsidian Void Microchip UI
  */
-
 (function () {
   'use strict';
 
-  // Always remove any previous instance to guarantee fresh UI update
-  const previousHost = document.getElementById('stitchmatrix-extension-root');
-  if (previousHost) {
-    try {
-      previousHost.remove();
-    } catch (e) {
-      // Ignore
-    }
-  }
+  if (window.__stitchmatrix_injected) return;
+  window.__stitchmatrix_injected = true;
 
-  const WORKER_BASE = 'https://stitchmatrix-api.humangeek77.workers.dev';
-
-  // Helper to format large numbers to compact notation (e.g. 1.2M, 69.9K)
+  // --- Helper Functions ---
   function formatCompactNumber(num) {
-    if (num === null || num === undefined || isNaN(num)) return '';
-    const n = Number(num);
+    if (!num) return 'Trending';
+    const n = parseInt(String(num).replace(/[^\d]/g, ''), 10);
+    if (isNaN(n) || n === 0) return 'Trending';
     if (n >= 1_000_000_000) {
       return (n / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B';
     }
@@ -44,7 +32,6 @@
     return n.toLocaleString();
   }
 
-  // Helper to clean extracted view and play metric strings
   function cleanViewCountString(str) {
     if (!str || typeof str !== 'string') return '';
     let clean = str.trim();
@@ -61,424 +48,174 @@
     return clean.slice(0, 15);
   }
 
-  // Real-time DOM Context Detector for Social Video Players
-  // Universal Active Video & Context Detector for TikTok, Instagram Reels, and YouTube Shorts
-  function detectVideoContext() {
-    let url = window.location.href;
-    let platform = 'Social Video';
-    let title = '';
-    let author = '';
-    let views = '';
-    let videoId = '';
-
-    try {
-      // =======================================================================
-      // 1. TIKTOK DETECTION ENGINE
-      // =======================================================================
-      if (url.includes('tiktok.com')) {
-        platform = 'TikTok';
-
-        const videos = Array.from(document.querySelectorAll('video'));
-        let activeVideo = null;
-
-        // 1a. Playing video
-        activeVideo = videos.find(v => !v.paused && v.currentTime > 0);
-
-        // 1b. Video fully visible within viewport
-        if (!activeVideo && videos.length > 0) {
-          activeVideo = videos.find(v => {
-            const rect = v.getBoundingClientRect();
-            return rect.top >= 0 && rect.bottom <= window.innerHeight && rect.height > 60;
-          });
-        }
-
-        // 1c. Video closest to viewport center
-        if (!activeVideo && videos.length > 0) {
-          const midY = window.innerHeight / 2;
-          let bestDist = Infinity;
-          for (const v of videos) {
-            const rect = v.getBoundingClientRect();
-            if (rect.height > 60) {
-              const dist = Math.abs(rect.top + rect.height / 2 - midY);
-              if (dist < bestDist) {
-                bestDist = dist;
-                activeVideo = v;
-              }
-            }
-          }
-        }
-
-        if (activeVideo) {
-          const container = activeVideo.closest('[data-e2e="recommend-list-item-container"]')
-            || activeVideo.closest('div[class*="DivItemContainer"]')
-            || activeVideo.closest('div[class*="DivVideoFeedList"] > div')
-            || activeVideo.closest('div[class*="DivBrowserModeContainer"]')
-            || activeVideo.closest('[data-e2e="user-post-item"]')
-            || activeVideo.closest('[data-e2e="browse-video"]')
-            || activeVideo.closest('article')
-            || activeVideo.parentElement?.parentElement?.parentElement;
-
-          if (container) {
-            const descEl = container.querySelector(
-              '[data-e2e="video-desc"], [data-e2e="browse-video-desc"], [class*="DivDescription"], [class*="SpanText"], [class*="desc"], h1, h2, div[data-e2e="search-card-video-caption"]'
-            );
-
-            // Extract view or play count from container
-            const viewEl = container.querySelector(
-              '[data-e2e="video-views"], strong[data-e2e="video-views"], [data-e2e="search-card-like-container"], strong[data-e2e="like-count"], [data-e2e="like-count"], div[class*="DivPlayCount"], span[class*="PlayCount"], [class*="play-count"]'
-            );
-            if (viewEl?.textContent?.trim()) {
-              views = cleanViewCountString(viewEl.textContent);
-            }
-
-            // Real author handle: check a[href*="/@"] explicitly first to avoid metric collisions
-            const authorLink = container.querySelector('a[href*="/@"]');
-            let handleFromHref = '';
-            if (authorLink) {
-              const href = authorLink.getAttribute('href') || '';
-              const m = href.match(/@([a-zA-Z0-9_.-]+)/);
-              if (m && m[1]) {
-                handleFromHref = '@' + m[1];
-              }
-            }
-
-            const authorEl = container.querySelector(
-              '[data-e2e="video-author-uniqueid"], [data-e2e="browse-username"], [data-e2e="user-title"], [data-e2e="author-uniqueId"], [class*="AuthorTitle"]'
-            );
-
-            if (descEl?.textContent?.trim()) title = descEl.textContent.trim();
-            if (authorEl?.textContent?.trim()) author = authorEl.textContent.trim();
-            if (!author && handleFromHref) author = handleFromHref;
-
-            // Disambiguation: If extracted author matches a metric like "69.9K" or "1.2M", redirect it to views
-            if (author && /^@?[\d,.]+[KMkmBb]?$/i.test(author.trim())) {
-              if (!views) views = cleanViewCountString(author);
-              author = handleFromHref || '';
-            }
-
-            const linkEl = container.querySelector('a[href*="/video/"]');
-            if (linkEl?.href) {
-              url = linkEl.href;
-              const m = url.match(/\/video\/(\d+)/);
-              if (m) videoId = m[1];
-            }
-          }
-        }
-
-        // Fallbacks for TikTok single video view / modal
-        if (!title) {
-          const descEl = document.querySelector(
-            '[data-e2e="browse-video-desc"], [data-e2e="video-desc"], [class*="H1VideoTitle"], [class*="DivDescription"], h1, .video-meta-title'
-          );
-          if (descEl?.textContent?.trim()) title = descEl.textContent.trim();
-        }
-
-        if (!views) {
-          const viewEl = document.querySelector(
-            '[data-e2e="video-views"], strong[data-e2e="video-views"], strong[data-e2e="like-count"], [data-e2e="like-count"], [data-e2e="browse-like-count"], [class*="PlayCount"]'
-          );
-          if (viewEl?.textContent?.trim()) views = cleanViewCountString(viewEl.textContent);
-        }
-
-        if (!author || /^@?[\d,.]+[KMkmBb]?$/i.test(author.trim())) {
-          const authorEl = document.querySelector(
-            '[data-e2e="browse-username"], [data-e2e="video-author-uniqueid"], [data-e2e="user-title"], [data-e2e="browser-nickname"], [data-e2e="author-uniqueId"], .author-uniqueId'
-          );
-          if (authorEl?.textContent?.trim()) author = authorEl.textContent.trim();
-
-          const authorLink = document.querySelector('a[href*="/@"]');
-          if (authorLink && (!author || /^@?[\d,.]+[KMkmBb]?$/i.test(author.trim()))) {
-            const href = authorLink.getAttribute('href') || '';
-            const m = href.match(/@([a-zA-Z0-9_.-]+)/);
-            if (m && m[1]) author = '@' + m[1];
-          }
-        }
-
-        if (author && /^@?[\d,.]+[KMkmBb]?$/i.test(author.trim())) {
-          if (!views) views = cleanViewCountString(author);
-          author = '';
-        }
-
-        if (!videoId) {
-          const m = url.match(/\/video\/(\d+)/);
-          if (m) videoId = m[1];
-        }
-
-        // Title parsing from document.title if empty
-        if (!title && document.title && document.title.includes('TikTok')) {
-          const quoteMatch = document.title.match(/["“](.*?)["”]/);
-          if (quoteMatch && quoteMatch[1].length > 2) {
-            title = quoteMatch[1];
-          } else {
-            title = document.title.replace(/\s*\|\s*TikTok.*/i, '').replace(/.*on TikTok:\s*/i, '').trim();
-          }
-        }
+  function cleanAuthorHandle(raw) {
+    if (!raw) return '@creator';
+    let clean = raw.replace(/\s+/g, ' ').trim();
+    // Fix repeated names from YouTube Polymer tooltips e.g. "MrLOCKIDY MrLOCKIDY" -> "MrLOCKIDY"
+    const words = clean.split(' ');
+    if (words.length === 2 && words[0].toLowerCase() === words[1].toLowerCase()) {
+      clean = words[0];
+    } else if (words.length >= 4 && words.length % 2 === 0) {
+      const half = words.length / 2;
+      const w1 = words.slice(0, half).join(' ');
+      const w2 = words.slice(half).join(' ');
+      if (w1.toLowerCase() === w2.toLowerCase()) {
+        clean = w1;
       }
+    }
+    clean = clean.split('\n')[0].trim();
+    if (!clean.startsWith('@') && !clean.includes(' ')) {
+      clean = '@' + clean;
+    }
+    return clean || '@creator';
+  }
 
-      // =======================================================================
-      // 2. INSTAGRAM REELS DETECTION ENGINE
-      // =======================================================================
-      else if (url.includes('instagram.com')) {
-        platform = 'Instagram Reels';
-
-        const videos = Array.from(document.querySelectorAll('video'));
-        let activeVideo = null;
-
-        // 2a. Playing video
-        activeVideo = videos.find(v => !v.paused && v.currentTime > 0);
-
-        // 2b. Video fully visible within viewport
-        if (!activeVideo && videos.length > 0) {
-          activeVideo = videos.find(v => {
-            const rect = v.getBoundingClientRect();
-            return rect.top >= 0 && rect.bottom <= window.innerHeight && rect.height > 80;
-          });
-        }
-
-        // 2c. Video closest to viewport center
-        if (!activeVideo && videos.length > 0) {
-          const midY = window.innerHeight / 2;
-          let bestDist = Infinity;
-          for (const v of videos) {
-            const rect = v.getBoundingClientRect();
-            if (rect.height > 80) {
-              const dist = Math.abs(rect.top + rect.height / 2 - midY);
-              if (dist < bestDist) {
-                bestDist = dist;
-                activeVideo = v;
-              }
-            }
-          }
-        }
-
-        if (activeVideo) {
-          const container = activeVideo.closest('article')
-            || activeVideo.closest('div[role="presentation"]')
-            || activeVideo.closest('div[class*="x1qjc9v5"]')
-            || activeVideo.closest('div[class*="x1n2onr6"]')
-            || activeVideo.closest('section')
-            || activeVideo.parentElement?.parentElement?.parentElement;
-
-          if (container) {
-            const captionEl = container.querySelector(
-              'h1, span._aacl, div._a9zs, span._aaco, span[class*="x193iq5w"], div[class*="x1lliihq"] span'
-            );
-            const authorEl = container.querySelector(
-              'header a, span._ap3a, a[role="link"][href^="/"], a[class*="x1i10hfl"][href*="/"]'
-            );
-            const viewEl = container.querySelector(
-              'a[href*="/liked_by/"] span, section span[class*="x193iq5w"], div[class*="x1lliihq"] span, span._aacl._aaco._aacw'
-            );
-            const linkEl = container.querySelector('a[href*="/reel/"], a[href*="/reels/"], a[href*="/p/"]');
-
-            if (captionEl?.textContent?.trim()) title = captionEl.textContent.trim();
-            if (authorEl?.textContent?.trim()) author = authorEl.textContent.trim();
-            if (viewEl?.textContent?.trim()) {
-              const raw = viewEl.textContent.trim();
-              if (/\d/.test(raw)) views = cleanViewCountString(raw);
-            }
-            if (linkEl?.href) {
-              url = linkEl.href;
-              const m = url.match(/\/(reels?|p)\/([a-zA-Z0-9_-]+)/);
-              if (m) videoId = m[2];
-            }
-          }
-        }
-
-        // Fallbacks for Instagram single reel / explore modal
-        if (!title) {
-          const captionEl = document.querySelector('article h1, article span._aacl, article div._a9zs, h1');
-          if (captionEl?.textContent?.trim()) title = captionEl.textContent.trim();
-        }
-
-        if (!views) {
-          const viewEl = document.querySelector('a[href*="/liked_by/"] span, section span[class*="x193iq5w"]');
-          if (viewEl?.textContent?.trim()) {
-            const raw = viewEl.textContent.trim();
-            if (/\d/.test(raw)) views = cleanViewCountString(raw);
-          }
-        }
-
-        if (!author) {
-          const authorEl = document.querySelector('header a, span._ap3a, article header a');
-          if (authorEl?.textContent?.trim()) author = authorEl.textContent.trim();
-        }
-
-        if (author && /^@?[\d,.]+[KMkmBb]?$/i.test(author.trim())) {
-          if (!views) views = cleanViewCountString(author);
-          author = '';
-        }
-
-        if (!videoId) {
-          const m = url.match(/\/(reels?|p)\/([a-zA-Z0-9_-]+)/);
-          if (m) videoId = m[2];
-        }
-
-        // Instagram document.title parsing
-        if (!title && document.title && document.title.includes('Instagram')) {
-          const quoteMatch = document.title.match(/["“](.*?)["”]/);
-          if (quoteMatch && quoteMatch[1].length > 2) {
-            title = quoteMatch[1];
-          } else {
-            title = document.title.replace(/\s*•\s*Instagram photos and videos.*/i, '').replace(/.*on Instagram:\s*/i, '').trim();
-          }
-        }
-      }
-
-      // =======================================================================
-      // 3. YOUTUBE SHORTS DETECTION ENGINE
-      // =======================================================================
-      else if (url.includes('youtube.com')) {
-        const isShorts = url.includes('/shorts');
-        platform = isShorts ? 'YouTube Shorts' : 'YouTube';
-
+  function extractLiveViewCount(platform, url, container) {
+    // 1. YouTube & YouTube Shorts
+    if (url.includes('youtube.com')) {
+      const isShorts = url.includes('/shorts');
+      if (isShorts) {
         const reels = Array.from(document.querySelectorAll('ytd-reel-video-renderer'));
-        let activeReel = null;
-
-        // 3a. Extract current video ID from URL
-        const urlMatch = url.match(/\/shorts\/([a-zA-Z0-9_-]+)/);
-        const currentVideoId = urlMatch ? urlMatch[1] : null;
-
-        // 3b. Match reel by current Video ID
-        if (currentVideoId && reels.length > 0) {
-          activeReel = reels.find(r => {
-            return r.querySelector(`a[href*="${currentVideoId}"]`)
-              || r.getAttribute('video-id') === currentVideoId
-              || r.id === currentVideoId;
-          });
-        }
-
-        // 3c. Match by screen center coverage & maximum visible height in viewport
-        if (!activeReel && reels.length > 0) {
-          const windowH = window.innerHeight;
-          const midY = windowH / 2;
-
-          const scoredReels = reels.map(r => {
-            const rect = r.getBoundingClientRect();
-            const visibleTop = Math.max(0, rect.top);
-            const visibleBottom = Math.min(windowH, rect.bottom);
-            const visibleHeight = Math.max(0, visibleBottom - visibleTop);
-            const coversCenter = rect.top <= midY && rect.bottom >= midY;
-            const v = r.querySelector('video');
-            const isPlaying = v && !v.paused && v.currentTime > 0;
-            return { reel: r, visibleHeight, coversCenter, isPlaying };
-          });
-
-          // Priority A: Reel covering the screen center line with >200px visible height
-          const centerReel = scoredReels.find(x => x.coversCenter && x.visibleHeight > 200);
-          if (centerReel) {
-            activeReel = centerReel.reel;
-          } else {
-            // Priority B: Highest visible height on screen
-            scoredReels.sort((a, b) => b.visibleHeight - a.visibleHeight);
-            if (scoredReels[0] && scoredReels[0].visibleHeight > 100) {
-              activeReel = scoredReels[0].reel;
-            }
-          }
-        }
-
-        // 3d. Fallback to playing video or is-active
-        if (!activeReel && reels.length > 0) {
-          activeReel = reels.find(r => {
-            const v = r.querySelector('video');
-            return v && !v.paused && v.currentTime > 0;
-          }) || reels.find(r => r.hasAttribute('is-active'));
-        }
-
+        const activeReel = reels.find(r => r.hasAttribute('is-active')) ||
+                           reels.find(r => {
+                             const rect = r.getBoundingClientRect();
+                             return rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2;
+                           }) || reels[0];
         if (activeReel) {
-          const tEl = activeReel.querySelector(
-            '#overlay #title, .ytReelMetamodelViewModelHostTitle, #title.ytd-reel-player-header-renderer, h2.title, yt-formatted-string.title, h2.ytd-reel-player-header-renderer, ytd-reel-player-overlay-renderer #title, yt-reel-metamodel-view-model h2, h2'
-          );
-          const aEl = activeReel.querySelector(
-            '#channel-name, .ytd-channel-name, #text.ytd-channel-name, [id="channel-name"], .yt-simple-endpoint.ytd-channel-name, .ytReelMetamodelViewModelHostHeaderChannelName'
-          );
-          const viewEl = activeReel.querySelector(
-            '#like-button #text, ytd-like-button-renderer yt-formatted-string, #factoid-views .yt-core-attributed-string, #like-button yt-formatted-string, [aria-label*="like"] #text, yt-button-shape[aria-label*="like"] div[aria-hidden="true"]'
-          );
-
-          if (tEl?.textContent?.trim()) title = tEl.textContent.trim();
-          if (aEl?.textContent?.trim()) author = aEl.textContent.trim();
-          if (viewEl?.textContent?.trim()) {
-            const raw = viewEl.textContent.trim();
-            if (/\d/.test(raw)) views = cleanViewCountString(raw);
+          const factoid = activeReel.querySelector('#factoid-views, [id*="factoid-views"], .ytReelMetamodelViewModelHostFactoid');
+          if (factoid) {
+            const m = (factoid.innerText || factoid.textContent || '').match(/([\d,.]+\s*[KMkmBb]?)/);
+            if (m && /\d/.test(m[1])) return cleanViewCountString(m[1]);
           }
-        }
-
-        // 3e. Document Title Source-of-Truth Validation
-        // YouTube Shorts always sets document.title = "<Active Title> - YouTube"
-        if (document.title && !document.title.includes('YouTube Shorts') && document.title.includes(' - YouTube')) {
-          const docTitleClean = document.title.replace(/\s*-\s*YouTube.*$/i, '').trim();
-          if (docTitleClean && docTitleClean.length > 2) {
-            title = docTitleClean;
+          const likeBtn = activeReel.querySelector('#like-button #text, ytd-like-button-renderer yt-formatted-string, [aria-label*="like"]');
+          if (likeBtn) {
+            const text = likeBtn.innerText || likeBtn.textContent || likeBtn.getAttribute('aria-label') || '';
+            const m = text.match(/([\d,.]+\s*[KMkmBb]?)/);
+            if (m && /\d/.test(m[1])) return cleanViewCountString(m[1]);
           }
-        }
-
-        if (!title) {
-          const headerTitle = document.querySelector(
-            'ytd-shorts-player-header-renderer #text, #title.ytd-reel-player-header-renderer, .ytReelMetamodelViewModelHostTitle, h1.title, h2.title, ytd-watch-metadata #title h1, h1.ytd-video-primary-info-renderer'
-          );
-          if (headerTitle?.textContent?.trim()) title = headerTitle.textContent.trim();
-        }
-
-        if (!views) {
-          const viewEl = document.querySelector(
-            'ytd-reel-video-renderer[is-active] #like-button #text, #like-button #text, #info span.view-count, ytd-watch-metadata #view-count, ytd-video-view-count-renderer span.view-count'
-          );
-          if (viewEl?.textContent?.trim()) {
-            const raw = viewEl.textContent.trim();
-            if (/\d/.test(raw)) views = cleanViewCountString(raw);
+          const overlay = activeReel.querySelector('ytd-reel-player-overlay-renderer, #overlay');
+          if (overlay) {
+            const text = overlay.innerText || overlay.textContent || '';
+            const m = text.match(/([\d,.]+\s*[KMkmBb]?)\s*(?:views|likes)/i);
+            if (m && /\d/.test(m[1])) return cleanViewCountString(m[1]);
           }
-        }
-
-        if (!views) {
-          const metaInteractions = document.querySelector('meta[itemprop="interactionCount"]');
-          if (metaInteractions && metaInteractions.content) {
-            views = formatCompactNumber(metaInteractions.content);
-          }
-        }
-
-        if (!author) {
-          const genericAuthor = document.querySelector('#channel-name, .ytd-channel-name, #text.ytd-channel-name, ytd-channel-name a');
-          if (genericAuthor?.textContent?.trim()) author = genericAuthor.textContent.trim();
-        }
-
-        if (author && /^@?[\d,.]+[KMkmBb]?$/i.test(author.trim())) {
-          if (!views) views = cleanViewCountString(author);
-          author = '';
-        }
-
-        if (currentVideoId) {
-          videoId = currentVideoId;
-        } else {
-          const m = url.match(/\/shorts\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]v=([a-zA-Z0-9_-]+)/);
-          if (m) videoId = m[1];
         }
       }
-    } catch (e) {
-      // Graceful error recovery
+
+      // Standard YouTube Watch Page view selectors
+      const watchSelectors = [
+        '#info-container',
+        'ytd-watch-metadata #info-container',
+        'ytd-watch-metadata yt-formatted-string#info',
+        '#view-count',
+        'ytd-video-view-count-renderer',
+        'span.view-count',
+        '#description-inner #info-container',
+        '#description-inner',
+        '#info-text',
+        '#count.ytd-video-primary-info-renderer'
+      ];
+      for (const sel of watchSelectors) {
+        const el = document.querySelector(sel);
+        if (el) {
+          const text = el.innerText || el.textContent || '';
+          const m = text.match(/([\d,.]+\s*[KMkmBb]?)\s*(?:views|view)/i);
+          if (m && m[1] && /\d/.test(m[1])) {
+            return cleanViewCountString(m[1]);
+          }
+        }
+      }
+
+      const meta = document.querySelector('meta[itemprop="interactionCount"]');
+      if (meta && meta.content && /\d/.test(meta.content)) {
+        return formatCompactNumber(meta.content);
+      }
+
+      const ariaEls = document.querySelectorAll('[aria-label*="view"], [aria-label*="views"]');
+      for (const el of ariaEls) {
+        const label = el.getAttribute('aria-label') || '';
+        const m = label.match(/([\d,.]+\s*[KMkmBb]?)\s*(?:views|view)/i);
+        if (m && m[1] && /\d/.test(m[1])) {
+          return cleanViewCountString(m[1]);
+        }
+      }
     }
 
-    if (!title) title = 'Active Viral Video';
-    if (!author || /^@?[\d,.]+[KMkmBb]?$/i.test(author.trim())) author = '@creator';
-    if (!author.startsWith('@') && !author.includes(' ')) author = '@' + author;
-    if (!views) views = 'Trending';
+    // 2. TikTok
+    else if (url.includes('tiktok.com')) {
+      const ttSelectors = [
+        '[data-e2e="video-views"]',
+        'strong[data-e2e="video-views"]',
+        '[data-e2e="browse-like-count"]',
+        'strong[data-e2e="like-count"]',
+        '[data-e2e="like-count"]',
+        'div[class*="DivPlayCount"]',
+        'span[class*="PlayCount"]',
+        '[class*="play-count"]',
+        '[class*="video-count"]'
+      ];
+      if (container) {
+        for (const s of ttSelectors) {
+          const el = container.querySelector(s);
+          if (el) {
+            const m = (el.innerText || el.textContent || '').match(/([\d,.]+\s*[KMkmBb]?)/);
+            if (m && /\d/.test(m[1])) return cleanViewCountString(m[1]);
+          }
+        }
+        const m = (container.innerText || '').match(/([\d,.]+\s*[KMkmBb]?)\s*(?:views|likes|plays)/i);
+        if (m && /\d/.test(m[1])) return cleanViewCountString(m[1]);
+      }
+      for (const s of ttSelectors) {
+        const el = document.querySelector(s);
+        if (el) {
+          const m = (el.innerText || el.textContent || '').match(/([\d,.]+\s*[KMkmBb]?)/);
+          if (m && /\d/.test(m[1])) return cleanViewCountString(m[1]);
+        }
+      }
+    }
 
-    let displayTitle = title;
-    if (displayTitle.length > 68) displayTitle = displayTitle.slice(0, 65) + '...';
+    // 3. Instagram Reels
+    else if (url.includes('instagram.com')) {
+      const igSelectors = [
+        'a[href*="/liked_by/"] span',
+        'section span[class*="x193iq5w"]',
+        'div[class*="x1lliihq"] span',
+        'span._aacl._aaco._aacw',
+        'span[class*="x1fh70ws"]',
+        '[aria-label*="likes"]',
+        '[aria-label*="views"]'
+      ];
+      if (container) {
+        for (const s of igSelectors) {
+          const el = container.querySelector(s);
+          if (el) {
+            const m = (el.innerText || el.textContent || el.getAttribute('aria-label') || '').match(/([\d,.]+\s*[KMkmBb]?)/);
+            if (m && /\d/.test(m[1])) return cleanViewCountString(m[1]);
+          }
+        }
+      }
+      for (const s of igSelectors) {
+        const el = document.querySelector(s);
+        if (el) {
+          const m = (el.innerText || el.textContent || el.getAttribute('aria-label') || '').match(/([\d,.]+\s*[KMkmBb]?)/);
+          if (m && /\d/.test(m[1])) return cleanViewCountString(m[1]);
+        }
+      }
+    }
 
-    return { platform, title, displayTitle, author, views, url, videoId };
+    return null;
   }
 
   function extractSubject(rawTitle) {
     if (!rawTitle || rawTitle === 'Active Viral Video') return 'this viral moment';
     let clean = rawTitle
-      .replace(/#[\p{L}\p{N}_]+/gu, '') // Unicode-aware hashtag stripping
+      .replace(/#[\p{L}\p{N}_]+/gu, '')
       .replace(/\|.*$/g, '')
       .replace(/\[.*?\]/g, '')
       .replace(/\(.*?\)/g, '')
       .replace(/[-–—].*$/g, '')
       .replace(/\b(official trailer|episode \d+|reimagined|shorts|viral|4k|hd|part \d+)\b/gi, '')
-      .replace(/[^\p{L}\p{N}\s'&.,!?-]/gu, '') // Preserve all international letters
+      .replace(/[^\p{L}\p{N}\s'&.,!?-]/gu, '')
       .trim();
     if (clean.length < 3) clean = rawTitle.replace(/#[\p{L}\p{N}_]+/gu, '').slice(0, 40).trim();
     if (clean.length < 2) clean = 'this viral moment';
@@ -490,11 +227,218 @@
       .replace(/#[\p{L}\p{N}_]+/gu, '')
       .replace(/[^\p{L}\p{N}\s]/gu, '')
       .split(/\s+/)
-      .filter(w => w.length > 3 && !['this', 'that', 'with', 'from', 'have', 'were', 'what', 'epic', 'part', 'episode'].includes(w.toLowerCase()));
+      .filter(w => w.length > 3 && !['this', 'that', 'with', 'from', 'have', 'were', 'what', 'epic', 'part', 'episode', 'full', 'scene'].includes(w.toLowerCase()));
     
     const tags = words.slice(0, 3).map(w => '#' + w.charAt(0).toUpperCase() + w.slice(1));
     tags.push('#ViralShorts', '#Trending');
     return tags.join(' ');
+  }
+
+  function detectVideoContext() {
+    let url = window.location.href;
+    let platform = 'Social Video';
+    let title = '';
+    let author = '';
+    let views = '';
+    let videoId = '';
+
+    try {
+      if (url.includes('tiktok.com')) {
+        platform = 'TikTok';
+        const videos = Array.from(document.querySelectorAll('video'));
+        const activeVideo = videos.find(v => !v.paused && v.currentTime > 0) ||
+                            videos.find(v => {
+                              const r = v.getBoundingClientRect();
+                              return r.top >= 0 && r.bottom <= window.innerHeight && r.height > 60;
+                            }) || videos[0];
+
+        let container = null;
+        if (activeVideo) {
+          container = activeVideo.closest('[data-e2e="recommend-list-item-container"]')
+            || activeVideo.closest('div[class*="DivItemContainer"]')
+            || activeVideo.closest('div[class*="DivVideoFeedList"] > div')
+            || activeVideo.closest('div[class*="DivBrowserModeContainer"]')
+            || activeVideo.closest('[data-e2e="user-post-item"]')
+            || activeVideo.closest('article')
+            || activeVideo.parentElement?.parentElement?.parentElement;
+
+          if (container) {
+            const descEl = container.querySelector(
+              '[data-e2e="video-desc"], [data-e2e="browse-video-desc"], [class*="DivDescription"], [class*="SpanText"], [class*="desc"], h1, h2'
+            );
+            if (descEl?.textContent?.trim()) title = descEl.textContent.trim();
+
+            const authorLink = container.querySelector('a[href*="/@"]');
+            if (authorLink) {
+              const href = authorLink.getAttribute('href') || '';
+              const m = href.match(/@([a-zA-Z0-9_.-]+)/);
+              if (m && m[1]) author = '@' + m[1];
+            }
+            if (!author) {
+              const aEl = container.querySelector('[data-e2e="browse-username"], [data-e2e="video-author-uniqueid"], [data-e2e="user-title"], h3');
+              if (aEl?.textContent?.trim()) author = aEl.textContent.trim();
+            }
+
+            const linkEl = container.querySelector('a[href*="/video/"]');
+            if (linkEl?.href) {
+              url = linkEl.href;
+              const m = url.match(/\/video\/(\d+)/);
+              if (m) videoId = m[1];
+            }
+          }
+        }
+
+        if (!title) {
+          const descEl = document.querySelector('[data-e2e="browse-video-desc"], [data-e2e="video-desc"], h1');
+          if (descEl?.textContent?.trim()) title = descEl.textContent.trim();
+        }
+        if (!author) {
+          const aEl = document.querySelector('[data-e2e="browse-username"], [data-e2e="video-author-uniqueid"], .author-uniqueId');
+          if (aEl?.textContent?.trim()) author = aEl.textContent.trim();
+        }
+
+        views = extractLiveViewCount('TikTok', url, container);
+
+        if (!videoId) {
+          const m = url.match(/\/video\/(\d+)/);
+          if (m) videoId = m[1];
+        }
+
+        if (!title && document.title && document.title.includes('TikTok')) {
+          const quoteMatch = document.title.match(/["“](.*?)["”]/);
+          if (quoteMatch && quoteMatch[1].length > 2) {
+            title = quoteMatch[1];
+          } else {
+            title = document.title.replace(/\s*\|\s*TikTok.*/i, '').replace(/.*on TikTok:\s*/i, '').trim();
+          }
+        }
+      }
+
+      else if (url.includes('instagram.com')) {
+        platform = 'Instagram Reels';
+        const videos = Array.from(document.querySelectorAll('video'));
+        const activeVideo = videos.find(v => !v.paused && v.currentTime > 0) ||
+                            videos.find(v => {
+                              const r = v.getBoundingClientRect();
+                              return r.top >= 0 && r.bottom <= window.innerHeight && r.height > 80;
+                            }) || videos[0];
+
+        let container = null;
+        if (activeVideo) {
+          container = activeVideo.closest('article')
+            || activeVideo.closest('div[role="presentation"]')
+            || activeVideo.closest('div[class*="x1qjc9v5"]')
+            || activeVideo.closest('section')
+            || activeVideo.parentElement?.parentElement?.parentElement;
+
+          if (container) {
+            const captionEl = container.querySelector('h1, span._aacl, div._a9zs, span._aaco, span[class*="x193iq5w"]');
+            const authorEl = container.querySelector('header a, span._ap3a, a[role="link"][href^="/"]');
+            const linkEl = container.querySelector('a[href*="/reel/"], a[href*="/reels/"], a[href*="/p/"]');
+
+            if (captionEl?.textContent?.trim()) title = captionEl.textContent.trim();
+            if (authorEl?.textContent?.trim()) author = authorEl.textContent.trim();
+            if (linkEl?.href) {
+              url = linkEl.href;
+              const m = url.match(/\/(reels?|p)\/([a-zA-Z0-9_-]+)/);
+              if (m) videoId = m[2];
+            }
+          }
+        }
+
+        if (!title) {
+          const captionEl = document.querySelector('article h1, article span._aacl, h1');
+          if (captionEl?.textContent?.trim()) title = captionEl.textContent.trim();
+        }
+        if (!author) {
+          const authorEl = document.querySelector('header a, span._ap3a, article header a');
+          if (authorEl?.textContent?.trim()) author = authorEl.textContent.trim();
+        }
+
+        views = extractLiveViewCount('Instagram Reels', url, container);
+
+        if (!videoId) {
+          const m = url.match(/\/(reels?|p)\/([a-zA-Z0-9_-]+)/);
+          if (m) videoId = m[2];
+        }
+
+        if (!title && document.title && document.title.includes('Instagram')) {
+          const quoteMatch = document.title.match(/["“](.*?)["”]/);
+          if (quoteMatch && quoteMatch[1].length > 2) {
+            title = quoteMatch[1];
+          } else {
+            title = document.title.replace(/\s*•\s*Instagram photos and videos.*/i, '').replace(/.*on Instagram:\s*/i, '').trim();
+          }
+        }
+      }
+
+      else if (url.includes('youtube.com')) {
+        const isShorts = url.includes('/shorts');
+        platform = isShorts ? 'YouTube Shorts' : 'YouTube';
+
+        if (isShorts) {
+          const reels = Array.from(document.querySelectorAll('ytd-reel-video-renderer'));
+          const urlMatch = url.match(/\/shorts\/([a-zA-Z0-9_-]+)/);
+          const currentVideoId = urlMatch ? urlMatch[1] : null;
+
+          let activeReel = null;
+          if (currentVideoId && reels.length > 0) {
+            activeReel = reels.find(r => r.querySelector(`a[href*="${currentVideoId}"]`) || r.getAttribute('video-id') === currentVideoId || r.id === currentVideoId);
+          }
+          if (!activeReel && reels.length > 0) {
+            activeReel = reels.find(r => {
+              const rect = r.getBoundingClientRect();
+              return rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2;
+            }) || reels.find(r => r.hasAttribute('is-active')) || reels[0];
+          }
+
+          if (activeReel) {
+            const tEl = activeReel.querySelector('#overlay #title, .ytReelMetamodelViewModelHostTitle, #title.ytd-reel-player-header-renderer, h2.title, yt-formatted-string.title, h2');
+            const aEl = activeReel.querySelector('#channel-name, .ytd-channel-name, #text.ytd-channel-name, .ytReelMetamodelViewModelHostHeaderChannelName');
+            if (tEl?.textContent?.trim()) title = tEl.textContent.trim();
+            if (aEl?.textContent?.trim()) author = aEl.textContent.trim();
+          }
+
+          if (currentVideoId) videoId = currentVideoId;
+        }
+
+        // Title parsing from document.title
+        if (document.title && document.title.includes(' - YouTube')) {
+          const docTitleClean = document.title.replace(/\s*-\s*YouTube.*$/i, '').trim();
+          if (docTitleClean && docTitleClean.length > 2) {
+            title = docTitleClean;
+          }
+        }
+
+        if (!title) {
+          const headerTitle = document.querySelector('ytd-shorts-player-header-renderer #text, h1.title, ytd-watch-metadata #title h1, h1.ytd-video-primary-info-renderer');
+          if (headerTitle?.textContent?.trim()) title = headerTitle.textContent.trim();
+        }
+
+        if (!author) {
+          const genericAuthor = document.querySelector('ytd-channel-name yt-formatted-string#text, #channel-name #text, .ytd-channel-name, ytd-channel-name a');
+          if (genericAuthor?.textContent?.trim()) author = genericAuthor.textContent.trim();
+        }
+
+        views = extractLiveViewCount(platform, url, null);
+
+        if (!videoId) {
+          const m = url.match(/\/shorts\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]v=([a-zA-Z0-9_-]+)/);
+          if (m) videoId = m[1];
+        }
+      }
+    } catch (e) {
+      console.log('[StitchMatrix] Context detection error:', e);
+    }
+
+    if (!title) title = 'Active Viral Video';
+    author = cleanAuthorHandle(author);
+    if (!views) views = 'Trending';
+
+    let displayTitle = title;
+    if (displayTitle.length > 68) displayTitle = displayTitle.slice(0, 65) + '...';
+
+    return { platform, title, displayTitle, author, views, url, videoId };
   }
 
   function buildViralScripts(videoContext) {
@@ -505,9 +449,9 @@
       {
         id: 'curiosity',
         title: 'Curiosity Gap',
-        subtitle: 'High Intrigue & Instant Hook',
+        subtitle: 'High Intrigue & Scroll-Stopping Hook',
         duration: '30s',
-        viralScore: '97/100',
+        viralScore: '98/100',
         hookLead: `Nobody realized this secret about `,
         hookHighlight: `${subject}`,
         hookTail: ` until now. The real story behind what you're watching is blowing everyone's mind.`,
@@ -518,9 +462,9 @@
       {
         id: 'hot_take',
         title: 'Hot Take',
-        subtitle: 'Controversial Angle for Comments',
+        subtitle: 'Controversial Angle for Maximum Comments',
         duration: '34s',
-        viralScore: '95/100',
+        viralScore: '96/100',
         hookLead: `Everyone is talking about `,
         hookHighlight: `${subject}`,
         hookTail: `, but everyone is getting the entire story completely backwards. Here is the uncomfortable truth.`,
@@ -533,7 +477,7 @@
         title: 'Teardown',
         subtitle: 'Breakdown of Why It Worked',
         duration: '32s',
-        viralScore: '94/100',
+        viralScore: '95/100',
         hookLead: `This video about `,
         hookHighlight: `${subject}`,
         hookTail: ` is currently breaking the algorithm. Let's break down the exact formula in 30 seconds.`,
@@ -544,92 +488,20 @@
     ];
   }
 
-  // Universal Active Page Video Selector (Direct DOM reference for snipping & recording)
-  function getActivePageVideo() {
-    const videos = Array.from(document.querySelectorAll('video'));
-    if (!videos.length) return null;
-
-    // 1. Video currently playing
-    const playing = videos.find(v => !v.paused && v.currentTime > 0);
-    if (playing) return playing;
-
-    // 2. YouTube main video player
-    const ytMain = document.querySelector('video.html5-main-video');
-    if (ytMain) return ytMain;
-
-    // 3. YouTube Shorts active video inside current reel
-    const activeReel = document.querySelector('ytd-reel-video-renderer[is-active]');
-    if (activeReel) {
-      const v = activeReel.querySelector('video');
-      if (v) return v;
-    }
-
-    // 4. TikTok active video
-    const ttActive = document.querySelector('[data-e2e="recommend-list-item-container"] video') ||
-                     document.querySelector('div[class*="DivVideoFeedList"] video') ||
-                     (window.location.hostname.includes('tiktok.com') && (document.querySelector('video[src]') || document.querySelector('video')));
-    if (ttActive) return ttActive;
-
-    // 5. Instagram Reels active video
-    const igActive = document.querySelector('article video') ||
-                     document.querySelector('div[role="dialog"] video') ||
-                     (window.location.hostname.includes('instagram.com') && (document.querySelector('video[src]') || document.querySelector('video')));
-    if (igActive) return igActive;
-
-    // 6. Largest visible video in viewport
-    const visible = videos.find(v => {
-      const r = v.getBoundingClientRect();
-      return r.height > 100 && r.width > 100 && r.top < window.innerHeight && r.bottom > 0;
-    });
-    if (visible) return visible;
-
-    return videos[0];
-  }
-
-  // State
+  // --- Extension State ---
   let activeStyleIndex = 0;
   let isOpen = false;
   let currentContext = detectVideoContext();
   let generatedScripts = buildViralScripts(currentContext);
 
-  // Creator Studio State (Viral Clip Snip & Webcam)
-  let studioRecordMode = 'snip'; // 'snip' (Faceless) | 'webcam' (Face)
-  let snipRecorder = null;
-  let snipChunks = [];
-  let isSnipping = false;
-  let snipSeconds = 0;
-  let snipTimer = null;
-  let snippedBlobUrl = null;
-  let isSyncPlaying = false;
-
-  // Webcam Studio State
-  let mediaStream = null;
-  let mediaRecorder = null;
-  let recordedChunks = [];
-  let isRecording = false;
-  let recordingSeconds = 0;
-  let recordingTimer = null;
-  let teleprompterScrollInterval = null;
-  let recordedBlobUrl = null;
-
-  // Faceless AI Voiceover Studio State
-  let currentVoiceBlob = null;
-  let currentVoiceBlobUrl = null;
-  let isGeneratingVoice = false;
-  let selectedVoiceId = localStorage.getItem('sm_selected_voice') || 'orion';
-  let voiceVolume = parseFloat(localStorage.getItem('sm_voice_volume') || '1.0');
-  let lastNonZeroVoiceVolume = voiceVolume > 0 ? voiceVolume : 1.0;
-  let snipVideoVolume = 0.0;
-
-  // Create Host Container
+  // --- Create Shadow DOM Host ---
   const host = document.createElement('div');
   host.id = 'stitchmatrix-extension-root';
   document.documentElement.appendChild(host);
 
-  // Attach Shadow DOM for complete CSS encapsulation
   const shadow = host.attachShadow({ mode: 'open' });
 
-  // Inject Blendr-Inspired Scoped Styles into Shadow DOM
+  // --- Inject Scoped Cyber-Cobalt Obsidian Styles ---
   const styleEl = document.createElement('style');
   styleEl.textContent = `
     :host {
@@ -695,26 +567,22 @@
       box-shadow: 0 0 10px #38BDF8;
     }
 
-    /* Main Sidebar Drawer (Blendr Cyber-Cobalt Deep Obsidian Void) */
+    /* Main Sidebar Drawer (Deep Obsidian Void & Silicon Microchip Glow) */
     .sm-sidebar-container {
       position: fixed;
       top: 0;
       right: 0;
-      width: 418px;
+      width: 416px;
+      max-width: 100vw;
       height: 100vh;
-      background: #020408 !important;
-      background-image: 
-        radial-gradient(circle at 100% 0%, rgba(37, 99, 235, 0.22) 0%, transparent 60%),
-        radial-gradient(circle at 0% 100%, rgba(29, 78, 216, 0.12) 0%, transparent 60%) !important;
+      background: #020408;
       border-left: 1px solid #15223C;
-      color: #F8FAFC;
+      box-shadow: -12px 0 45px rgba(2, 4, 8, 0.95), 0 0 40px rgba(37, 99, 235, 0.15);
       z-index: 2147483647;
-      transform: translateX(418px);
-      transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       flex-direction: column;
-      box-shadow: -16px 0 50px rgba(0, 0, 0, 0.9);
-      overflow: hidden;
+      transform: translateX(100%);
+      transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
       user-select: text;
     }
 
@@ -722,15 +590,16 @@
       transform: translateX(0);
     }
 
-    /* 1. Header (Blendr Cyber Glass Header) */
+    /* 1. Sleek Blendr Header */
     .sm-header {
-      padding: 13px 18px;
+      padding: 14px 18px;
       background: #070B16;
       border-bottom: 1px solid #15223C;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      position: relative;
+      gap: 12px;
+      flex-shrink: 0;
     }
 
     .sm-header-brand {
@@ -739,322 +608,315 @@
       gap: 10px;
     }
 
-    /* Blendr Silicon Microchip Icon */
-    .sm-qubora-logo {
-      width: 26px;
-      height: 26px;
-      position: relative;
+    .sm-logo-icon {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #1E40AF 0%, #2563EB 50%, #38BDF8 100%);
+      border-radius: 7px;
       display: flex;
       align-items: center;
       justify-content: center;
+      color: #FFFFFF;
+      box-shadow: 0 0 14px rgba(37, 99, 235, 0.45);
     }
 
-    .sm-qubora-logo svg {
-      width: 24px;
-      height: 24px;
-      filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.7));
-    }
-
-    .sm-header-title {
-      font-size: 14px;
-      font-weight: 700;
+    .sm-brand-title {
+      font-size: 15px;
+      font-weight: 800;
       color: #FFFFFF;
       letter-spacing: -0.03em;
+      display: flex;
+      align-items: center;
+      gap: 2px;
     }
 
-    .sm-header-title span {
-      color: #60A5FA;
+    .sm-brand-title span {
+      color: #38BDF8;
     }
 
     .sm-header-actions {
       display: flex;
       align-items: center;
-      gap: 7px;
-    }
-
-    .sm-auto-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 10px;
-      color: #93C5FD;
-      background: rgba(37, 99, 235, 0.15);
-      border: 1px solid rgba(59, 130, 246, 0.35);
-      padding: 2px 8px;
-      border-radius: 9999px;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-    }
-
-    .sm-pulse-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: #38BDF8;
-      box-shadow: 0 0 8px #38BDF8;
-      animation: smBeaconPulse 2s infinite ease-in-out;
-    }
-
-    @keyframes smBeaconPulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.35; transform: scale(0.85); }
-    }
-
-    .sm-close-btn {
-      background: #0A101D;
-      border: 1px solid #1E2E4E;
-      color: #94A3B8;
-      cursor: pointer;
-      width: 26px;
-      height: 26px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s ease;
-    }
-
-    .sm-close-btn:hover {
-      background: #10192E;
-      color: #FFFFFF;
-      border-color: #3B82F6;
-    }
-
-    /* 2. Active Video Ingestion Banner with Ambient Cobalt Glow */
-    .sm-video-banner {
-      padding: 12px 18px;
-      background: radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.12) 0%, rgba(2, 4, 8, 0.95) 75%);
-      border-bottom: 1px solid #15223C;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      position: relative;
-      transition: background 0.4s ease;
-    }
-
-    .sm-video-banner.pulse-active {
-      background: radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.22) 0%, rgba(2, 4, 8, 0.95) 85%);
-    }
-
-    .sm-video-status-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 11px;
+      gap: 8px;
     }
 
     .sm-live-badge {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
+      background: rgba(37, 99, 235, 0.16);
+      border: 1px solid rgba(59, 130, 246, 0.4);
       color: #60A5FA;
-      font-weight: 600;
       font-size: 10.5px;
-      letter-spacing: -0.01em;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      letter-spacing: 0.02em;
     }
 
-    .sm-rescan-btn {
-      background: #0A101D;
+    .sm-pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #38BDF8;
+      box-shadow: 0 0 8px #38BDF8;
+      animation: smPulse 1.8s infinite;
+    }
+
+    @keyframes smPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .sm-close-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: #0A1122;
       border: 1px solid #1E2E4E;
-      color: #93C5FD;
-      border-radius: 5px;
-      padding: 2px 8px;
-      font-size: 10.5px;
-      font-weight: 550;
-      cursor: pointer;
+      color: #94A3B8;
       display: flex;
       align-items: center;
-      gap: 3px;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
       transition: all 0.15s ease;
     }
 
-    .sm-rescan-btn:hover {
-      background: #10192E;
+    .sm-close-btn:hover {
+      background: #15223C;
       color: #FFFFFF;
       border-color: #3B82F6;
     }
 
+    /* 2. Active Video Live Intelligence Card (WHERE RED ARROWS POINT) */
+    .sm-video-banner {
+      margin: 12px 16px 0 16px;
+      padding: 13px 15px;
+      background: #070B16;
+      border: 1px solid #15223C;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    .sm-video-banner::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      background: linear-gradient(180deg, #38BDF8 0%, #2563EB 100%);
+    }
+
+    .sm-banner-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .sm-banner-live-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 750;
+      color: #60A5FA;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .sm-btn-rescan {
+      background: #0A1122;
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      color: #93C5FD;
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .sm-btn-rescan:hover {
+      background: #15223C;
+      color: #FFFFFF;
+      border-color: #38BDF8;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+    }
+
     .sm-video-title {
       font-size: 13.5px;
-      font-weight: 700;
+      font-weight: 750;
       color: #FFFFFF;
-      white-space: nowrap;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
       overflow: hidden;
-      text-overflow: ellipsis;
-      letter-spacing: -0.025em;
-      line-height: 1.3;
+      letter-spacing: -0.02em;
     }
 
     .sm-video-meta {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
       font-size: 11px;
       color: #94A3B8;
       flex-wrap: wrap;
+      font-variant-numeric: tabular-nums;
     }
 
-    .sm-video-meta span strong {
-      color: #CBD5E1;
+    .sm-video-meta strong {
+      color: #E2E8F0;
+      font-weight: 700;
     }
 
     .sm-meta-views-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      color: #38BDF8;
-      font-weight: 600;
+      color: #38BDF8 !important;
+      font-weight: 750;
     }
 
     .sm-meta-views-pill strong {
-      color: #93C5FD !important;
-      font-weight: 750 !important;
+      color: #38BDF8 !important;
     }
 
-    /* 3. Fast Angle Tabs (Blendr Glass Pills) */
-    .sm-angle-deck {
-      padding: 9px 16px;
-      background: #070B16;
-      border-bottom: 1px solid #15223C;
-      display: flex;
-      gap: 6px;
-    }
-
-    .sm-angle-tab {
+    /* 3. THE ONE MASTER VIRAL SCRIPT CARD */
+    .sm-master-output-card {
+      margin: 12px 16px 16px 16px;
       flex: 1;
-      background: #0A101D;
-      border: 1px solid #1E2E4E;
-      border-radius: 8px;
-      padding: 6px 8px;
-      font-size: 11.5px;
-      font-weight: 600;
-      color: #94A3B8;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.15s ease;
-      white-space: nowrap;
-      letter-spacing: -0.015em;
-    }
-
-    .sm-angle-tab:hover {
-      color: #F8FAFC;
-      border-color: rgba(59, 130, 246, 0.4);
-    }
-
-    .sm-angle-tab.active {
-      background: rgba(37, 99, 235, 0.22);
-      color: #60A5FA;
-      font-weight: 700;
-      border: 1px solid #3B82F6;
-      box-shadow: 0 0 12px rgba(37, 99, 235, 0.3);
-    }
-
-    /* 4. Scrollable Script Canvas with Blendr High-Contrast Typography */
-    .sm-canvas-area {
-      flex: 1;
-      overflow-y: auto;
-      padding: 14px 16px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-    }
-
-    .sm-canvas-area::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    .sm-canvas-area::-webkit-scrollbar-thumb {
-      background: #1D2D50;
-      border-radius: 4px;
-    }
-
-    /* Script Block Card (Blendr Deep Cobalt Surface) */
-    .sm-frame-card {
       background: #070B16;
-      border: 1px solid #15223C;
+      border: 1px solid #1E2E4E;
       border-radius: 12px;
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-      transition: border-color 0.15s ease;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.65), 0 0 25px rgba(37, 99, 235, 0.1);
     }
 
-    .sm-frame-card:hover {
-      border-color: rgba(59, 130, 246, 0.4);
-    }
-
-    .sm-frame-header {
-      padding: 8px 12px;
+    .sm-output-header {
+      padding: 12px 14px;
       background: #0A1122;
       border-bottom: 1px solid #15223C;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 10px;
+      flex-shrink: 0;
     }
 
-    .sm-frame-title {
-      font-size: 11px;
-      font-weight: 700;
+    .sm-output-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #60A5FA;
+      font-size: 11.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .sm-output-badge svg {
+      color: #38BDF8;
+    }
+
+    .sm-output-metrics {
       display: flex;
       align-items: center;
       gap: 6px;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
     }
 
-    .sm-title-hook { color: #60A5FA; }
-    .sm-title-body { color: #93C5FD; }
-    .sm-title-cta  { color: #38BDF8; }
+    .sm-metric-pill {
+      font-size: 10px;
+      font-weight: 700;
+      color: #94A3B8;
+      background: #020408;
+      border: 1px solid #15223C;
+      padding: 3px 7px;
+      border-radius: 6px;
+    }
 
-    .sm-copy-part-btn {
-      background: #0A101D;
-      border: 1px solid #1E2E4E;
-      color: #93C5FD;
-      cursor: pointer;
-      padding: 2px 7px;
-      border-radius: 5px;
+    .sm-pill-highlight {
+      color: #38BDF8;
+      border-color: rgba(56, 189, 248, 0.35);
+      background: rgba(37, 99, 235, 0.15);
+    }
+
+    /* Unified Script Canvas */
+    .sm-unified-script-editor {
+      flex: 1;
+      padding: 14px 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      outline: none;
+      font-family: inherit;
+      background: #040711;
+    }
+
+    .sm-unified-script-editor::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .sm-unified-script-editor::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .sm-unified-script-editor::-webkit-scrollbar-thumb {
+      background: #1E2E4E;
+      border-radius: 4px;
+    }
+
+    .sm-script-section {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .sm-section-label {
       font-size: 10.5px;
-      font-weight: 600;
+      font-weight: 800;
+      color: #60A5FA;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
       display: flex;
       align-items: center;
-      gap: 3px;
-      transition: all 0.15s ease;
+      gap: 5px;
     }
 
-    .sm-copy-part-btn:hover {
-      background: #10192E;
-      color: #FFFFFF;
-      border-color: #3B82F6;
-    }
-
-    /* Blendr High-Contrast Typography */
-    .sm-frame-editor {
-      padding: 12px 14px;
+    .sm-section-body {
       font-size: 13.5px;
       line-height: 1.6;
-      outline: none;
-      cursor: text;
-      white-space: pre-wrap;
-      word-break: break-word;
-      min-height: 52px;
+      color: #F8FAFC;
       letter-spacing: -0.015em;
     }
 
     .sm-hook-lead {
-      color: #FFFFFF;
-      font-weight: 700;
+      color: #E2E8F0;
+      font-weight: 750;
     }
 
     .sm-hook-highlight {
-      color: #60A5FA;
-      font-weight: 700;
-      text-shadow: 0 0 12px rgba(96, 165, 250, 0.45);
+      color: #38BDF8;
+      font-weight: 800;
+      text-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
     }
 
     .sm-hook-tail {
-      color: #CBD5E1;
-      font-weight: 450;
+      color: #F1F5F9;
+      font-weight: 700;
     }
 
     .sm-body-text {
@@ -1067,1429 +929,185 @@
       font-weight: 600;
     }
 
-    /* Hashtags Box */
-    .sm-hashtags-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #070B16;
-      border: 1px solid #15223C;
-      border-radius: 8px;
-      padding: 8px 12px;
-      gap: 8px;
-    }
-
-    .sm-hashtags-text {
-      font-size: 11px;
-      color: #60A5FA;
+    .sm-tags-text {
+      color: #38BDF8;
       font-weight: 600;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      font-size: 12px;
+      word-spacing: 3px;
     }
 
-    .sm-copy-tags-btn {
-      background: #0A101D;
-      border: 1px solid #1E2E4E;
-      color: #93C5FD;
-      border-radius: 5px;
-      padding: 3px 8px;
-      font-size: 10.5px;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.15s ease;
-    }
-
-    .sm-copy-tags-btn:hover {
-      background: #10192E;
-      color: #FFFFFF;
-      border-color: #3B82F6;
-    }
-
-    /* 5. Blendr Action Deck (Electric Sapphire Studio Controls) */
-    .sm-footer {
-      padding: 14px 16px;
+    /* 4. Action Controls Bar */
+    .sm-output-actions {
+      padding: 12px 14px;
       background: #070B16;
       border-top: 1px solid #15223C;
       display: flex;
       flex-direction: column;
       gap: 8px;
+      flex-shrink: 0;
     }
 
-    /* Option 1: 1-Click AI Voiceover (.mp3) - Radiant Blendr Sapphire */
-    .sm-btn-voiceover {
-      width: 100%;
-      background: linear-gradient(135deg, #1E40AF 0%, #2563EB 50%, #3B82F6 100%);
-      color: #FFFFFF;
-      border: none;
-      border-radius: 10px;
-      padding: 12px 16px;
-      font-size: 13.5px;
-      font-weight: 750;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 4px 22px rgba(37, 99, 235, 0.45);
-      letter-spacing: -0.02em;
-    }
-
-    .sm-btn-voiceover:hover {
-      background: linear-gradient(135deg, #2563EB 0%, #3B82F6 50%, #60A5FA 100%);
-      transform: translateY(-1px);
-      box-shadow: 0 6px 28px rgba(59, 130, 246, 0.6);
-      color: #FFFFFF;
-    }
-
-    .sm-btn-voiceover:active {
-      transform: translateY(0);
-      box-shadow: 0 2px 14px rgba(37, 99, 235, 0.4);
-    }
-
-    /* Option 2: Record / Snip Short */
-    .sm-btn-record {
-      width: 100%;
-      background: #0A1122;
-      color: #DBEAFE;
-      border: 1px solid rgba(59, 130, 246, 0.35);
-      border-radius: 10px;
-      padding: 10px 14px;
-      font-size: 12.5px;
-      font-weight: 650;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      transition: all 0.2s ease;
-      letter-spacing: -0.015em;
-    }
-
-    .sm-btn-record:hover {
-      background: #0F1A33;
-      color: #FFFFFF;
-      border-color: #60A5FA;
-      box-shadow: 0 2px 16px rgba(37, 99, 235, 0.25);
-      transform: translateY(-1px);
-    }
-
-    .sm-btn-row-split {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .sm-btn-phone {
-      background: #0A1122;
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      color: #93C5FD;
-      border-radius: 8px;
-      padding: 9px 12px;
-      font-size: 12px;
-      font-weight: 650;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      transition: all 0.15s ease;
-      letter-spacing: -0.015em;
-    }
-
-    .sm-btn-phone:hover {
-      background: #0F1A33;
-      color: #FFFFFF;
-      border-color: #60A5FA;
-    }
-
-    .sm-btn-copy {
-      background: #0A1122;
-      border: 1px solid #15223C;
-      color: #94A3B8;
-      border-radius: 8px;
-      padding: 9px 12px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      transition: all 0.15s ease;
-      letter-spacing: -0.015em;
-    }
-
-    .sm-btn-copy:hover {
-      background: #0F1A33;
-      color: #FFFFFF;
-      border-color: rgba(59, 130, 246, 0.4);
-    }
-
-    .sm-btn-copy.copied {
-      background: #1E40AF !important;
-      border-color: #2563EB !important;
-      color: #FFFFFF !important;
-    }
-
-    /* Modal Overlays (Webcam Studio & QR Modal) */
-    .sm-modal-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(2, 4, 8, 0.97);
-      backdrop-filter: blur(10px);
-      z-index: 500;
-      display: none;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .sm-modal-overlay.active {
-      display: flex;
-    }
-
-    .sm-modal-header {
-      padding: 13px 18px;
-      background: #070B16;
-      border-bottom: 1px solid #15223C;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .sm-modal-title {
-      font-size: 13.5px;
-      font-weight: 700;
-      color: #FFFFFF;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      letter-spacing: -0.02em;
-    }
-
-    /* CREATOR STUDIO VIEW (VIRAL CLIP SNIP & WEBCAM) */
-    .sm-rec-mode-tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-      padding: 10px 16px 4px 16px;
-      background: #070B16;
-      border-bottom: 1px solid #15223C;
-    }
-
-    .sm-rec-mode-tab {
-      background: #0A1122;
-      border: 1px solid #1E2E4E;
-      color: #94A3B8;
-      border-radius: 8px;
-      padding: 8px 10px;
-      font-size: 11.5px;
-      font-weight: 650;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      transition: all 0.15s ease;
-      letter-spacing: -0.015em;
-    }
-
-    .sm-rec-mode-tab:hover {
-      color: #FFFFFF;
-      border-color: #60A5FA;
-    }
-
-    .sm-rec-mode-tab.active {
-      background: rgba(37, 99, 235, 0.22);
-      border-color: #3B82F6;
-      color: #60A5FA;
-      box-shadow: 0 0 12px rgba(37, 99, 235, 0.25);
-    }
-
-    .sm-webcam-body {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 16px;
-      gap: 12px;
-      overflow-y: auto;
-    }
-
-    .sm-camera-box {
-      position: relative;
-      width: 100%;
-      height: 235px;
-      background: #000000;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid #15223C;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    /* Vertical 9:16 Mobile View Mode (TikTok, Instagram Reels, YouTube Shorts) */
-    .sm-camera-box.sm-vertical-video {
-      height: 380px;
-      border-color: #1E3A8A;
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(0, 0, 0, 0.9);
-    }
-
-    #smWebcamFeed {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    #smRecordedPlayback {
-      width: 100%;
-      height: 100%;
-      object-fit: contain; /* Full uncropped frame: perfectly preserves vertical 9:16 and horizontal 16:9 */
-      background: #000000;
-      transition: object-fit 0.2s ease;
-    }
-
-    #smRecordedPlayback.sm-fill-mode {
-      object-fit: cover;
-    }
-
-    .sm-snip-helper-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at center, rgba(37, 99, 235, 0.12) 0%, rgba(0, 0, 0, 0.9) 100%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 16px;
-      gap: 8px;
-      z-index: 5;
-    }
-
-    .sm-snip-helper-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(37, 99, 235, 0.18);
-      border: 1px solid rgba(59, 130, 246, 0.45);
-      color: #93C5FD;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 3px 9px;
-      border-radius: 9999px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .sm-snip-helper-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #FFFFFF;
-      max-width: 280px;
-      line-height: 1.4;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-      letter-spacing: -0.02em;
-    }
-
-    .sm-snip-helper-sub {
-      font-size: 11px;
-      color: #94A3B8;
-      max-width: 260px;
-      line-height: 1.4;
-    }
-
-    .sm-rec-indicator {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(220, 38, 38, 0.88);
-      color: #FFFFFF;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 9999px;
-      display: none;
-      align-items: center;
-      gap: 5px;
-      z-index: 10;
-    }
-
-    .sm-rec-indicator.active {
-      display: inline-flex;
-    }
-
-    .sm-rec-timer {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: rgba(0, 0, 0, 0.8);
-      color: #38BDF8;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-variant-numeric: tabular-nums;
-      z-index: 10;
-      border: 1px solid rgba(59, 130, 246, 0.35);
-    }
-
-    /* Scrolling Teleprompter Inside Camera Studio */
-    .sm-teleprompter-glass {
-      background: #070B16;
-      border: 1px solid #15223C;
-      border-radius: 10px;
-      padding: 12px 14px;
-      max-height: 120px;
-      overflow-y: auto;
-      font-size: 12.5px;
-      line-height: 1.55;
-      color: #F8FAFC;
-      text-align: center;
-      font-weight: 500;
-      letter-spacing: -0.015em;
-    }
-
-    .sm-teleprompter-glass::-webkit-scrollbar {
-      width: 3px;
-    }
-
-    /* Snip Controls Panel */
-    .sm-snip-controls-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: auto;
-    }
-
-    .sm-snip-presets-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 6px;
-    }
-
-    .sm-btn-snip-preset {
-      background: linear-gradient(135deg, #1E40AF 0%, #2563EB 50%, #3B82F6 100%);
-      color: #FFFFFF;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 4px;
-      font-size: 11.5px;
-      font-weight: 750;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s ease;
-      box-shadow: 0 2px 10px rgba(37, 99, 235, 0.35);
-      letter-spacing: -0.015em;
-    }
-
-    .sm-btn-snip-preset:hover {
-      background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
-      transform: translateY(-1px);
-    }
-
-    .sm-btn-snip-custom {
-      background: #0A1122;
-      color: #E2E8F0;
-      border: 1px solid rgba(59, 130, 246, 0.4);
-      border-radius: 8px;
-      padding: 10px 4px;
-      font-size: 11.5px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s ease;
-      letter-spacing: -0.015em;
-    }
-
-    .sm-btn-snip-custom:hover {
-      background: #0F1A33;
-      color: #FFFFFF;
-      border-color: #60A5FA;
-    }
-
-    .sm-snip-audio-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2px 0;
-    }
-
-    .sm-checkbox-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      color: #94A3B8;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .sm-checkbox-label input[type="checkbox"] {
-      accent-color: #2563EB;
-      cursor: pointer;
-      width: 13px;
-      height: 13px;
-    }
-
-    /* Snip Review Panel (After Snip Capture) */
-    .sm-snip-review-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: auto;
-    }
-
-    .sm-btn-review-syncplay {
+    .sm-btn-copy-master {
       width: 100%;
       background: linear-gradient(135deg, #1E40AF 0%, #2563EB 50%, #3B82F6 100%);
       color: #FFFFFF;
       border: none;
       border-radius: 9px;
-      padding: 11px 14px;
-      font-size: 13px;
+      padding: 12px 14px;
+      font-size: 13.5px;
       font-weight: 750;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 7px;
+      gap: 8px;
       box-shadow: 0 4px 18px rgba(37, 99, 235, 0.45);
-      transition: all 0.2s ease;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       letter-spacing: -0.015em;
     }
 
-    .sm-btn-review-syncplay:hover {
+    .sm-btn-copy-master:hover {
       background: linear-gradient(135deg, #2563EB 0%, #3B82F6 50%, #60A5FA 100%);
       transform: translateY(-1px);
+      box-shadow: 0 6px 22px rgba(37, 99, 235, 0.6);
     }
 
-    .sm-snip-download-grid {
+    .sm-btn-copy-master.copied {
+      background: #10B981 !important;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.5) !important;
+    }
+
+    .sm-output-sub-actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
     }
 
-    .sm-btn-download-clip {
-      background: #0A1122;
-      border: 1px solid rgba(59, 130, 246, 0.45);
-      color: #60A5FA;
-      border-radius: 8px;
-      padding: 10px 8px;
-      font-size: 11.5px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      transition: all 0.15s ease;
-    }
-
-    .sm-btn-download-clip:hover {
-      background: #0F1A33;
-      color: #FFFFFF;
-      border-color: #60A5FA;
-    }
-
-    .sm-btn-download-voice-fast {
-      background: #0A1122;
-      border: 1px solid rgba(59, 130, 246, 0.45);
-      color: #93C5FD;
-      border-radius: 8px;
-      padding: 10px 8px;
-      font-size: 11.5px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      transition: all 0.15s ease;
-    }
-
-    .sm-btn-download-voice-fast:hover {
-      background: #0F1A33;
-      color: #FFFFFF;
-      border-color: #38BDF8;
-    }
-
-    .sm-snip-discard-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .sm-btn-delete-clip {
-      background: rgba(239, 68, 68, 0.12);
-      border: 1px solid rgba(239, 68, 68, 0.35);
-      color: #FCA5A5;
-      border-radius: 8px;
-      padding: 8px 10px;
-      font-size: 11.5px;
-      font-weight: 650;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.15s ease;
-      letter-spacing: -0.01em;
-    }
-
-    .sm-btn-delete-clip:hover {
-      background: rgba(239, 68, 68, 0.25);
-      color: #FFFFFF;
-      border-color: #EF4444;
-      box-shadow: 0 0 14px rgba(239, 68, 68, 0.35);
-    }
-
-    .sm-btn-resnip {
-      background: transparent;
-      border: 1px solid #1E2E4E;
-      color: #94A3B8;
-      border-radius: 8px;
-      padding: 8px 10px;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      transition: all 0.15s ease;
-    }
-
-    .sm-btn-resnip:hover {
-      color: #E2E8F0;
-      border-color: #60A5FA;
-    }
-
-    .sm-btn-delete-webcam {
-      width: 100%;
-      background: rgba(239, 68, 68, 0.12);
-      border: 1px solid rgba(239, 68, 68, 0.35);
-      color: #FCA5A5;
-      border-radius: 8px;
-      padding: 10px;
-      font-size: 12.5px;
-      font-weight: 650;
-      cursor: pointer;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.15s ease;
-      letter-spacing: -0.01em;
-    }
-
-    .sm-btn-delete-webcam:hover {
-      background: rgba(239, 68, 68, 0.25);
-      color: #FFFFFF;
-      border-color: #EF4444;
-      box-shadow: 0 0 14px rgba(239, 68, 68, 0.35);
-    }
-
-    /* Floating Delete Video Button inside Camera Box */
-    .sm-btn-floating-delete {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(10, 16, 29, 0.88);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(239, 68, 68, 0.5);
-      color: #FCA5A5;
-      border-radius: 6px;
-      padding: 4px 9px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      display: none;
-      align-items: center;
-      gap: 5px;
-      z-index: 15;
-      transition: all 0.15s ease;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-      letter-spacing: -0.01em;
-    }
-
-    .sm-btn-floating-delete:hover {
-      background: rgba(220, 38, 38, 0.95);
-      color: #FFFFFF;
-      border-color: #EF4444;
-      box-shadow: 0 0 16px rgba(239, 68, 68, 0.6);
-      transform: translateY(-1px);
-    }
-
-    /* Floating Playback Top-Right Toolbar (Format Badge + Fit/Fill Mode Toggle) */
-    .sm-floating-playback-tools {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      display: none;
-      align-items: center;
-      gap: 6px;
-      z-index: 15;
-    }
-
-    .sm-video-format-pill {
-      background: rgba(10, 16, 29, 0.88);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(59, 130, 246, 0.45);
-      color: #93C5FD;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 4px 8px;
-      border-radius: 6px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      letter-spacing: -0.01em;
-      pointer-events: none;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    }
-
-    .sm-btn-floating-aspect {
-      background: rgba(10, 16, 29, 0.88);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(59, 130, 246, 0.45);
-      color: #60A5FA;
-      border-radius: 6px;
-      padding: 4px 8px;
-      font-size: 10.5px;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      transition: all 0.15s ease;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-      letter-spacing: -0.01em;
-    }
-
-    .sm-btn-floating-aspect:hover {
-      background: rgba(37, 99, 235, 0.35);
-      color: #FFFFFF;
-      border-color: #3B82F6;
-      box-shadow: 0 0 14px rgba(37, 99, 235, 0.5);
-      transform: translateY(-1px);
-    }
-
-    /* Webcam Controls */
-    .sm-webcam-controls {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: auto;
-    }
-
-    .sm-btn-start-rec {
-      width: 100%;
-      background: linear-gradient(135deg, #1E40AF 0%, #2563EB 100%);
-      color: #FFFFFF;
-      border: none;
-      border-radius: 10px;
-      padding: 12px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
-    }
-
-    .sm-btn-start-rec:hover {
-      background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
-    }
-
-    .sm-btn-stop-rec {
-      width: 100%;
-      background: #1E293B;
-      color: #FFFFFF;
-      border: none;
-      border-radius: 10px;
-      padding: 12px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .sm-btn-download-video {
-      width: 100%;
-      background: linear-gradient(135deg, #1E40AF 0%, #2563EB 100%);
-      color: #FFFFFF;
-      border: none;
-      border-radius: 10px;
-      padding: 12px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
-    }
-
-    /* QR CODE MODAL VIEW */
-    .sm-qr-body {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px 22px;
-      text-align: center;
-      gap: 14px;
-    }
-
-    .sm-qr-frame {
-      background: #FFFFFF;
-      padding: 10px;
-      border-radius: 14px;
-      box-shadow: 0 0 32px rgba(59, 130, 246, 0.35);
-      width: 212px;
-      height: 212px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .sm-qr-frame img {
-      width: 192px;
-      height: 192px;
-      display: block;
-      image-rendering: -webkit-optimize-contrast;
-      image-rendering: pixelated;
-    }
-
-    .sm-qr-instructions {
-      font-size: 12.5px;
-      color: #94A3B8;
-      max-width: 320px;
-      line-height: 1.5;
-    }
-
-    .sm-qr-actions-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      width: 100%;
-    }
-
-    .sm-btn-open-direct {
-      flex: 1;
-      background: linear-gradient(135deg, #1E40AF 0%, #2563EB 100%);
-      color: #FFFFFF;
-      border: none;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-size: 12.5px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      box-shadow: 0 2px 14px rgba(37, 99, 235, 0.35);
-      transition: all 0.15s ease;
-    }
-
-    .sm-btn-open-direct:hover {
-      background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
-    }
-
-    .sm-btn-copy-link {
-      flex: 1;
-      background: #0A1122;
-      border: 1px solid rgba(59, 130, 246, 0.35);
-      color: #60A5FA;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-size: 12.5px;
-      font-weight: 650;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.15s ease;
-    }
-
-    .sm-btn-copy-link:hover {
-      background: #0F1A33;
-      color: #FFFFFF;
-      border-color: #60A5FA;
-    }
-
-    .sm-qr-link-box {
-      width: 100%;
-    }
-
-    .sm-qr-link-box input {
-      width: 100%;
-      background: #070B16;
-      border: 1px solid #15223C;
-      color: #94A3B8;
-      border-radius: 6px;
-      padding: 6px 10px;
-      font-size: 10.5px;
-      font-family: monospace;
-      outline: none;
-      text-overflow: ellipsis;
-      cursor: pointer;
-    }
-
-    .sm-qr-link-box input:focus {
-      color: #93C5FD;
-      border-color: #2563EB;
-    }
-
-    /* AI VOICEOVER MODAL VIEW (FACELESS CREATOR STUDIO) */
-    .sm-voice-body {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 16px 18px;
-      gap: 12px;
-      overflow-y: auto;
-    }
-
-    .sm-voice-hero {
-      background: #000000;
-      border: 1px solid #15223C;
-      border-radius: 12px;
-      padding: 22px 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      position: relative;
-      box-shadow: inset 0 0 24px rgba(37, 99, 235, 0.12);
-    }
-
-    .sm-soundwaves {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      height: 48px;
-      margin-bottom: 12px;
-    }
-
-    .sm-soundwaves .bar {
-      width: 4px;
-      height: 12px;
-      background: #2563EB;
-      border-radius: 4px;
-      transition: height 0.15s ease, background 0.15s ease;
-    }
-
-    .sm-soundwaves.playing .bar {
-      animation: soundwaveBounce 0.8s infinite ease-in-out alternate;
-    }
-
-    .sm-soundwaves.loading .bar {
-      animation: soundwavePulse 0.5s infinite ease-in-out alternate;
-    }
-
-    @keyframes soundwaveBounce {
-      0% { height: 8px; opacity: 0.4; }
-      50% { height: 44px; opacity: 1; background: #60A5FA; }
-      100% { height: 14px; opacity: 0.6; }
-    }
-
-    @keyframes soundwavePulse {
-      0% { height: 6px; opacity: 0.3; }
-      100% { height: 28px; opacity: 0.9; background: #2563EB; }
-    }
-
-    .sm-soundwaves .bar:nth-child(1) { animation-delay: 0.05s; }
-    .sm-soundwaves .bar:nth-child(2) { animation-delay: 0.18s; }
-    .sm-soundwaves .bar:nth-child(3) { animation-delay: 0.30s; }
-    .sm-soundwaves .bar:nth-child(4) { animation-delay: 0.42s; }
-    .sm-soundwaves .bar:nth-child(5) { animation-delay: 0.54s; }
-    .sm-soundwaves .bar:nth-child(6) { animation-delay: 0.66s; }
-    .sm-soundwaves .bar:nth-child(7) { animation-delay: 0.54s; }
-    .sm-soundwaves .bar:nth-child(8) { animation-delay: 0.42s; }
-    .sm-soundwaves .bar:nth-child(9) { animation-delay: 0.30s; }
-    .sm-soundwaves .bar:nth-child(10) { animation-delay: 0.18s; }
-    .sm-soundwaves .bar:nth-child(11) { animation-delay: 0.10s; }
-    .sm-soundwaves .bar:nth-child(12) { animation-delay: 0.05s; }
-
-    .sm-voice-status {
-      font-size: 14px;
-      font-weight: 700;
-      color: #FFFFFF;
-      margin-bottom: 3px;
-      letter-spacing: -0.02em;
-    }
-
-    .sm-voice-substatus {
-      font-size: 11.5px;
-      color: #94A3B8;
-      max-width: 290px;
-      line-height: 1.45;
-    }
-
-    .sm-voice-script-box {
-      background: #070B16;
-      border: 1px solid #15223C;
-      border-radius: 10px;
-      padding: 12px 14px;
-      max-height: 130px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .sm-voice-script-box::-webkit-scrollbar {
-      width: 3px;
-    }
-
-    .sm-voice-script-label {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      color: #60A5FA;
-      text-transform: uppercase;
-    }
-
-    .sm-voice-script-text {
-      font-size: 12.5px;
-      line-height: 1.55;
-      color: #CBD5E1;
-      user-select: text;
-    }
-
-    .sm-voice-controls {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: auto;
-    }
-
-    .sm-btn-generate-voice {
-      width: 100%;
-      background: linear-gradient(135deg, #1E40AF 0%, #2563EB 100%);
-      color: #FFFFFF;
-      border: none;
-      border-radius: 10px;
-      padding: 12px;
-      font-size: 13.5px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 4px 18px rgba(37, 99, 235, 0.4);
-      transition: all 0.2s ease;
-      letter-spacing: -0.015em;
-    }
-
-    .sm-btn-generate-voice:hover {
-      background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
-    }
-
-    .sm-btn-generate-voice:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .sm-voice-action-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .sm-btn-voice-play {
+    .sm-btn-remix-angle {
       background: #0A1122;
       border: 1px solid rgba(59, 130, 246, 0.4);
-      color: #60A5FA;
-      border-radius: 8px;
-      padding: 11px 12px;
-      font-size: 12.5px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.15s ease;
-    }
-
-    .sm-btn-voice-play:hover {
-      background: #0F1A33;
-      color: #FFFFFF;
-      border-color: #60A5FA;
-    }
-
-    .sm-btn-voice-download {
-      background: linear-gradient(135deg, #1E40AF 0%, #2563EB 100%);
-      border: none;
-      color: #FFFFFF;
-      border-radius: 8px;
-      padding: 11px 12px;
-      font-size: 12.5px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      box-shadow: 0 2px 14px rgba(37, 99, 235, 0.35);
-      transition: all 0.15s ease;
-    }
-
-    .sm-btn-voice-download:hover {
-      background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
-    }
-
-    /* Voice Selection & Volume Controls */
-    .sm-voice-select-card {
-      background: #070B16;
-      border: 1px solid #15223C;
-      border-radius: 10px;
-      padding: 10px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
-
-    .sm-voice-select-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-    }
-
-    .sm-voice-select-title {
-      font-size: 11px;
-      font-weight: 700;
-      color: #60A5FA;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .sm-voice-chip {
-      font-size: 9.5px;
-      font-weight: 600;
       color: #93C5FD;
-      background: rgba(37, 99, 235, 0.15);
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      padding: 2px 7px;
-      border-radius: 9999px;
-    }
-
-    .sm-voice-dropdown {
-      width: 100%;
-      background: #03060C;
-      border: 1px solid #1A2B4D;
-      border-radius: 7px;
-      padding: 8px 10px;
-      color: #FFFFFF;
-      font-size: 12px;
-      font-weight: 600;
-      outline: none;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-family: inherit;
-    }
-
-    .sm-voice-dropdown:focus {
-      border-color: #2563EB;
-      box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
-    }
-
-    .sm-voice-dropdown optgroup {
-      background: #070B16;
-      color: #60A5FA;
-      font-weight: 700;
-    }
-
-    .sm-voice-dropdown option {
-      background: #0A1122;
-      color: #CBD5E1;
-      padding: 6px 10px;
-    }
-
-    /* Volume Control Bars */
-    .sm-voice-volume-panel {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: #070B16;
-      border: 1px solid #15223C;
       border-radius: 8px;
-      padding: 7px 12px;
-    }
-
-    .sm-vol-icon-btn {
-      background: transparent;
-      border: none;
-      color: #60A5FA;
+      padding: 9px 10px;
+      font-size: 11.5px;
+      font-weight: 700;
       cursor: pointer;
-      font-size: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0;
-      user-select: none;
-      transition: transform 0.15s ease;
-    }
-
-    .sm-vol-icon-btn:hover {
-      transform: scale(1.15);
-    }
-
-    .sm-vol-slider-wrap {
-      flex: 1;
-      display: flex;
-      align-items: center;
-    }
-
-    .sm-volume-slider {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 100%;
-      height: 5px;
-      background: #15223C;
-      border-radius: 9999px;
-      outline: none;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
-
-    .sm-volume-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: #2563EB;
-      box-shadow: 0 0 8px rgba(37, 99, 235, 0.8);
-      cursor: pointer;
-      border: 2px solid #FFFFFF;
+      gap: 6px;
       transition: all 0.15s ease;
     }
 
-    .sm-volume-slider::-webkit-slider-thumb:hover {
-      transform: scale(1.2);
-      background: #3B82F6;
+    .sm-btn-remix-angle:hover {
+      background: #15223C;
+      color: #FFFFFF;
+      border-color: #38BDF8;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
     }
 
-    .sm-vol-number {
-      font-size: 11px;
-      font-weight: 700;
-      color: #94A3B8;
-      min-width: 34px;
-      text-align: right;
-      font-variant-numeric: tabular-nums;
-    }
-
-    /* Snipper Dual-Track Volume Matrix */
-    .sm-snip-volume-matrix {
-      background: #070B16;
-      border: 1px solid #15223C;
+    .sm-btn-copy-tags {
+      background: #0A1122;
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      color: #93C5FD;
       border-radius: 8px;
-      padding: 8px 11px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 4px;
-    }
-
-    .sm-snip-volume-row {
+      padding: 9px 10px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
     }
 
-    .sm-snip-vol-label {
-      font-size: 10.5px;
-      font-weight: 600;
-      color: #94A3B8;
-      min-width: 78px;
+    .sm-btn-copy-tags:hover {
+      background: #15223C;
+      color: #FFFFFF;
+      border-color: #38BDF8;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
     }
 
-    .sm-slider-mini {
-      flex: 1;
-      height: 4px;
-    }
-
-    .sm-slider-mini::-webkit-slider-thumb {
-      width: 11px;
-      height: 11px;
-    }
-
-    .sm-snip-vol-val {
-      font-size: 10px;
-      font-weight: 700;
-      color: #60A5FA;
-      min-width: 36px;
-      text-align: right;
-    }
-
-    /* Toast Notification */
+    /* 5. Minimalist Toast Alerts */
     .sm-toast {
       position: absolute;
-      bottom: 88px;
+      bottom: 20px;
       left: 50%;
-      transform: translateX(-50%) translateY(10px);
-      background: #070B16;
-      border: 1px solid #2563EB;
+      transform: translateX(-50%) translateY(30px);
+      background: rgba(10, 16, 29, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid #3B82F6;
       color: #FFFFFF;
-      padding: 7px 16px;
-      border-radius: 9999px;
+      padding: 8px 16px;
+      border-radius: 8px;
       font-size: 11.5px;
-      font-weight: 650;
-      box-shadow: 0 0 20px rgba(37, 99, 235, 0.45);
+      font-weight: 700;
       opacity: 0;
       pointer-events: none;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      z-index: 600;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(37, 99, 235, 0.4);
+      z-index: 1000;
+      white-space: nowrap;
     }
 
     .sm-toast.show {
-      opacity: 1;
       transform: translateX(-50%) translateY(0);
+      opacity: 1;
     }
   `;
   shadow.appendChild(styleEl);
 
-  // Floating Trigger Tab
+  // --- Render Floating Edge Trigger ---
   const triggerTab = document.createElement('div');
   triggerTab.className = 'sm-floating-trigger';
-  triggerTab.title = 'Open StitchMatrix Script Studio (Alt+S)';
+  triggerTab.title = 'StitchMatrix — 1-Click Viral Script Engine (Alt+S)';
   triggerTab.innerHTML = `
-    <svg viewBox="0 0 24 24" fill="none">
-      <rect x="4" y="4" width="16" height="16" rx="3" stroke="#38BDF8" stroke-width="1.8"/>
-      <circle cx="12" cy="12" r="2.5" fill="#38BDF8"/>
-      <line x1="12" y1="1" x2="12" y2="4" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="12" y1="20" x2="12" y2="23" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="1" y1="12" x2="4" y2="12" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="20" y1="12" x2="23" y2="12" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round"/>
+    <svg viewBox="0 0 24 24">
+      <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+      <rect x="9" y="9" width="6" height="6"></rect>
+      <line x1="9" y1="1" x2="9" y2="4"></line>
+      <line x1="15" y1="1" x2="15" y2="4"></line>
+      <line x1="9" y1="20" x2="9" y2="23"></line>
+      <line x1="15" y1="20" x2="15" y2="23"></line>
+      <line x1="20" y1="9" x2="23" y2="9"></line>
+      <line x1="20" y1="14" x2="23" y2="14"></line>
+      <line x1="1" y1="9" x2="4" y2="9"></line>
+      <line x1="1" y1="14" x2="4" y2="14"></line>
     </svg>
     <div class="trigger-dot"></div>
   `;
   shadow.appendChild(triggerTab);
 
-  // Sidebar Container
-  const sidebar = document.createElement('div');
+  // --- Render Sidebar Container ---
+  const sidebar = document.createElement('aside');
   sidebar.className = 'sm-sidebar-container';
+  shadow.appendChild(sidebar);
 
-  // Toast Container
-  const toastEl = document.createElement('div');
-  toastEl.className = 'sm-toast';
-  sidebar.appendChild(toastEl);
+  // --- Toast Notification ---
+  const toast = document.createElement('div');
+  toast.className = 'sm-toast';
+  shadow.appendChild(toast);
 
+  let toastTimeout = null;
   function showToast(msg) {
-    toastEl.innerHTML = `
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-      <span>${msg}</span>
-    `;
-    toastEl.classList.add('show');
-    setTimeout(() => {
-      toastEl.classList.remove('show');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    if (toastTimeout) clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+      toast.classList.remove('show');
     }, 2200);
   }
 
-  function getMobileCompanionUrl() {
-    const params = new URLSearchParams({
-      t: currentContext.title || 'Viral Video',
-      a: activeStyleIndex.toString(),
-      u: currentContext.url || window.location.href
-    });
-    return `${WORKER_BASE}/p?${params.toString()}`;
+  // --- Format Master Script for 1-Click Clipboard Copy ---
+  function getFullScriptPlainText() {
+    const curScript = generatedScripts[activeStyleIndex] || generatedScripts[0];
+    const hook = `${curScript.hookLead}${curScript.hookHighlight}${curScript.hookTail}`;
+    return `[HOOK · 0-3s]\n${hook}\n\n[STORY · 4-25s]\n${curScript.body}\n\n[CALL-TO-ACTION · 26-35s]\n${curScript.cta}\n\n[TAGS]\n${curScript.hashtags}`;
   }
 
-  function prepareTtsText(rawText) {
-    if (!rawText) return '';
-    return rawText
-      .replace(/#[\w-]+/g, '') // remove hashtags
-      .replace(/https?:\/\/\S+/g, '') // remove URLs
-      .replace(/[*_~`\[\]\(\)\{\}\<\>\|\\]/g, ' ') // remove markdown brackets & formatting
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
-
-  async function fetchAudioTts(rawText, voiceId = selectedVoiceId) {
-    const cleanText = prepareTtsText(rawText);
-    if (!cleanText) {
-      throw new Error('Please enter script text to generate voiceover narration.');
-    }
-
-    // Attempt 1: Direct fetch to Cloudflare Worker TTS endpoint
-    try {
-      const res = await fetch(`${WORKER_BASE}/api/tts`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: cleanText, voice: voiceId })
-      });
-      if (res.ok) {
-        return await res.blob();
-      }
-    } catch (e) {
-      console.warn('[StitchMatrix] Direct TTS fetch failed, attempting service worker proxy...', e);
-    }
-
-    // Attempt 2: Background Service Worker Proxy (immune to web page CSP)
-    return new Promise((resolve, reject) => {
-      if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
-        chrome.runtime.sendMessage({ action: 'API_PROXY_TTS', text: cleanText, voice: voiceId }, (response) => {
-          if (chrome.runtime.lastError) {
-            return reject(new Error(chrome.runtime.lastError.message));
-          }
-          if (!response || !response.success) {
-            return reject(new Error(response?.error || 'TTS audio generation failed'));
-          }
-          try {
-            const binary = atob(response.base64);
-            const bytes = new Uint8Array(binary.length);
-            for (let i = 0; i < binary.length; i++) {
-              bytes[i] = binary.charCodeAt(i);
-            }
-            const blob = new Blob([bytes], { type: 'audio/mpeg' });
-            resolve(blob);
-          } catch (err) {
-            reject(err);
-          }
-        });
-      } else {
-        reject(new Error('Extension runtime communication unavailable'));
-      }
-    });
-  }
-
-  // Smooth live in-place update without closing the drawer
-  function updateLiveContent(animateFlash) {
+  // --- Live DOM Update (In-Place) ---
+  function updateLiveContent(flash) {
     const curScript = generatedScripts[activeStyleIndex] || generatedScripts[0];
 
     const titleEl = sidebar.querySelector('#smDetectedTitle');
@@ -2497,10 +1115,14 @@
     const authorEl = sidebar.querySelector('#smMetaAuthor');
     const viewsEl = sidebar.querySelector('#smMetaViews');
     const scoreEl = sidebar.querySelector('#smMetaScore');
-    const hookEl = sidebar.querySelector('#smHookText');
+    const angleTitleEl = sidebar.querySelector('#smScriptAngleTitle');
+    const remixAngleText = sidebar.querySelector('#smRemixAngleText');
+    const hookLeadEl = sidebar.querySelector('#smHookLead');
+    const hookHighlightEl = sidebar.querySelector('#smHookHighlight');
+    const hookTailEl = sidebar.querySelector('#smHookTail');
     const bodyEl = sidebar.querySelector('#smBodyText');
     const ctaEl = sidebar.querySelector('#smCtaText');
-    const tagsEl = sidebar.querySelector('#smHashtagDisplay');
+    const tagsEl = sidebar.querySelector('#smTagsText');
     const bannerEl = sidebar.querySelector('#smVideoBanner');
 
     if (titleEl) {
@@ -2511,44 +1133,27 @@
     if (authorEl) authorEl.textContent = currentContext.author;
     if (viewsEl) viewsEl.textContent = currentContext.views || 'Trending';
     if (scoreEl) scoreEl.textContent = curScript.viralScore;
+    if (angleTitleEl) angleTitleEl.textContent = `${curScript.title} Formula`;
 
-    // Synchronize snip overlay source information
-    const snipTitleEl = sidebar.querySelector('#smSnipSourceTitle');
-    const snipTargetEl = sidebar.querySelector('#smSnipMetaTarget');
-    const snipAuthorEl = sidebar.querySelector('#smSnipMetaAuthor');
-    const snipViewsEl = sidebar.querySelector('#smSnipMetaViews');
-    if (snipTitleEl) snipTitleEl.textContent = `"${currentContext.displayTitle}"`;
-    if (snipTargetEl) snipTargetEl.textContent = currentContext.platform;
-    if (snipAuthorEl) snipAuthorEl.textContent = currentContext.author;
-    if (snipViewsEl) snipViewsEl.textContent = currentContext.views || 'Trending';
+    const nextIdx = (activeStyleIndex + 1) % generatedScripts.length;
+    if (remixAngleText) remixAngleText.textContent = `⚡ Remix: ${generatedScripts[nextIdx].title}`;
 
-    if (hookEl) {
-      hookEl.innerHTML = `
-        <span class="sm-hook-lead">${curScript.hookLead}</span>
-        <span class="sm-hook-highlight">${curScript.hookHighlight}</span>
-        <span class="sm-hook-tail">${curScript.hookTail}</span>
-      `;
-    }
+    if (hookLeadEl) hookLeadEl.textContent = curScript.hookLead;
+    if (hookHighlightEl) hookHighlightEl.textContent = curScript.hookHighlight;
+    if (hookTailEl) hookTailEl.textContent = curScript.hookTail;
     if (bodyEl) bodyEl.textContent = curScript.body;
     if (ctaEl) ctaEl.textContent = curScript.cta;
     if (tagsEl) tagsEl.textContent = curScript.hashtags;
 
-    if (animateFlash && bannerEl) {
-      bannerEl.classList.add('pulse-active');
-      setTimeout(() => bannerEl.classList.remove('pulse-active'), 500);
-    }
-
-    // Also update QR modal if currently open
-    const phoneModal = sidebar.querySelector('#smPhoneModal');
-    const qrImage = sidebar.querySelector('#smQrImage');
-    const mobileLinkInput = sidebar.querySelector('#smMobileLinkInput');
-    if (phoneModal && phoneModal.classList.contains('active') && qrImage && mobileLinkInput) {
-      const mobileUrl = getMobileCompanionUrl();
-      qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=2&data=${encodeURIComponent(mobileUrl)}`;
-      mobileLinkInput.value = mobileUrl;
+    if (flash && bannerEl) {
+      bannerEl.style.borderColor = '#38BDF8';
+      setTimeout(() => {
+        bannerEl.style.borderColor = '#15223C';
+      }, 500);
     }
   }
 
+  // --- Real-Time Heartbeat Auto-Detector ---
   function checkAndAutoUpdate() {
     if (!isOpen) return;
 
@@ -2569,70 +1174,56 @@
       generatedScripts = buildViralScripts(currentContext);
 
       updateLiveContent(true);
-      showToast(`⚡ Remixed: "${currentContext.displayTitle.slice(0, 26)}..."`);
+      showToast(`⚡ Detected: "${currentContext.displayTitle.slice(0, 24)}..."`);
     }
   }
 
+  // --- Render Streamlined Sidebar Content ---
   function renderSidebar() {
     const curScript = generatedScripts[activeStyleIndex] || generatedScripts[0];
+    const nextIdx = (activeStyleIndex + 1) % generatedScripts.length;
 
     sidebar.innerHTML = `
-      <!-- 1. Sleek Blendr Header -->
+      <!-- 1. Blendr Cyber Header -->
       <header class="sm-header">
         <div class="sm-header-brand">
-          <div class="sm-qubora-logo">
-            <!-- Blendr Inspired Cyber Silicon Microchip SVG -->
-            <svg viewBox="0 0 28 28" fill="none">
-              <rect x="5" y="5" width="18" height="18" rx="4" fill="#070B16" stroke="#2563EB" stroke-width="1.6"/>
-              <rect x="9" y="9" width="10" height="10" rx="2" fill="url(#smChipGrad)" stroke="#60A5FA" stroke-width="1.2"/>
-              <circle cx="14" cy="14" r="2" fill="#38BDF8"/>
-              <line x1="9" y1="2" x2="9" y2="5" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="14" y1="2" x2="14" y2="5" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="19" y1="2" x2="19" y2="5" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="9" y1="23" x2="9" y2="26" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="14" y1="23" x2="14" y2="26" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="19" y1="23" x2="19" y2="26" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="2" y1="9" x2="5" y2="9" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="2" y1="14" x2="5" y2="14" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="2" y1="19" x2="5" y2="19" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="23" y1="9" x2="26" y2="9" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="23" y1="14" x2="26" y2="14" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="23" y1="19" x2="26" y2="19" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
-              <defs>
-                <linearGradient id="smChipGrad" x1="9" y1="9" x2="19" y2="19" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#1E40AF"/>
-                  <stop offset="1" stop-color="#2563EB"/>
-                </linearGradient>
-              </defs>
+          <div class="sm-logo-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+              <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+              <rect x="9" y="9" width="6" height="6"></rect>
+              <line x1="9" y1="1" x2="9" y2="4"></line>
+              <line x1="15" y1="1" x2="15" y2="4"></line>
+              <line x1="9" y1="20" x2="9" y2="23"></line>
+              <line x1="15" y1="20" x2="15" y2="23"></line>
+              <line x1="20" y1="9" x2="23" y2="9"></line>
+              <line x1="20" y1="14" x2="23" y2="14"></line>
+              <line x1="1" y1="9" x2="4" y2="9"></line>
+              <line x1="1" y1="14" x2="4" y2="14"></line>
             </svg>
           </div>
-          <div>
-            <div class="sm-header-title">Stitch<span>Matrix</span></div>
-          </div>
+          <span class="sm-brand-title">Stitch<span>Matrix</span></span>
         </div>
         <div class="sm-header-actions">
-          <span class="sm-auto-badge" title="Live automatic video tracking active">
+          <div class="sm-live-badge">
             <span class="sm-pulse-dot"></span>
             <span>Live Sync</span>
-          </span>
-          <button class="sm-close-btn" id="smCloseBtn" title="Close Studio (Esc)">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
+          </div>
+          <button class="sm-close-btn" id="smCloseBtn" title="Close (Alt+S)">✕</button>
         </div>
       </header>
 
-      <!-- 2. Active Video Ingestion Card with Ambient Cobalt Glow -->
+      <!-- 2. Active Video Live Intelligence Card (WHERE THE RED ARROWS POINT) -->
       <div class="sm-video-banner" id="smVideoBanner">
-        <div class="sm-video-status-row">
-          <span class="sm-live-badge">
+        <div class="sm-banner-header">
+          <div class="sm-banner-live-tag">
             <span class="sm-pulse-dot"></span>
-            <span>Remixing Active Video</span>
-          </span>
-          <button class="sm-rescan-btn" id="smRescanBtn" title="Manually re-check video">
-            🔄 Re-scan
+            <span id="smStatusText">Analyzing Active Video</span>
+          </div>
+          <button class="sm-btn-rescan" id="smRescanBtn" title="Re-scan and analyze current video in 1 second">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+            </svg>
+            <span>Re-Analyze</span>
           </button>
         </div>
         <div class="sm-video-title" id="smDetectedTitle" title="${currentContext.title}">
@@ -2645,420 +1236,75 @@
           <span>•</span>
           <span class="sm-meta-views-pill">Views: <strong id="smMetaViews">${currentContext.views || 'Trending'}</strong></span>
           <span>•</span>
-          <span style="color: #60A5FA;">Viral Potential: <strong id="smMetaScore">${curScript.viralScore}</strong></span>
+          <span style="color: #60A5FA;">Viral Score: <strong id="smMetaScore">${curScript.viralScore}</strong></span>
         </div>
       </div>
 
-      <!-- 3. Fast Angle Tabs -->
-      <div class="sm-angle-deck">
-        ${generatedScripts.map((s, idx) => `
-          <button class="sm-angle-tab ${idx === activeStyleIndex ? 'active' : ''}" data-idx="${idx}" title="${s.subtitle}">
-            ${s.title}
-          </button>
-        `).join('')}
-      </div>
-
-      <!-- 4. Scrollable Script Canvas with 3-Tone Typography -->
-      <div class="sm-canvas-area">
-        
-        <!-- Part 1: The Hook -->
-        <div class="sm-frame-card">
-          <div class="sm-frame-header">
-            <div class="sm-frame-title sm-title-hook">
-              <span>01 · The Viral Hook (0–3s)</span>
-            </div>
-            <button class="sm-copy-part-btn" id="smCopyHookBtn" title="Copy hook only">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-              <span>Copy</span>
-            </button>
-          </div>
-          <div class="sm-frame-editor" id="smHookText" contenteditable="true" spellcheck="false">
-            <span class="sm-hook-lead">${curScript.hookLead}</span>
-            <span class="sm-hook-highlight">${curScript.hookHighlight}</span>
-            <span class="sm-hook-tail">${curScript.hookTail}</span>
-          </div>
-        </div>
-
-        <!-- Part 2: The Core Body -->
-        <div class="sm-frame-card">
-          <div class="sm-frame-header">
-            <div class="sm-frame-title sm-title-body">
-              <span>02 · The Core Story (4–25s)</span>
-            </div>
-            <button class="sm-copy-part-btn" id="smCopyBodyBtn" title="Copy body only">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-              <span>Copy</span>
-            </button>
-          </div>
-          <div class="sm-frame-editor sm-body-text" id="smBodyText" contenteditable="true" spellcheck="false">${curScript.body}</div>
-        </div>
-
-        <!-- Part 3: Call to Action -->
-        <div class="sm-frame-card">
-          <div class="sm-frame-header">
-            <div class="sm-frame-title sm-title-cta">
-              <span>03 · Retention Call-To-Action (26–35s)</span>
-            </div>
-            <button class="sm-copy-part-btn" id="smCopyCtaBtn" title="Copy CTA only">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-              <span>Copy</span>
-            </button>
-          </div>
-          <div class="sm-frame-editor sm-cta-text" id="smCtaText" contenteditable="true" spellcheck="false">${curScript.cta}</div>
-        </div>
-
-        <!-- Trending Hashtags -->
-        <div class="sm-hashtags-row">
-          <span class="sm-hashtags-text" id="smHashtagDisplay">${curScript.hashtags}</span>
-          <button class="sm-copy-tags-btn" id="smCopyHashtagsBtn">Copy Tags</button>
-        </div>
-
-      </div>
-
-      <!-- 5. Qubora Glowing Action Deck -->
-      <footer class="sm-footer">
-        <!-- Option 1: 1-Click AI Voiceover (.mp3) - Faceless Creator Studio -->
-        <button class="sm-btn-voiceover" id="smOpenVoiceoverBtn" title="Generate studio AI voiceover audio (.mp3) in 1 click (No camera, no mic)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-          </svg>
-          <span>🔊 Generate AI Voiceover (.mp3)</span>
-        </button>
-
-        <!-- Option 2: Record / Snip Viral Video Clip -->
-        <button class="sm-btn-record" id="smOpenRecordBtn" title="Snip viral moments from video (Faceless) or record with webcam">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="6" cy="6" r="3"></circle>
-            <circle cx="6" cy="18" r="3"></circle>
-            <line x1="20" y1="4" x2="8.12" y2="15.88"></line>
-            <line x1="14.47" y1="14.48" x2="20" y2="20"></line>
-            <line x1="8.12" y1="8.12" x2="12" y2="12"></line>
-          </svg>
-          <span>✂️ Snip Viral Clip / Record Video</span>
-        </button>
-
-        <!-- Option 2 & 3: Send to Phone OR Copy Script -->
-        <div class="sm-btn-row-split">
-          <button class="sm-btn-phone" id="smOpenPhoneBtn" title="Scan QR code to open script & video on your phone">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-              <line x1="12" y1="18" x2="12.01" y2="18"></line>
+      <!-- 3. THE ONE MASTER VIRAL SCRIPT OUTPUT -->
+      <div class="sm-master-output-card">
+        <div class="sm-output-header">
+          <div class="sm-output-badge">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
             </svg>
-            <span>Send to Phone (QR)</span>
-          </button>
+            <span id="smScriptAngleTitle">${curScript.title} Formula</span>
+          </div>
+          <div class="sm-output-metrics">
+            <span class="sm-metric-pill">⏱️ ${curScript.duration} Pacing</span>
+            <span class="sm-metric-pill sm-pill-highlight">🔥 Top 1% Retention</span>
+          </div>
+        </div>
 
-          <button class="sm-btn-copy" id="smCopyFullBtn" title="Copy Full Script (Alt+C)">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <!-- Unified Script Canvas -->
+        <div class="sm-unified-script-editor" id="smUnifiedScript" contenteditable="true" spellcheck="false">
+          <!-- Hook Section -->
+          <div class="sm-script-section sm-section-hook">
+            <div class="sm-section-label">🎣 01 · THE VIRAL HOOK (0–3s)</div>
+            <div class="sm-section-body">
+              <span class="sm-hook-lead" id="smHookLead">${curScript.hookLead}</span><span class="sm-hook-highlight" id="smHookHighlight">${curScript.hookHighlight}</span><span class="sm-hook-tail" id="smHookTail">${curScript.hookTail}</span>
+            </div>
+          </div>
+
+          <!-- Body / Story Section -->
+          <div class="sm-script-section sm-section-body">
+            <div class="sm-section-label">⚡ 02 · THE CORE STORY (4–25s)</div>
+            <div class="sm-section-body sm-body-text" id="smBodyText">${curScript.body}</div>
+          </div>
+
+          <!-- Call to Action Section -->
+          <div class="sm-script-section sm-section-cta">
+            <div class="sm-section-label">🚀 03 · RETENTION CALL-TO-ACTION (26–35s)</div>
+            <div class="sm-section-body sm-cta-text" id="smCtaText">${curScript.cta}</div>
+          </div>
+
+          <!-- Viral Hashtags Section -->
+          <div class="sm-script-section sm-section-tags">
+            <div class="sm-section-label">🏷️ VIRAL HASHTAGS</div>
+            <div class="sm-section-body sm-tags-text" id="smTagsText">${curScript.hashtags}</div>
+          </div>
+        </div>
+
+        <!-- 4. Action Controls Bar -->
+        <div class="sm-output-actions">
+          <button class="sm-btn-copy-master" id="smCopyMasterBtn" title="Copy entire viral script and hashtags (Alt+C)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
               <rect x="9" y="9" width="13" height="13" rx="2"></rect>
               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
             </svg>
-            <span id="smCopyFullText">Copy Full Script</span>
+            <span id="smCopyMasterText">Copy Full Viral Script</span>
           </button>
-        </div>
-      </footer>
 
-      <!-- CREATOR STUDIO MODAL: VIRAL CLIP SNIPPER & WEBCAM TELEPROMPTER -->
-      <div class="sm-modal-overlay" id="smWebcamModal">
-        <div class="sm-modal-header">
-          <div class="sm-modal-title">
-            <span class="sm-pulse-dot" style="background:#38BDF8;"></span>
-            <span id="smRecordModalTitle">Viral Clip Snip & Recording Studio</span>
-          </div>
-          <button class="sm-close-btn" id="smCloseWebcamBtn">✕</button>
-        </div>
-
-        <!-- Mode Switcher Tabs: Snip Viral Video (Faceless) vs Webcam (Face) -->
-        <div class="sm-rec-mode-tabs">
-          <button class="sm-rec-mode-tab active" id="smTabSnipVideo" title="Snip trending video playing on screen (Faceless Mode)">
-            <span>✂️ Snip Viral Video (Faceless)</span>
-          </button>
-          <button class="sm-rec-mode-tab" id="smTabWebcam" title="Record with your webcam and teleprompter (Face Mode)">
-            <span>📹 Webcam Teleprompter</span>
-          </button>
-        </div>
-
-        <div class="sm-webcam-body">
-          <div class="sm-camera-box" id="smCameraBox">
-            <video id="smWebcamFeed" autoplay muted playsinline style="display:none;"></video>
-            <video id="smRecordedPlayback" controls playsinline style="display: none;"></video>
-
-            <!-- Floating Delete Video Button (Directly on Video) -->
-            <button class="sm-btn-floating-delete" id="smFloatingDeleteBtn" title="Delete & discard this video" style="display: none;">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                <line x1="10" y1="11" x2="10" y2="17"></line>
-                <line x1="14" y1="11" x2="14" y2="17"></line>
+          <div class="sm-output-sub-actions">
+            <button class="sm-btn-remix-angle" id="smRemixAngleBtn" title="Switch to another high-converting angle">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
               </svg>
-              <span>Delete Video</span>
+              <span id="smRemixAngleText">⚡ Remix: ${generatedScripts[nextIdx].title}</span>
             </button>
 
-            <!-- Floating Playback Top-Right Toolbar (Format Badge + Fit/Fill Mode Toggle) -->
-            <div class="sm-floating-playback-tools" id="smFloatingPlaybackTools" style="display: none;">
-              <span class="sm-video-format-pill" id="smVideoFormatBadge">📱 9:16 Vertical</span>
-              <button class="sm-btn-floating-aspect" id="smFloatingAspectBtn" title="Toggle between Fit (Full Frame 100% Uncropped) and Fill (Zoom to Box)">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path>
-                </svg>
-                <span id="smFloatingAspectText">↔️ Fit</span>
-              </button>
-            </div>
-
-            <!-- Snip Helper Overlay (Shown in Snip Mode before recording) -->
-            <div class="sm-snip-helper-overlay" id="smSnipHelperOverlay">
-              <div class="sm-snip-helper-badge">
-                <span class="sm-pulse-dot"></span>
-                <span>Active Video Source</span>
-              </div>
-              <div class="sm-snip-helper-title" id="smSnipSourceTitle">
-                "${currentContext.displayTitle}"
-              </div>
-              <div class="sm-snip-helper-meta" id="smSnipSourceMeta" style="font-size: 11px; color: #94A3B8; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 7px; flex-wrap: wrap;">
-                <span>Target: <strong style="color: #E2E8F0;" id="smSnipMetaTarget">${currentContext.platform}</strong></span>
-                <span>•</span>
-                <span>Creator: <strong style="color: #E2E8F0;" id="smSnipMetaAuthor">${currentContext.author}</strong></span>
-                <span>•</span>
-                <span class="sm-meta-views-pill">Views: <strong id="smSnipMetaViews">${currentContext.views || 'Trending'}</strong></span>
-              </div>
-              <div class="sm-snip-helper-sub" style="margin-top: 6px;">
-                Click a snip button below to capture the viral moment directly from this player.
-              </div>
-            </div>
-
-            <div class="sm-rec-indicator" id="smRecBadge">
-              <span class="sm-pulse-dot" style="background:#FFFFFF;"></span>
-              <span id="smRecBadgeText">RECORDING</span>
-            </div>
-            <div class="sm-rec-timer" id="smRecTimer">00:00 / 00:05</div>
-          </div>
-
-          <div class="sm-teleprompter-glass" id="smTeleprompterText">
-            <strong style="color: #60A5FA; display: block; margin-bottom: 4px;">Part 1 (The Hook):</strong>
-            <span id="smCamHook">${curScript.hookLead}${curScript.hookHighlight}${curScript.hookTail}</span>
-            <br><br>
-            <strong style="color: #93C5FD; display: block; margin-bottom: 4px;">Part 2 (The Story):</strong>
-            <span id="smCamBody">${curScript.body}</span>
-            <br><br>
-            <strong style="color: #38BDF8; display: block; margin-bottom: 4px;">Part 3 (Call-to-Action):</strong>
-            <span id="smCamCta">${curScript.cta}</span>
-          </div>
-
-          <!-- Controls Panel 1: Snip Controls (Default in Faceless Mode) -->
-          <div class="sm-snip-controls-panel" id="smSnipControlsPanel">
-            <div class="sm-snip-presets-row">
-              <button class="sm-btn-snip-preset" id="smSnip5sBtn" title="Snip the first 5s of the viral hook">
-                <span>⚡ Snip 5s Hook</span>
-              </button>
-              <button class="sm-btn-snip-preset" id="smSnip10sBtn" title="Snip a 10s viral clip">
-                <span>⚡ Snip 10s Clip</span>
-              </button>
-              <button class="sm-btn-snip-custom" id="smSnipCustomBtn" title="Start and stop manual snip">
-                <span id="smSnipCustomText">● Custom Snip</span>
-              </button>
-            </div>
-
-            <div class="sm-snip-audio-row">
-              <label class="sm-checkbox-label">
-                <input type="checkbox" id="smMuteOriginalAudio" checked>
-                <span>Mute original audio (Ready for AI Voiceover)</span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Controls Panel 2: Review / Download Panel (Shown after a clip is snipped) -->
-          <div class="sm-snip-review-panel" id="smSnipReviewPanel" style="display: none;">
-            <button class="sm-btn-review-syncplay" id="smSyncPlayBtn" title="Play snipped video with AI Voiceover simultaneously">
-              <span id="smSyncPlayIcon">▶</span>
-              <span id="smSyncPlayText">Play with AI Voiceover</span>
-            </button>
-
-            <!-- Dual-Track Volume Mixer -->
-            <div class="sm-snip-volume-matrix">
-              <div class="sm-snip-volume-row">
-                <span class="sm-snip-vol-label">🎙️ Voiceover:</span>
-                <input type="range" class="sm-volume-slider sm-slider-mini" id="smSnipVoiceVolSlider" min="0" max="100" value="${Math.round(voiceVolume * 100)}" title="AI Voiceover volume">
-                <span class="sm-snip-vol-val" id="smSnipVoiceVolVal">${Math.round(voiceVolume * 100)}%</span>
-              </div>
-              <div class="sm-snip-volume-row">
-                <span class="sm-snip-vol-label">🎬 Video Sound:</span>
-                <input type="range" class="sm-volume-slider sm-slider-mini" id="smSnipVideoVolSlider" min="0" max="100" value="0" title="Original Video volume (0% = Muted)">
-                <span class="sm-snip-vol-val" id="smSnipVideoVolVal">Muted</span>
-              </div>
-            </div>
-            
-            <div class="sm-snip-download-grid">
-              <button class="sm-btn-download-clip" id="smDownloadClipBtn" title="Download pure HD video clip (.webm)">
-                <span>💾 Video Clip (.webm)</span>
-              </button>
-              <button class="sm-btn-download-voice-fast" id="smDownloadVoiceFastBtn" title="Download AI Voiceover narration (.mp3)">
-                <span>🔊 Voiceover (.mp3)</span>
-              </button>
-            </div>
-
-            <div class="sm-snip-discard-row">
-              <button class="sm-btn-delete-clip" id="smDeleteClipBtn" title="Permanently delete and remove this video clip">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                  <polyline points="3 6 5 6 21 6"></polyline>
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                  <line x1="10" y1="11" x2="10" y2="17"></line>
-                  <line x1="14" y1="11" x2="14" y2="17"></line>
-                </svg>
-                <span>Delete Video</span>
-              </button>
-              <button class="sm-btn-resnip" id="smReSnipBtn" title="Snip another clip from video">
-                <span>🔄 Snip Another</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Controls Panel 3: Webcam Controls (Shown only in Webcam tab) -->
-          <div class="sm-webcam-controls" id="smWebcamControlsPanel" style="display: none;">
-            <button class="sm-btn-start-rec" id="smStartRecBtn">
-              <span>Start 30s Recording</span>
-            </button>
-            <button class="sm-btn-stop-rec" id="smStopRecBtn">
-              <span>⏹ Stop & Review</span>
-            </button>
-            <button class="sm-btn-download-video" id="smDownloadVideoBtn">
-              <span>💾 Download Webcam Video File</span>
-            </button>
-            <button class="sm-btn-delete-webcam" id="smDeleteWebcamBtn" style="display: none;" title="Delete recorded webcam video and re-record">
-              <span>🗑️ Delete Video & Re-Record</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- SEND TO PHONE QR MODAL -->
-      <div class="sm-modal-overlay" id="smPhoneModal">
-        <div class="sm-modal-header">
-          <div class="sm-modal-title">
-            <span class="sm-pulse-dot"></span>
-            <span>📱 Mobile Teleprompter & Link</span>
-          </div>
-          <button class="sm-close-btn" id="smClosePhoneBtn">✕</button>
-        </div>
-
-        <div class="sm-qr-body">
-          <div class="sm-qr-frame">
-            <img id="smQrImage" src="" alt="Teleprompter QR Code">
-          </div>
-          <div class="sm-qr-instructions">
-            Scan with your phone's camera to open the teleprompter on mobile, or launch/copy the direct link below.
-          </div>
-
-          <div class="sm-qr-actions-row">
-            <button class="sm-btn-open-direct" id="smOpenMobileDirectBtn" title="Open teleprompter page in a new browser tab right now">
-              <span>🔗 Open in New Tab</span>
-            </button>
-            <button class="sm-btn-copy-link" id="smCopyMobileLinkBtn" title="Copy web link">
-              <span id="smCopyMobileLinkText">📋 Copy Link</span>
-            </button>
-          </div>
-
-          <div class="sm-qr-link-box">
-            <input type="text" id="smMobileLinkInput" readonly spellcheck="false" title="Click to copy link" />
-          </div>
-        </div>
-      </div>
-
-      <!-- 1-CLICK AI VOICEOVER MODAL (FACELESS CREATOR STUDIO) -->
-      <div class="sm-modal-overlay" id="smVoiceoverModal">
-        <div class="sm-modal-header">
-          <div class="sm-modal-title">
-            <span class="sm-pulse-dot" style="background:#38BDF8;"></span>
-            <span>AI Voiceover Studio (Faceless Creator)</span>
-          </div>
-          <button class="sm-close-btn" id="smCloseVoiceoverBtn">✕</button>
-        </div>
-
-        <div class="sm-voice-body">
-          <div class="sm-voice-hero">
-            <div class="sm-soundwaves" id="smSoundwaves">
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-              <span class="bar"></span>
-            </div>
-
-            <div class="sm-voice-status" id="smVoiceStatus">
-              Ready to generate studio voiceover
-            </div>
-            <div class="sm-voice-substatus" id="smVoiceSubstatus">
-              AI studio narrator reads your viral script with natural human pacing
-            </div>
-          </div>
-
-          <!-- Voice Selection Card -->
-          <div class="sm-voice-select-card">
-            <div class="sm-voice-select-head">
-              <span class="sm-voice-select-title">🎙️ AI Narrator Voice:</span>
-              <span class="sm-voice-chip" id="smActiveVoiceBadge">Neural AI • Ultra-Realistic</span>
-            </div>
-            <div class="sm-voice-select-wrapper">
-              <select class="sm-voice-dropdown" id="smVoiceSelect" title="Select ultra-realistic voice">
-                <optgroup label="🚀 Neural AI Voices (Ultra-Realistic Deepgram Aura)">
-                  <option value="orion" ${selectedVoiceId === 'orion' ? 'selected' : ''}>🔥 Orion — Viral Creator (Male • Punchy & High-Energy)</option>
-                  <option value="asteria" ${selectedVoiceId === 'asteria' ? 'selected' : ''}>✨ Asteria — Studio Pro (Female • Clear & Polished)</option>
-                  <option value="luna" ${selectedVoiceId === 'luna' ? 'selected' : ''}>🎙️ Luna — Conversational (Female • Warm & Natural)</option>
-                  <option value="stella" ${selectedVoiceId === 'stella' ? 'selected' : ''}>⚡ Stella — Trendy & Upbeat (Female • Dynamic)</option>
-                  <option value="perseus" ${selectedVoiceId === 'perseus' ? 'selected' : ''}>🎯 Perseus — Bold Hook (Male • Direct & Authoritative)</option>
-                  <option value="arcas" ${selectedVoiceId === 'arcas' ? 'selected' : ''}>☕ Arcas — Smooth Storyteller (Male • Calm & Intellectual)</option>
-                  <option value="athena" ${selectedVoiceId === 'athena' ? 'selected' : ''}>🏛️ Athena — Executive Leader (Female • Confident & Deep)</option>
-                  <option value="angus" ${selectedVoiceId === 'angus' ? 'selected' : ''}>🇬🇧 Angus — British Documentary (Male • Rich & Thoughtful)</option>
-                  <option value="orpheus" ${selectedVoiceId === 'orpheus' ? 'selected' : ''}>🎬 Orpheus — Cinematic Master (Male • Dramatic Hook)</option>
-                  <option value="hera" ${selectedVoiceId === 'hera' ? 'selected' : ''}>💎 Hera — Sophisticated (Female • Crisp & Elegant)</option>
-                </optgroup>
-                <optgroup label="🌍 Global Dialects & International">
-                  <option value="au" ${selectedVoiceId === 'au' ? 'selected' : ''}>🇦🇺 Liam — Australian Chill (Male • Casual Storyteller)</option>
-                  <option value="es" ${selectedVoiceId === 'es' ? 'selected' : ''}>🇪🇸 Mateo — Spanish / International (Male • Melodic)</option>
-                  <option value="fr" ${selectedVoiceId === 'fr' ? 'selected' : ''}>🇫🇷 Camille — French Elegance (Female • Chic European)</option>
-                </optgroup>
-              </select>
-            </div>
-          </div>
-
-          <div class="sm-voice-script-box">
-            <div class="sm-voice-script-label">NARRATION SCRIPT:</div>
-            <div class="sm-voice-script-text" id="smVoiceScriptText"></div>
-          </div>
-
-          <audio id="smTtsAudio" preload="auto" style="display:none;"></audio>
-
-          <div class="sm-voice-controls">
-            <!-- Volume Control Bar -->
-            <div class="sm-voice-volume-panel">
-              <button class="sm-vol-icon-btn" id="smVoiceVolumeMuteBtn" title="Click to mute/unmute audio">
-                <span id="smVoiceVolumeIcon">🔊</span>
-              </button>
-              <div class="sm-vol-slider-wrap">
-                <input type="range" class="sm-volume-slider" id="smVoiceVolumeSlider" min="0" max="100" value="${Math.round(voiceVolume * 100)}" title="Adjust playback volume">
-              </div>
-              <span class="sm-vol-number" id="smVoiceVolumePercent">${Math.round(voiceVolume * 100)}%</span>
-            </div>
-
-            <div class="sm-voice-action-row" id="smVoiceActionRow" style="display: none;">
-              <button class="sm-btn-voice-play" id="smVoicePlayBtn" title="Play or pause audio preview">
-                <span id="smVoicePlayIcon">▶</span>
-                <span id="smVoicePlayText">Play Preview</span>
-              </button>
-              <button class="sm-btn-voice-download" id="smVoiceDownloadBtn" title="Download finished studio-grade MP3 audio">
-                <span>💾 Download .mp3</span>
-              </button>
-            </div>
-
-            <button class="sm-btn-generate-voice" id="smGenerateVoiceBtn">
-              <span id="smGenerateVoiceBtnText">⚡ Generate Voiceover Now</span>
+            <button class="sm-btn-copy-tags" id="smCopyTagsOnlyBtn" title="Copy hashtags only">
+              <span>#️⃣ Copy Tags</span>
             </button>
           </div>
         </div>
@@ -3068,6 +1314,7 @@
     attachEventListeners();
   }
 
+  // --- Attach Event Listeners ---
   function attachEventListeners() {
     const closeBtn = sidebar.querySelector('#smCloseBtn');
     if (closeBtn) closeBtn.onclick = toggleSidebar;
@@ -3078,1054 +1325,49 @@
         currentContext = detectVideoContext();
         generatedScripts = buildViralScripts(currentContext);
         updateLiveContent(true);
-        showToast(`Remixed: "${currentContext.displayTitle.slice(0, 26)}..."`);
+        showToast(`⚡ Analyzed: "${currentContext.displayTitle.slice(0, 24)}..."`);
       };
     }
 
-    sidebar.querySelectorAll('.sm-angle-tab').forEach(btn => {
-      btn.onclick = () => {
-        const idx = parseInt(btn.getAttribute('data-idx'), 10);
-        activeStyleIndex = idx;
-        sidebar.querySelectorAll('.sm-angle-tab').forEach((b, i) => {
-          b.classList.toggle('active', i === idx);
-        });
+    const remixAngleBtn = sidebar.querySelector('#smRemixAngleBtn');
+    if (remixAngleBtn) {
+      remixAngleBtn.onclick = () => {
+        activeStyleIndex = (activeStyleIndex + 1) % generatedScripts.length;
         updateLiveContent(false);
-      };
-    });
-
-    const copyHookBtn = sidebar.querySelector('#smCopyHookBtn');
-    if (copyHookBtn) {
-      copyHookBtn.onclick = () => {
-        const curScript = generatedScripts[activeStyleIndex];
-        const fullHook = `${curScript.hookLead}${curScript.hookHighlight}${curScript.hookTail}`;
-        navigator.clipboard.writeText(fullHook).then(() => showToast('Hook copied!'));
+        const cur = generatedScripts[activeStyleIndex];
+        showToast(`⚡ Remixed to ${cur.title} Formula`);
       };
     }
 
-    const copyBodyBtn = sidebar.querySelector('#smCopyBodyBtn');
-    if (copyBodyBtn) {
-      copyBodyBtn.onclick = () => {
-        const text = sidebar.querySelector('#smBodyText')?.textContent || '';
-        navigator.clipboard.writeText(text).then(() => showToast('Body copied!'));
-      };
-    }
-
-    const copyCtaBtn = sidebar.querySelector('#smCtaBtn');
-    if (copyCtaBtn) {
-      copyCtaBtn.onclick = () => {
-        const text = sidebar.querySelector('#smCtaText')?.textContent || '';
-        navigator.clipboard.writeText(text).then(() => showToast('CTA copied!'));
-      };
-    }
-
-    const copyTagsBtn = sidebar.querySelector('#smCopyHashtagsBtn');
-    if (copyTagsBtn) {
-      copyTagsBtn.onclick = () => {
-        const tags = sidebar.querySelector('#smHashtagDisplay')?.textContent || '';
-        navigator.clipboard.writeText(tags).then(() => showToast('Hashtags copied!'));
-      };
-    }
-
-    const copyFullBtn = sidebar.querySelector('#smCopyFullBtn');
-    const copyFullText = sidebar.querySelector('#smCopyFullText');
-    if (copyFullBtn && copyFullText) {
-      copyFullBtn.onclick = () => executeCopyFullScript();
-    }
-
-    // CREATOR STUDIO (VIRAL CLIP SNIP & WEBCAM) LOGIC
-    const openRecordBtn = sidebar.querySelector('#smOpenRecordBtn');
-    const webcamModal = sidebar.querySelector('#smWebcamModal');
-    const closeWebcamBtn = sidebar.querySelector('#smCloseWebcamBtn');
-    const tabSnipVideo = sidebar.querySelector('#smTabSnipVideo');
-    const tabWebcam = sidebar.querySelector('#smTabWebcam');
-    const videoFeed = sidebar.querySelector('#smWebcamFeed');
-    const recordedPlayback = sidebar.querySelector('#smRecordedPlayback');
-    const snipHelperOverlay = sidebar.querySelector('#smSnipHelperOverlay');
-    const snipSourceTitle = sidebar.querySelector('#smSnipSourceTitle');
-    const recBadge = sidebar.querySelector('#smRecBadge');
-    const recBadgeText = sidebar.querySelector('#smRecBadgeText');
-    const recTimer = sidebar.querySelector('#smRecTimer');
-    const prompterText = sidebar.querySelector('#smTeleprompterText');
-
-    const snipControlsPanel = sidebar.querySelector('#smSnipControlsPanel');
-    const snip5sBtn = sidebar.querySelector('#smSnip5sBtn');
-    const snip10sBtn = sidebar.querySelector('#smSnip10sBtn');
-    const snipCustomBtn = sidebar.querySelector('#smSnipCustomBtn');
-    const snipCustomText = sidebar.querySelector('#smSnipCustomText');
-    const muteOriginalAudio = sidebar.querySelector('#smMuteOriginalAudio');
-
-    const snipReviewPanel = sidebar.querySelector('#smSnipReviewPanel');
-    const syncPlayBtn = sidebar.querySelector('#smSyncPlayBtn');
-    const syncPlayIcon = sidebar.querySelector('#smSyncPlayIcon');
-    const syncPlayText = sidebar.querySelector('#smSyncPlayText');
-    const downloadClipBtn = sidebar.querySelector('#smDownloadClipBtn');
-    const downloadVoiceFastBtn = sidebar.querySelector('#smDownloadVoiceFastBtn');
-    const reSnipBtn = sidebar.querySelector('#smReSnipBtn');
-    const deleteClipBtn = sidebar.querySelector('#smDeleteClipBtn');
-    const floatingDeleteBtn = sidebar.querySelector('#smFloatingDeleteBtn');
-    const cameraBox = sidebar.querySelector('#smCameraBox');
-    const floatingPlaybackTools = sidebar.querySelector('#smFloatingPlaybackTools');
-    const videoFormatBadge = sidebar.querySelector('#smVideoFormatBadge');
-    const floatingAspectBtn = sidebar.querySelector('#smFloatingAspectBtn');
-    const floatingAspectText = sidebar.querySelector('#smFloatingAspectText');
-    let isFillMode = false;
-
-    function updateStudioAspect() {
-      const pageVideo = getActivePageVideo();
-      const isVertPlatform = currentContext.platform === 'TikTok' ||
-                             currentContext.platform === 'Instagram Reels' ||
-                             currentContext.platform === 'YouTube Shorts' ||
-                             window.location.pathname.includes('/shorts/') ||
-                             window.location.pathname.includes('/reel/') ||
-                             window.location.hostname.includes('tiktok.com') ||
-                             window.location.hostname.includes('instagram.com');
-      const isVertVideo = pageVideo && pageVideo.videoHeight > 0 && (pageVideo.videoHeight > pageVideo.videoWidth);
-
-      // Check loaded playback dimensions if available
-      let isPlaybackVert = false;
-      if (recordedPlayback && recordedPlayback.videoHeight > 0 && recordedPlayback.videoWidth > 0) {
-        isPlaybackVert = recordedPlayback.videoHeight > recordedPlayback.videoWidth;
-      }
-
-      const isVertical = isPlaybackVert || isVertPlatform || isVertVideo;
-
-      if (cameraBox) {
-        if (studioRecordMode === 'webcam' && !recordedBlobUrl) {
-          // Standard webcam view
-          cameraBox.classList.remove('sm-vertical-video');
-          if (videoFormatBadge) videoFormatBadge.textContent = '🖥️ Webcam';
-        } else if (isVertical) {
-          cameraBox.classList.add('sm-vertical-video');
-          if (videoFormatBadge) videoFormatBadge.textContent = '📱 9:16 Vertical';
-        } else {
-          cameraBox.classList.remove('sm-vertical-video');
-          if (videoFormatBadge) videoFormatBadge.textContent = '🖥️ 16:9 Landscape';
-        }
-      }
-    }
-
-    function toggleAspectMode() {
-      if (!recordedPlayback) return;
-      isFillMode = !isFillMode;
-      if (isFillMode) {
-        recordedPlayback.classList.add('sm-fill-mode');
-        if (floatingAspectText) floatingAspectText.textContent = '↕️ Fill';
-        showToast('Framing: Fill Box (Cropped Zoom)');
-      } else {
-        recordedPlayback.classList.remove('sm-fill-mode');
-        if (floatingAspectText) floatingAspectText.textContent = '↔️ Fit';
-        showToast('Framing: Full Frame (100% Uncropped)');
-      }
-    }
-
-    if (floatingAspectBtn) floatingAspectBtn.onclick = toggleAspectMode;
-
-    if (recordedPlayback) {
-      recordedPlayback.onloadedmetadata = () => {
-        updateStudioAspect();
-      };
-    }
-
-    const webcamControlsPanel = sidebar.querySelector('#smWebcamControlsPanel');
-    const startRecBtn = sidebar.querySelector('#smStartRecBtn');
-    const stopRecBtn = sidebar.querySelector('#smStopRecBtn');
-    const downloadVideoBtn = sidebar.querySelector('#smDownloadVideoBtn');
-    const deleteWebcamBtn = sidebar.querySelector('#smDeleteWebcamBtn');
-
-    function stopSyncPlayback() {
-      if (isSyncPlaying) {
-        if (recordedPlayback) recordedPlayback.pause();
-        if (ttsAudio) ttsAudio.pause();
-        isSyncPlaying = false;
-        if (syncPlayIcon) syncPlayIcon.textContent = '▶';
-        if (syncPlayText) syncPlayText.textContent = 'Play with AI Voiceover';
-      }
-    }
-
-    function switchStudioMode(mode) {
-      studioRecordMode = mode;
-      stopSyncPlayback();
-      stopSnip();
-      cleanupWebcamStreamOnly();
-
-      if (mode === 'snip') {
-        if (tabSnipVideo) tabSnipVideo.classList.add('active');
-        if (tabWebcam) tabWebcam.classList.remove('active');
-        if (videoFeed) videoFeed.style.display = 'none';
-
-        if (snippedBlobUrl) {
-          if (snipHelperOverlay) snipHelperOverlay.style.display = 'none';
-          if (recordedPlayback) {
-            recordedPlayback.src = snippedBlobUrl;
-            recordedPlayback.style.display = 'block';
-          }
-          if (snipControlsPanel) snipControlsPanel.style.display = 'none';
-          if (snipReviewPanel) snipReviewPanel.style.display = 'flex';
-          if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'inline-flex';
-          if (floatingPlaybackTools) floatingPlaybackTools.style.display = 'flex';
-          if (recTimer) recTimer.style.display = 'none';
-        } else {
-          if (recordedPlayback) recordedPlayback.style.display = 'none';
-          if (snipHelperOverlay) snipHelperOverlay.style.display = 'flex';
-          if (snipControlsPanel) snipControlsPanel.style.display = 'flex';
-          if (snipReviewPanel) snipReviewPanel.style.display = 'none';
-          if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'none';
-          if (floatingPlaybackTools) floatingPlaybackTools.style.display = 'none';
-          if (recTimer) recTimer.style.display = 'block';
-        }
-        if (webcamControlsPanel) webcamControlsPanel.style.display = 'none';
-        if (recTimer) recTimer.textContent = '00:00 / 00:05';
-        updateStudioAspect();
-      } else {
-        // Webcam Mode
-        if (tabWebcam) tabWebcam.classList.add('active');
-        if (tabSnipVideo) tabSnipVideo.classList.remove('active');
-        if (snipHelperOverlay) snipHelperOverlay.style.display = 'none';
-        if (snipControlsPanel) snipControlsPanel.style.display = 'none';
-        if (snipReviewPanel) snipReviewPanel.style.display = 'none';
-        if (webcamControlsPanel) webcamControlsPanel.style.display = 'flex';
-
-        if (recordedBlobUrl) {
-          if (videoFeed) videoFeed.style.display = 'none';
-          if (recordedPlayback) {
-            recordedPlayback.src = recordedBlobUrl;
-            recordedPlayback.style.display = 'block';
-          }
-          if (startRecBtn) startRecBtn.style.display = 'none';
-          if (stopRecBtn) stopRecBtn.style.display = 'none';
-          if (downloadVideoBtn) downloadVideoBtn.style.display = 'flex';
-          if (deleteWebcamBtn) deleteWebcamBtn.style.display = 'flex';
-          if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'inline-flex';
-          if (floatingPlaybackTools) floatingPlaybackTools.style.display = 'flex';
-          if (recTimer) recTimer.style.display = 'none';
-        } else {
-          initWebcamStream();
-          if (deleteWebcamBtn) deleteWebcamBtn.style.display = 'none';
-          if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'none';
-          if (floatingPlaybackTools) floatingPlaybackTools.style.display = 'none';
-          if (recTimer) recTimer.style.display = 'block';
-        }
-        if (recTimer) recTimer.textContent = '00:00 / 00:30';
-        updateStudioAspect();
-      }
-    }
-
-    if (tabSnipVideo) tabSnipVideo.onclick = () => switchStudioMode('snip');
-    if (tabWebcam) tabWebcam.onclick = () => switchStudioMode('webcam');
-
-    if (openRecordBtn && webcamModal) {
-      openRecordBtn.onclick = () => {
-        const curScript = generatedScripts[activeStyleIndex] || generatedScripts[0];
-        const fullHook = `${curScript.hookLead}${curScript.hookHighlight}${curScript.hookTail}`;
-        const camHookEl = sidebar.querySelector('#smCamHook');
-        const camBodyEl = sidebar.querySelector('#smCamBody');
-        const camCtaEl = sidebar.querySelector('#smCamCta');
-        if (camHookEl) camHookEl.textContent = fullHook;
-        if (camBodyEl) camBodyEl.textContent = curScript.body;
-        if (camCtaEl) camCtaEl.textContent = curScript.cta;
-
-        if (snipSourceTitle) snipSourceTitle.textContent = `"${currentContext.displayTitle}"`;
-        const snipTargetEl = sidebar.querySelector('#smSnipMetaTarget');
-        const snipAuthorEl = sidebar.querySelector('#smSnipMetaAuthor');
-        const snipViewsEl = sidebar.querySelector('#smSnipMetaViews');
-        if (snipTargetEl) snipTargetEl.textContent = currentContext.platform;
-        if (snipAuthorEl) snipAuthorEl.textContent = currentContext.author;
-        if (snipViewsEl) snipViewsEl.textContent = currentContext.views || 'Trending';
-
-        webcamModal.classList.add('active');
-        switchStudioMode('snip'); // Default to Faceless Viral Clip mode
-      };
-    }
-
-    function startSnip(durationLimit = null) {
-      const pageVideo = getActivePageVideo();
-      if (!pageVideo) {
-        showToast('⚠️ No playing video detected. Please play the video on the page first.');
-        return;
-      }
-
-      try {
-        let stream = null;
-        if (typeof pageVideo.captureStream === 'function') {
-          stream = pageVideo.captureStream();
-        } else if (typeof pageVideo.mozCaptureStream === 'function') {
-          stream = pageVideo.mozCaptureStream();
-        }
-
-        if (!stream || stream.getVideoTracks().length === 0) {
-          showToast('⚠️ Could not capture stream from video element.');
-          return;
-        }
-
-        const muteOriginal = muteOriginalAudio?.checked;
-        if (muteOriginal) {
-          stream.getAudioTracks().forEach(t => {
-            t.stop();
-            stream.removeTrack(t);
-          });
-        }
-
-        snipChunks = [];
-        let mimeType = 'video/webm;codecs=vp9,opus';
-        if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
-
-        snipRecorder = new MediaRecorder(stream, { mimeType });
-
-        snipRecorder.ondataavailable = (e) => {
-          if (e.data.size > 0) snipChunks.push(e.data);
-        };
-
-        snipRecorder.onstop = () => {
-          const blob = new Blob(snipChunks, { type: 'video/webm' });
-          if (snippedBlobUrl) URL.revokeObjectURL(snippedBlobUrl);
-          snippedBlobUrl = URL.createObjectURL(blob);
-
-          if (snipHelperOverlay) snipHelperOverlay.style.display = 'none';
-          if (videoFeed) videoFeed.style.display = 'none';
-          if (recordedPlayback) {
-            recordedPlayback.src = snippedBlobUrl;
-            recordedPlayback.style.display = 'block';
-            recordedPlayback.loop = true;
-            recordedPlayback.play().catch(e => console.log(e));
-          }
-
-          if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'inline-flex';
-          if (floatingPlaybackTools) floatingPlaybackTools.style.display = 'flex';
-          if (recTimer) recTimer.style.display = 'none';
-          if (recBadge) recBadge.classList.remove('active');
-          if (snipControlsPanel) snipControlsPanel.style.display = 'none';
-          if (snipReviewPanel) snipReviewPanel.style.display = 'flex';
-          updateStudioAspect();
-          showToast('✂️ Viral Clip Captured!');
-        };
-
-        if (pageVideo.paused) {
-          pageVideo.play().catch(e => console.log('Autoplay request:', e));
-        }
-
-        snipRecorder.start();
-        isSnipping = true;
-        snipSeconds = 0;
-        if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'none';
-        if (floatingPlaybackTools) floatingPlaybackTools.style.display = 'none';
-        if (recTimer) recTimer.style.display = 'block';
-        updateStudioAspect();
-
-        if (recBadge) {
-          recBadge.classList.add('active');
-          if (recBadgeText) recBadgeText.textContent = 'SNIPPING VIRAL HOOK';
-        }
-
-        if (snipCustomText) snipCustomText.textContent = '⏹ Stop Snip';
-
-        if (snipTimer) clearInterval(snipTimer);
-        const targetStr = durationLimit ? `00:${String(durationLimit).padStart(2, '0')}` : '∞';
-        if (recTimer) recTimer.textContent = `00:00 / ${targetStr}`;
-
-        snipTimer = setInterval(() => {
-          snipSeconds++;
-          const secFormatted = String(snipSeconds).padStart(2, '0');
-          if (recTimer) recTimer.textContent = `00:${secFormatted} / ${targetStr}`;
-
-          if (durationLimit && snipSeconds >= durationLimit) {
-            stopSnip();
-          }
-        }, 1000);
-
-      } catch (err) {
-        console.error('[StitchMatrix] Snip error:', err);
-        showToast('Snip error: ' + err.message);
-      }
-    }
-
-    function stopSnip() {
-      if (snipTimer) clearInterval(snipTimer);
-      if (snipRecorder && snipRecorder.state === 'recording') {
-        snipRecorder.stop();
-      }
-      isSnipping = false;
-      if (snipCustomText) snipCustomText.textContent = '● Custom Snip';
-    }
-
-    if (snip5sBtn) snip5sBtn.onclick = () => startSnip(5);
-    if (snip10sBtn) snip10sBtn.onclick = () => startSnip(10);
-    if (snipCustomBtn) {
-      snipCustomBtn.onclick = () => {
-        if (isSnipping) {
-          stopSnip();
-        } else {
-          startSnip(null);
-        }
-      };
-    }
-
-    async function toggleSyncPlayback() {
-      if (!snippedBlobUrl) return;
-
-      if (isSyncPlaying) {
-        stopSyncPlayback();
-        return;
-      }
-
-      // If no AI voiceover generated yet, synthesize it automatically!
-      if (!currentVoiceBlobUrl) {
-        showToast('⚡ Generating AI Voiceover for your clip...');
-        if (syncPlayText) syncPlayText.textContent = '⏳ Synthesizing Voice...';
-        try {
-          const rawScript = getActiveScriptForVoice();
-          const narrationText = prepareTtsText(rawScript);
-          const blob = await fetchAudioTts(narrationText);
-          currentVoiceBlob = blob;
-          currentVoiceBlobUrl = URL.createObjectURL(blob);
-          if (ttsAudio) {
-            ttsAudio.src = currentVoiceBlobUrl;
-            ttsAudio.load();
-          }
-        } catch (err) {
-          showToast('Voiceover failed: ' + err.message);
-          if (syncPlayText) syncPlayText.textContent = 'Play with AI Voiceover';
-          return;
-        }
-      }
-
-      if (recordedPlayback) {
-        recordedPlayback.currentTime = 0;
-        recordedPlayback.volume = snipVideoVolume;
-        recordedPlayback.muted = (snipVideoVolume === 0);
-        recordedPlayback.play();
-      }
-
-      if (ttsAudio) {
-        ttsAudio.currentTime = 0;
-        ttsAudio.volume = voiceVolume;
-        ttsAudio.play().catch(e => console.log('Audio play error:', e));
-      }
-
-      isSyncPlaying = true;
-      if (syncPlayIcon) syncPlayIcon.textContent = '⏸';
-      if (syncPlayText) syncPlayText.textContent = 'Pause Dual Preview';
-
-      if (recordedPlayback) {
-        recordedPlayback.onended = () => {
-          if (isSyncPlaying) {
-            recordedPlayback.currentTime = 0;
-            recordedPlayback.play();
-          }
-        };
-      }
-
-      if (ttsAudio) {
-        ttsAudio.onended = () => {
-          isSyncPlaying = false;
-          if (syncPlayIcon) syncPlayIcon.textContent = '▶';
-          if (syncPlayText) syncPlayText.textContent = 'Replay with AI Voiceover';
-        };
-      }
-    }
-
-    if (syncPlayBtn) syncPlayBtn.onclick = toggleSyncPlayback;
-
-    if (downloadClipBtn) {
-      downloadClipBtn.onclick = () => {
-        if (!snippedBlobUrl) return;
-        const a = document.createElement('a');
-        a.href = snippedBlobUrl;
-        const cleanTitle = (currentContext.displayTitle || 'viral-hook')
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .slice(0, 30);
-        a.download = `stitchmatrix-clip-${cleanTitle || 'hook'}-${Date.now()}.webm`;
-        a.click();
-        showToast('💾 Video clip downloaded! Ready for Shorts / CapCut.');
-      };
-    }
-
-    if (downloadVoiceFastBtn) {
-      downloadVoiceFastBtn.onclick = async () => {
-        if (!currentVoiceBlobUrl) {
-          showToast('⚡ Synthesizing AI Voiceover for download...');
-          try {
-            const rawScript = getActiveScriptForVoice();
-            const narrationText = prepareTtsText(rawScript);
-            const blob = await fetchAudioTts(narrationText);
-            currentVoiceBlob = blob;
-            currentVoiceBlobUrl = URL.createObjectURL(blob);
-            if (ttsAudio) ttsAudio.src = currentVoiceBlobUrl;
-          } catch (err) {
-            showToast('Voiceover failed: ' + err.message);
-            return;
-          }
-        }
-        const a = document.createElement('a');
-        a.href = currentVoiceBlobUrl;
-        const cleanTitle = (currentContext.displayTitle || 'viral-script')
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .slice(0, 30);
-        a.download = `stitchmatrix-voiceover-${cleanTitle || 'narration'}-${Date.now()}.mp3`;
-        a.click();
-        showToast('💾 Voiceover MP3 downloaded!');
-      };
-    }
-
-    function deleteCurrentVideo() {
-      stopSyncPlayback();
-
-      if (recordedPlayback) {
-        try {
-          recordedPlayback.pause();
-          recordedPlayback.removeAttribute('src');
-          recordedPlayback.load();
-        } catch (e) {}
-        recordedPlayback.style.display = 'none';
-        recordedPlayback.classList.remove('sm-fill-mode');
-      }
-      isFillMode = false;
-      if (floatingAspectText) floatingAspectText.textContent = '↔️ Fit';
-
-      if (snippedBlobUrl) {
-        try { URL.revokeObjectURL(snippedBlobUrl); } catch (e) {}
-        snippedBlobUrl = null;
-      }
-
-      if (recordedBlobUrl) {
-        try { URL.revokeObjectURL(recordedBlobUrl); } catch (e) {}
-        recordedBlobUrl = null;
-      }
-      recordedChunks = [];
-      snipChunks = [];
-
-      if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'none';
-      if (floatingPlaybackTools) floatingPlaybackTools.style.display = 'none';
-      if (recTimer) recTimer.style.display = 'block';
-
-      if (studioRecordMode === 'snip') {
-        if (snipHelperOverlay) snipHelperOverlay.style.display = 'flex';
-        if (snipControlsPanel) snipControlsPanel.style.display = 'flex';
-        if (snipReviewPanel) snipReviewPanel.style.display = 'none';
-        if (recTimer) recTimer.textContent = '00:00 / 00:05';
-        updateStudioAspect();
-        showToast('🗑️ Video clip deleted');
-      } else {
-        if (downloadVideoBtn) downloadVideoBtn.style.display = 'none';
-        if (deleteWebcamBtn) deleteWebcamBtn.style.display = 'none';
-        initWebcamStream();
-        updateStudioAspect();
-        showToast('🗑️ Webcam video deleted');
-      }
-    }
-
-    if (deleteClipBtn) deleteClipBtn.onclick = deleteCurrentVideo;
-    if (reSnipBtn) reSnipBtn.onclick = deleteCurrentVideo;
-    if (floatingDeleteBtn) floatingDeleteBtn.onclick = deleteCurrentVideo;
-
-    // WEBCAM STREAM & RECORDING LOGIC
-    async function initWebcamStream() {
-      if (recordedPlayback) recordedPlayback.style.display = 'none';
-      if (videoFeed) videoFeed.style.display = 'block';
-      if (startRecBtn) startRecBtn.style.display = 'flex';
-      if (stopRecBtn) stopRecBtn.style.display = 'none';
-      if (downloadVideoBtn) downloadVideoBtn.style.display = 'none';
-      if (recBadge) recBadge.classList.remove('active');
-      if (recTimer) recTimer.textContent = '00:00 / 00:30';
-
-      try {
-        mediaStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'user' },
-          audio: true
-        });
-        if (videoFeed) videoFeed.srcObject = mediaStream;
-      } catch (err) {
-        showToast('Please allow camera & microphone permissions');
-      }
-    }
-
-    function cleanupWebcamStreamOnly() {
-      if (recordingTimer) clearInterval(recordingTimer);
-      if (teleprompterScrollInterval) clearInterval(teleprompterScrollInterval);
-      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-        mediaRecorder.stop();
-      }
-      if (mediaStream) {
-        mediaStream.getTracks().forEach(t => t.stop());
-        mediaStream = null;
-      }
-    }
-
-    function cleanupAllRecording() {
-      stopSyncPlayback();
-      stopSnip();
-      cleanupWebcamStreamOnly();
-      if (webcamModal) webcamModal.classList.remove('active');
-    }
-
-    if (closeWebcamBtn) closeWebcamBtn.onclick = cleanupAllRecording;
-
-    if (startRecBtn) {
-      startRecBtn.onclick = () => {
-        if (!mediaStream) return;
-        recordedChunks = [];
-
-        try {
-          const options = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
-            ? { mimeType: 'video/webm;codecs=vp9,opus' }
-            : { mimeType: 'video/webm' };
-          mediaRecorder = new MediaRecorder(mediaStream, options);
-        } catch (e) {
-          mediaRecorder = new MediaRecorder(mediaStream);
-        }
-
-        mediaRecorder.ondataavailable = (e) => {
-          if (e.data.size > 0) recordedChunks.push(e.data);
-        };
-
-        mediaRecorder.onstop = () => {
-          const blob = new Blob(recordedChunks, { type: 'video/webm' });
-          if (recordedBlobUrl) URL.revokeObjectURL(recordedBlobUrl);
-          recordedBlobUrl = URL.createObjectURL(blob);
-
-          if (videoFeed) videoFeed.style.display = 'none';
-          if (recordedPlayback) {
-            recordedPlayback.src = recordedBlobUrl;
-            recordedPlayback.style.display = 'block';
-            recordedPlayback.play();
-          }
-
-          if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'inline-flex';
-          if (floatingPlaybackTools) floatingPlaybackTools.style.display = 'flex';
-          if (recTimer) recTimer.style.display = 'none';
-          if (startRecBtn) startRecBtn.style.display = 'none';
-          if (stopRecBtn) stopRecBtn.style.display = 'none';
-          if (downloadVideoBtn) downloadVideoBtn.style.display = 'flex';
-          if (deleteWebcamBtn) deleteWebcamBtn.style.display = 'flex';
-          updateStudioAspect();
-        };
-
-        mediaRecorder.start();
-        isRecording = true;
-        recordingSeconds = 0;
-        if (floatingDeleteBtn) floatingDeleteBtn.style.display = 'none';
-        if (floatingPlaybackTools) floatingPlaybackTools.style.display = 'none';
-        if (recTimer) recTimer.style.display = 'block';
-        if (deleteWebcamBtn) deleteWebcamBtn.style.display = 'none';
-        if (startRecBtn) startRecBtn.style.display = 'none';
-        if (stopRecBtn) stopRecBtn.style.display = 'flex';
-        if (recBadge) {
-          recBadge.classList.add('active');
-          if (recBadgeText) recBadgeText.textContent = 'RECORDING WEBCAM';
-        }
-
-        if (prompterText) prompterText.scrollTop = 0;
-        teleprompterScrollInterval = setInterval(() => {
-          if (prompterText) prompterText.scrollTop += 1;
-        }, 120);
-
-        recordingTimer = setInterval(() => {
-          recordingSeconds++;
-          const secFormatted = String(recordingSeconds).padStart(2, '0');
-          if (recTimer) recTimer.textContent = `00:${secFormatted} / 00:30`;
-
-          if (recordingSeconds >= 30) {
-            stopRecording();
-          }
-        }, 1000);
-      };
-    }
-
-    function stopRecording() {
-      if (recordingTimer) clearInterval(recordingTimer);
-      if (teleprompterScrollInterval) clearInterval(teleprompterScrollInterval);
-      if (mediaRecorder && mediaRecorder.state === 'recording') {
-        mediaRecorder.stop();
-      }
-      isRecording = false;
-      if (recBadge) recBadge.classList.remove('active');
-    }
-
-    if (stopRecBtn) stopRecBtn.onclick = stopRecording;
-
-    if (downloadVideoBtn) {
-      downloadVideoBtn.onclick = () => {
-        if (!recordedBlobUrl) return;
-        const a = document.createElement('a');
-        a.href = recordedBlobUrl;
-        a.download = `stitchmatrix-webcam-${Date.now()}.webm`;
-        a.click();
-        showToast('Webcam video downloaded!');
-      };
-    }
-
-    if (deleteWebcamBtn) deleteWebcamBtn.onclick = deleteCurrentVideo;
-
-    // QR CODE MODAL LOGIC
-    const openPhoneBtn = sidebar.querySelector('#smOpenPhoneBtn');
-    const phoneModal = sidebar.querySelector('#smPhoneModal');
-    const closePhoneBtn = sidebar.querySelector('#smClosePhoneBtn');
-    const qrImage = sidebar.querySelector('#smQrImage');
-    const openMobileDirectBtn = sidebar.querySelector('#smOpenMobileDirectBtn');
-    const copyMobileLinkBtn = sidebar.querySelector('#smCopyMobileLinkBtn');
-    const copyMobileLinkText = sidebar.querySelector('#smCopyMobileLinkText');
-    const mobileLinkInput = sidebar.querySelector('#smMobileLinkInput');
-
-    function robustCopy(text, onSuccess) {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(onSuccess).catch(() => fallbackExecCopy(text, onSuccess));
-      } else {
-        fallbackExecCopy(text, onSuccess);
-      }
-    }
-
-    function fallbackExecCopy(text, onSuccess) {
-      try {
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        ta.style.position = 'fixed';
-        ta.style.left = '-9999px';
-        ta.style.top = '0';
-        document.body.appendChild(ta);
-        ta.focus();
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        if (onSuccess) onSuccess();
-      } catch (e) {
-        window.prompt('Copy this link:', text);
-      }
-    }
-
-    if (openPhoneBtn && phoneModal) {
-      openPhoneBtn.onclick = () => {
-        const mobileUrl = getMobileCompanionUrl();
-        // High-contrast 250x250 QR code with quiet margin
-        qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=2&data=${encodeURIComponent(mobileUrl)}`;
-        if (mobileLinkInput) mobileLinkInput.value = mobileUrl;
-        phoneModal.classList.add('active');
-      };
-    }
-
-    if (closePhoneBtn && phoneModal) {
-      closePhoneBtn.onclick = () => phoneModal.classList.remove('active');
-    }
-
-    if (openMobileDirectBtn) {
-      openMobileDirectBtn.onclick = () => {
-        const mobileUrl = getMobileCompanionUrl();
-        window.open(mobileUrl, '_blank');
-      };
-    }
-
-    if (copyMobileLinkBtn) {
-      copyMobileLinkBtn.onclick = () => {
-        const mobileUrl = getMobileCompanionUrl();
-        robustCopy(mobileUrl, () => {
-          if (copyMobileLinkText) copyMobileLinkText.textContent = '✓ Link Copied!';
-          showToast('Teleprompter link copied!');
+    const copyMasterBtn = sidebar.querySelector('#smCopyMasterBtn');
+    const copyMasterText = sidebar.querySelector('#smCopyMasterText');
+    if (copyMasterBtn) {
+      copyMasterBtn.onclick = () => {
+        const fullText = getFullScriptPlainText();
+        navigator.clipboard.writeText(fullText).then(() => {
+          if (copyMasterText) copyMasterText.textContent = '✓ Copied to Clipboard!';
+          copyMasterBtn.classList.add('copied');
+          showToast('📋 Full Viral Script Copied!');
           setTimeout(() => {
-            if (copyMobileLinkText) copyMobileLinkText.textContent = '📋 Copy Link';
-          }, 2000);
+            if (copyMasterText) copyMasterText.textContent = 'Copy Full Viral Script';
+            copyMasterBtn.classList.remove('copied');
+          }, 1800);
         });
       };
     }
 
-    if (mobileLinkInput) {
-      mobileLinkInput.onclick = () => {
-        mobileLinkInput.select();
-        robustCopy(mobileLinkInput.value, () => {
-          showToast('Link copied!');
+    const copyTagsOnlyBtn = sidebar.querySelector('#smCopyTagsOnlyBtn');
+    if (copyTagsOnlyBtn) {
+      copyTagsOnlyBtn.onclick = () => {
+        const curScript = generatedScripts[activeStyleIndex] || generatedScripts[0];
+        navigator.clipboard.writeText(curScript.hashtags).then(() => {
+          showToast('🏷️ Hashtags Copied!');
         });
       };
     }
-
-    // AI VOICEOVER (FACELESS CREATOR) STUDIO LOGIC
-    const openVoiceoverBtn = sidebar.querySelector('#smOpenVoiceoverBtn');
-    const voiceoverModal = sidebar.querySelector('#smVoiceoverModal');
-    const closeVoiceoverBtn = sidebar.querySelector('#smCloseVoiceoverBtn');
-    const soundwaves = sidebar.querySelector('#smSoundwaves');
-    const voiceStatus = sidebar.querySelector('#smVoiceStatus');
-    const voiceSubstatus = sidebar.querySelector('#smVoiceSubstatus');
-    const voiceScriptText = sidebar.querySelector('#smVoiceScriptText');
-    const ttsAudio = sidebar.querySelector('#smTtsAudio');
-    const generateVoiceBtn = sidebar.querySelector('#smGenerateVoiceBtn');
-    const generateVoiceBtnText = sidebar.querySelector('#smGenerateVoiceBtnText');
-    const voiceActionRow = sidebar.querySelector('#smVoiceActionRow');
-    const voicePlayBtn = sidebar.querySelector('#smVoicePlayBtn');
-    const voicePlayIcon = sidebar.querySelector('#smVoicePlayIcon');
-    const voicePlayText = sidebar.querySelector('#smVoicePlayText');
-    const voiceDownloadBtn = sidebar.querySelector('#smVoiceDownloadBtn');
-
-    function getActiveScriptForVoice() {
-      const curScript = generatedScripts[activeStyleIndex] || generatedScripts[0];
-      const hookLead = sidebar.querySelector('.sm-hook-lead')?.textContent || curScript.hookLead;
-      const hookHighlight = sidebar.querySelector('.sm-hook-highlight')?.textContent || curScript.hookHighlight;
-      const hookTail = sidebar.querySelector('.sm-hook-tail')?.textContent || curScript.hookTail;
-      const fullHook = `${hookLead} ${hookHighlight} ${hookTail}`.trim();
-      const bodyText = sidebar.querySelector('#smBodyText')?.textContent || curScript.body;
-      const ctaText = sidebar.querySelector('#smCtaText')?.textContent || curScript.cta;
-      return `${fullHook}. ${bodyText}. ${ctaText}`;
-    }
-
-    async function synthesizeVoiceover() {
-      if (isGeneratingVoice) return;
-      isGeneratingVoice = true;
-
-      const rawScript = getActiveScriptForVoice();
-      const narrationText = prepareTtsText(rawScript);
-
-      if (voiceScriptText) {
-        voiceScriptText.textContent = narrationText;
-      }
-
-      // UI Loading state
-      if (soundwaves) {
-        soundwaves.classList.remove('playing');
-        soundwaves.classList.add('loading');
-      }
-      if (voiceStatus) voiceStatus.textContent = '⚡ Synthesizing Studio Voiceover...';
-      if (voiceSubstatus) voiceSubstatus.textContent = 'Generating human-paced continuous MP3 narration without camera or mic';
-      if (generateVoiceBtn) generateVoiceBtn.disabled = true;
-      if (generateVoiceBtnText) generateVoiceBtnText.textContent = '⏳ Generating MP3 Audio...';
-      if (voiceActionRow) voiceActionRow.style.display = 'none';
-
-      try {
-        const blob = await fetchAudioTts(narrationText, selectedVoiceId);
-        currentVoiceBlob = blob;
-        if (currentVoiceBlobUrl) URL.revokeObjectURL(currentVoiceBlobUrl);
-        currentVoiceBlobUrl = URL.createObjectURL(blob);
-
-        if (ttsAudio) {
-          ttsAudio.src = currentVoiceBlobUrl;
-          ttsAudio.volume = voiceVolume;
-          ttsAudio.load();
-        }
-
-        // UI Ready state
-        if (soundwaves) soundwaves.classList.remove('loading');
-        if (voiceStatus) voiceStatus.textContent = '✨ Voiceover Ready! (Continuous MP3)';
-        if (voiceSubstatus) voiceSubstatus.textContent = 'Professional AI narration ready. Preview or download below.';
-        if (generateVoiceBtnText) generateVoiceBtnText.textContent = '🔄 Re-generate Audio';
-        if (generateVoiceBtn) generateVoiceBtn.disabled = false;
-        if (voiceActionRow) voiceActionRow.style.display = 'grid';
-
-        // Auto-play audio preview
-        if (ttsAudio) {
-          try {
-            ttsAudio.volume = voiceVolume;
-            await ttsAudio.play();
-            if (soundwaves) soundwaves.classList.add('playing');
-            if (voicePlayIcon) voicePlayIcon.textContent = '⏸';
-            if (voicePlayText) voicePlayText.textContent = 'Pause Preview';
-          } catch (autoErr) {
-            console.log('[StitchMatrix] Audio preview ready (autoplay blocked by browser, click Play):', autoErr);
-          }
-        }
-        showToast('🔊 AI Voiceover Ready!');
-      } catch (err) {
-        console.error('[StitchMatrix] Voiceover failed:', err);
-        if (soundwaves) soundwaves.classList.remove('loading', 'playing');
-        if (voiceStatus) voiceStatus.textContent = 'Generation Failed';
-        if (voiceSubstatus) voiceSubstatus.textContent = err.message || 'Error communicating with voice engine.';
-        if (generateVoiceBtnText) generateVoiceBtnText.textContent = '⚡ Retry Generation';
-        if (generateVoiceBtn) generateVoiceBtn.disabled = false;
-        showToast('Voiceover failed: ' + (err.message || 'Error'));
-      } finally {
-        isGeneratingVoice = false;
-      }
-    }
-
-    function stopVoicePlayback() {
-      if (ttsAudio) {
-        ttsAudio.pause();
-        ttsAudio.currentTime = 0;
-      }
-      if (soundwaves) {
-        soundwaves.classList.remove('playing', 'loading');
-      }
-      if (voicePlayIcon) voicePlayIcon.textContent = '▶';
-      if (voicePlayText) voicePlayText.textContent = 'Play Preview';
-    }
-
-    function cleanupVoiceover() {
-      stopVoicePlayback();
-      if (voiceoverModal) voiceoverModal.classList.remove('active');
-    }
-
-    if (ttsAudio) {
-      ttsAudio.onended = () => {
-        if (soundwaves) soundwaves.classList.remove('playing');
-        if (voicePlayIcon) voicePlayIcon.textContent = '▶';
-        if (voicePlayText) voicePlayText.textContent = 'Play Preview';
-      };
-      ttsAudio.onpause = () => {
-        if (soundwaves) soundwaves.classList.remove('playing');
-        if (voicePlayIcon) voicePlayIcon.textContent = '▶';
-        if (voicePlayText) voicePlayText.textContent = 'Play Preview';
-      };
-      ttsAudio.onplay = () => {
-        if (soundwaves) soundwaves.classList.add('playing');
-        if (voicePlayIcon) voicePlayIcon.textContent = '⏸';
-        if (voicePlayText) voicePlayText.textContent = 'Pause Preview';
-      };
-    }
-
-    if (voicePlayBtn && ttsAudio) {
-      voicePlayBtn.onclick = () => {
-        if (ttsAudio.paused) {
-          ttsAudio.volume = voiceVolume;
-          ttsAudio.play().catch(e => console.warn(e));
-        } else {
-          ttsAudio.pause();
-        }
-      };
-    }
-
-    if (voiceDownloadBtn) {
-      voiceDownloadBtn.onclick = () => {
-        if (!currentVoiceBlobUrl) return;
-        const a = document.createElement('a');
-        a.href = currentVoiceBlobUrl;
-        const cleanTitle = (currentContext.displayTitle || 'viral-script')
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-|-$/g, '')
-          .slice(0, 32);
-        a.download = `stitchmatrix-${selectedVoiceId}-${cleanTitle || 'voiceover'}-${Date.now()}.mp3`;
-        a.click();
-        showToast('💾 Voiceover MP3 downloaded!');
-      };
-    }
-
-    if (generateVoiceBtn) {
-      generateVoiceBtn.onclick = () => {
-        synthesizeVoiceover();
-      };
-    }
-
-    if (openVoiceoverBtn && voiceoverModal) {
-      openVoiceoverBtn.onclick = () => {
-        const rawScript = getActiveScriptForVoice();
-        const narrationText = prepareTtsText(rawScript);
-        if (voiceScriptText) voiceScriptText.textContent = narrationText;
-        voiceoverModal.classList.add('active');
-        synthesizeVoiceover();
-      };
-    }
-
-    if (closeVoiceoverBtn) {
-      closeVoiceoverBtn.onclick = cleanupVoiceover;
-    }
-
-    // Voice Selector Listener
-    const voiceSelect = sidebar.querySelector('#smVoiceSelect');
-    const voiceBadge = sidebar.querySelector('#smActiveVoiceBadge');
-    if (voiceSelect) {
-      voiceSelect.value = selectedVoiceId;
-      voiceSelect.onchange = () => {
-        selectedVoiceId = voiceSelect.value;
-        localStorage.setItem('sm_selected_voice', selectedVoiceId);
-        if (voiceBadge) {
-          if (['orion', 'asteria', 'luna', 'stella', 'perseus', 'arcas', 'athena', 'angus', 'orpheus', 'hera'].includes(selectedVoiceId)) {
-            voiceBadge.textContent = 'Neural AI • Ultra-Realistic';
-            voiceBadge.style.color = '#93C5FD';
-          } else {
-            voiceBadge.textContent = 'International Dialect';
-            voiceBadge.style.color = '#38BDF8';
-          }
-        }
-        const optText = voiceSelect.options[voiceSelect.selectedIndex]?.text || selectedVoiceId;
-        showToast(`🎙️ Voice: ${optText.split('—')[0].trim()}`);
-      };
-    }
-
-    // Voiceover Volume Control
-    const voiceVolSlider = sidebar.querySelector('#smVoiceVolumeSlider');
-    const voiceVolPercent = sidebar.querySelector('#smVoiceVolumePercent');
-    const voiceVolIcon = sidebar.querySelector('#smVoiceVolumeIcon');
-    const voiceVolMuteBtn = sidebar.querySelector('#smVoiceVolumeMuteBtn');
-
-    function applyVoiceVolume(vol) {
-      voiceVolume = Math.max(0, Math.min(1, vol));
-      if (ttsAudio) ttsAudio.volume = voiceVolume;
-      const pct = Math.round(voiceVolume * 100);
-      if (voiceVolSlider) voiceVolSlider.value = pct;
-      if (voiceVolPercent) voiceVolPercent.textContent = pct + '%';
-      if (voiceVolIcon) {
-        if (voiceVolume === 0) voiceVolIcon.textContent = '🔇';
-        else if (voiceVolume < 0.5) voiceVolIcon.textContent = '🔉';
-        else voiceVolIcon.textContent = '🔊';
-      }
-      localStorage.setItem('sm_voice_volume', voiceVolume.toString());
-    }
-
-    if (voiceVolSlider) {
-      voiceVolSlider.value = Math.round(voiceVolume * 100);
-      voiceVolSlider.oninput = () => {
-        const val = parseInt(voiceVolSlider.value, 10);
-        applyVoiceVolume(val / 100);
-        if (voiceVolume > 0) lastNonZeroVoiceVolume = voiceVolume;
-      };
-    }
-
-    if (voiceVolMuteBtn) {
-      voiceVolMuteBtn.onclick = () => {
-        if (voiceVolume > 0) {
-          lastNonZeroVoiceVolume = voiceVolume;
-          applyVoiceVolume(0);
-        } else {
-          applyVoiceVolume(lastNonZeroVoiceVolume || 1.0);
-        }
-      };
-    }
-
-    // Snipper Dual-Track Mixer Sliders
-    const snipVoiceVolSlider = sidebar.querySelector('#smSnipVoiceVolSlider');
-    const snipVoiceVolVal = sidebar.querySelector('#smSnipVoiceVolVal');
-    const snipVideoVolSlider = sidebar.querySelector('#smSnipVideoVolSlider');
-    const snipVideoVolVal = sidebar.querySelector('#smSnipVideoVolVal');
-
-    if (snipVoiceVolSlider) {
-      snipVoiceVolSlider.value = Math.round(voiceVolume * 100);
-      snipVoiceVolSlider.oninput = () => {
-        const val = parseInt(snipVoiceVolSlider.value, 10);
-        applyVoiceVolume(val / 100);
-        if (snipVoiceVolVal) snipVoiceVolVal.textContent = val + '%';
-      };
-    }
-
-    if (snipVideoVolSlider) {
-      snipVideoVolSlider.oninput = () => {
-        const val = parseInt(snipVideoVolSlider.value, 10);
-        snipVideoVolume = val / 100;
-        if (recordedPlayback) {
-          recordedPlayback.volume = snipVideoVolume;
-          recordedPlayback.muted = (val === 0);
-        }
-        if (snipVideoVolVal) snipVideoVolVal.textContent = val === 0 ? 'Muted' : val + '%';
-      };
-    }
   }
 
-  function executeCopyFullScript() {
-    const curScript = generatedScripts[activeStyleIndex];
-    const fullHook = `${curScript.hookLead}${curScript.hookHighlight}${curScript.hookTail}`;
-    const bodyText = sidebar.querySelector('#smBodyText')?.textContent || curScript.body;
-    const ctaText = sidebar.querySelector('#smCtaText')?.textContent || curScript.cta;
-    const formatted = `[PART 1: THE VIRAL HOOK]\n${fullHook}\n\n[PART 2: THE CORE STORY]\n${bodyText}\n\n[PART 3: RETENTION CALL-TO-ACTION]\n${ctaText}\n\nHASHTAGS:\n${curScript.hashtags}`;
-
-    navigator.clipboard.writeText(formatted).then(() => {
-      const copyFullBtn = sidebar.querySelector('#smCopyFullBtn');
-      const copyFullText = sidebar.querySelector('#smCopyFullText');
-      if (copyFullBtn && copyFullText) {
-        copyFullBtn.classList.add('copied');
-        copyFullText.textContent = '✓ Copied!';
-        showToast('Full script & hashtags copied!');
-        setTimeout(() => {
-          copyFullBtn.classList.remove('copied');
-          copyFullText.textContent = 'Copy Full Script';
-        }, 1800);
-      }
-    });
-  }
-
+  // --- Toggle Sidebar ---
   function toggleSidebar() {
     isOpen = !isOpen;
     if (isOpen) {
@@ -4137,118 +1379,38 @@
     } else {
       sidebar.classList.remove('open');
       triggerTab.style.display = 'flex';
-      const audio = sidebar.querySelector('#smTtsAudio');
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
-      const waves = sidebar.querySelector('#smSoundwaves');
-      if (waves) waves.classList.remove('playing', 'loading');
-      const playback = sidebar.querySelector('#smRecordedPlayback');
-      if (playback) {
-        playback.pause();
-      }
-      if (isSnipping) {
-        if (snipTimer) clearInterval(snipTimer);
-        if (snipRecorder && snipRecorder.state === 'recording') snipRecorder.stop();
-        isSnipping = false;
-      }
-      if (isSyncPlaying) {
-        isSyncPlaying = false;
-      }
-      if (mediaStream) {
-        mediaStream.getTracks().forEach(t => t.stop());
-        mediaStream = null;
-      }
     }
   }
 
   triggerTab.onclick = toggleSidebar;
-  shadow.appendChild(sidebar);
 
-  // AUTOMATED REAL-TIME VIDEO DETECTION & LIVE RE-SYNC ENGINE
-  // 1. Intercept SPA URL routing for TikTok, Instagram Reels, and YouTube
-  try {
-    const origPush = history.pushState;
-    history.pushState = function (...args) {
-      const res = origPush.apply(this, args);
-      setTimeout(checkAndAutoUpdate, 120);
-      setTimeout(checkAndAutoUpdate, 450);
-      return res;
-    };
-
-    const origReplace = history.replaceState;
-    history.replaceState = function (...args) {
-      const res = origReplace.apply(this, args);
-      setTimeout(checkAndAutoUpdate, 120);
-      setTimeout(checkAndAutoUpdate, 450);
-      return res;
-    };
-  } catch (e) {}
-
-  window.addEventListener('popstate', () => {
-    setTimeout(checkAndAutoUpdate, 120);
-  });
-
-  // 2. User Clicks (advancing feed, clicking video, clicking next arrow, clicking comments/feed)
-  document.addEventListener('click', (e) => {
-    if (host.contains(e.target)) return;
-    setTimeout(checkAndAutoUpdate, 150);
-    setTimeout(checkAndAutoUpdate, 500);
-  }, true);
-
-  // 3. Media Playback Events
-  document.addEventListener('play', () => {
-    setTimeout(checkAndAutoUpdate, 120);
-  }, true);
-
-  document.addEventListener('playing', () => {
-    setTimeout(checkAndAutoUpdate, 100);
-  }, true);
-
-  // 4. Platform-Specific SPA Events
-  window.addEventListener('yt-navigate-finish', () => {
-    setTimeout(checkAndAutoUpdate, 150);
-  });
-  window.addEventListener('yt-page-data-updated', () => {
-    setTimeout(checkAndAutoUpdate, 150);
-  });
-
-  // 5. Wheel and Scroll Navigation
-  let scrollDebounce = null;
-  const onUserScroll = () => {
-    if (scrollDebounce) clearTimeout(scrollDebounce);
-    scrollDebounce = setTimeout(checkAndAutoUpdate, 180);
-  };
-  window.addEventListener('wheel', onUserScroll, { passive: true });
-  window.addEventListener('scroll', onUserScroll, { passive: true });
-
-  // 6. Keyboard feed advance (Down/Up arrow, PageDown, J, K, Space)
+  // --- Global Keyboard Shortcuts ---
   window.addEventListener('keydown', (e) => {
-    if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'j', 'k', 'J', 'K', ' '].includes(e.key)) {
-      setTimeout(checkAndAutoUpdate, 220);
-      setTimeout(checkAndAutoUpdate, 550);
-    }
-    if ((e.altKey && (e.key === 's' || e.key === 'S')) || (e.ctrlKey && e.shiftKey && (e.key === 's' || e.key === 'S'))) {
+    // Alt+S: Toggle sidebar
+    if (e.altKey && (e.key === 's' || e.key === 'S')) {
       e.preventDefault();
       toggleSidebar();
     }
-    if (e.key === 'Escape' && isOpen) {
-      toggleSidebar();
-    }
-    if (isOpen && e.altKey && (e.key === 'c' || e.key === 'C')) {
-      e.preventDefault();
-      executeCopyFullScript();
+    // Alt+C: 1-Click Copy Full Viral Script
+    if (e.altKey && (e.key === 'c' || e.key === 'C')) {
+      if (isOpen) {
+        e.preventDefault();
+        const fullText = getFullScriptPlainText();
+        navigator.clipboard.writeText(fullText).then(() => {
+          showToast('📋 Full Viral Script Copied (Alt+C)!');
+        });
+      }
     }
   });
 
-  // 7. Active Heartbeat Poller (250ms when sidebar is open)
+  // --- Active Heartbeat Poller (250ms when sidebar is open) ---
   setInterval(() => {
     if (isOpen) {
       checkAndAutoUpdate();
     }
   }, 250);
 
+  // --- Message Listener from Background Worker ---
   if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       if (request.action === 'TOGGLE_SIDEBAR') {
@@ -4258,5 +1420,5 @@
     });
   }
 
-  console.log('[StitchMatrix] Blendr Cyber-Cobalt Obsidian Studio v3.9.2 loaded.');
+  console.log('[StitchMatrix] Streamlined Viral Script Engine v4.0.0 loaded.');
 })();
