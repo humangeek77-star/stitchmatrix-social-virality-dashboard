@@ -175,41 +175,33 @@
         }
       }
 
-      // Standard YouTube Watch Page view selectors
-      const watchSelectors = [
-        '#info-container',
-        'ytd-watch-metadata #info-container',
-        'ytd-watch-metadata yt-formatted-string#info',
-        '#view-count',
-        'ytd-video-view-count-renderer',
-        'span.view-count',
-        '#description-inner #info-container',
-        '#description-inner',
-        '#info-text',
-        '#count.ytd-video-primary-info-renderer'
-      ];
-      for (const sel of watchSelectors) {
-        const el = document.querySelector(sel);
-        if (el) {
-          const text = el.innerText || el.textContent || '';
-          const m = text.match(/([\d,.]+\s*[KMkmBb]?)\s*(?:views|view)/i);
-          if (m && m[1] && /\d/.test(m[1])) {
-            return cleanViewCountString(m[1]);
-          }
-        }
-      }
-
+      // Priority 1: Direct official YouTube interactionCount meta tag (always contains the exact active video view count)
       const meta = document.querySelector('meta[itemprop="interactionCount"]');
       if (meta && meta.content && /\d/.test(meta.content)) {
         return formatCompactNumber(meta.content);
       }
 
-      const ariaEls = document.querySelectorAll('[aria-label*="view"], [aria-label*="views"]');
-      for (const el of ariaEls) {
-        const label = el.getAttribute('aria-label') || '';
-        const m = label.match(/([\d,.]+\s*[KMkmBb]?)\s*(?:views|view)/i);
-        if (m && m[1] && /\d/.test(m[1])) {
-          return cleanViewCountString(m[1]);
+      // Priority 2: Primary active video player container only (strictly ignore sidebar #related / #secondary)
+      const primaryContainer = document.querySelector('ytd-watch-metadata, #primary #above-the-fold, #primary');
+      if (primaryContainer) {
+        const primarySelectors = [
+          '#description-inner #info-container span:first-child',
+          'ytd-watch-metadata #description-inner #info-container',
+          'ytd-watch-metadata #info-container',
+          'ytd-watch-metadata yt-formatted-string#info span:first-child',
+          'ytd-video-view-count-renderer .view-count',
+          '#view-count span:first-child',
+          '#count.ytd-video-primary-info-renderer span:first-child'
+        ];
+        for (const sel of primarySelectors) {
+          const el = primaryContainer.querySelector(sel);
+          if (el) {
+            const text = el.innerText || el.textContent || '';
+            const m = text.match(/([\d,.]+\s*[KMkmBb]?)\s*(?:views|view)/i);
+            if (m && m[1] && /\d/.test(m[1])) {
+              return cleanViewCountString(m[1]);
+            }
+          }
         }
       }
     }
@@ -287,9 +279,15 @@
       .replace(/\[.*?\]/g, '')
       .replace(/\(.*?\)/g, '')
       .replace(/\s+[-–—]\s+.*$/g, '')
+      .replace(/,\s*(?:and\s+)?it\s+(?:can|will|might|is)\s+.*$/i, '')
       .replace(/\b(official trailer|episode \d+|reimagined|shorts|viral|4k|hd|part \d+)\b/gi, '')
       .replace(/[^\p{L}\p{N}\s'&.,!?-]/gu, '')
       .trim();
+
+    const verbMatch = clean.match(/^(?:.*?\b(?:unveils?|reveals?|announces?|releases?|shows?|drops?|introduces?)\s+)(.+)$/i);
+    if (verbMatch && verbMatch[1] && verbMatch[1].length > 4) {
+      clean = verbMatch[1].trim();
+    }
     if (clean.length < 3) clean = rawTitle.replace(/#[\p{L}\p{N}_]+/gu, '').slice(0, 40).trim();
     if (clean.length < 2) clean = 'this viral moment';
     return clean;
@@ -508,30 +506,46 @@
     author = cleanAuthorHandle(author);
     if (!views) views = 'Trending';
 
+    let description = '';
+    try {
+      const descMeta = document.querySelector('meta[name="description"]');
+      if (descMeta && descMeta.content) description = descMeta.content;
+      if (!description) {
+        const descEl = document.querySelector('ytd-watch-metadata #description-inner, #description-inline-expander, #description');
+        if (descEl) description = (descEl.innerText || descEl.textContent || '').slice(0, 300);
+      }
+    } catch (_) {}
+
     let displayTitle = title;
     if (displayTitle.length > 68) displayTitle = displayTitle.slice(0, 65) + '...';
 
-    return { platform, title, displayTitle, author, views, url, videoId };
+    return { platform, title, displayTitle, author, views, url, videoId, description };
   }
 
   function formatSubjectForSentence(subject) {
     if (!subject || subject === 'this viral moment') return 'this viral moment';
+    const properNouns = ['El', 'Niño', 'God', 'Earth', 'Mars', 'Apple', 'Tesla', 'SpaceX', 'YouTube', 'TikTok', 'Google', 'Roman', 'Rome', 'Egypt', 'America', 'Rockstar', 'OpenAI', 'NASA', 'ChatGPT', 'AI', 'GTA', 'Elon', 'Musk'];
     const words = subject.split(' ');
     return words.map((w, idx) => {
       if (w.length > 1 && w === w.toUpperCase() && !/[a-z]/.test(w)) return w;
-      if (['El', 'Niño', 'God', 'Earth', 'Mars', 'Apple', 'Tesla', 'YouTube', 'TikTok', 'Google', 'Roman', 'Rome', 'Egypt', 'America', 'Rockstar', 'OpenAI', 'NASA', 'ChatGPT', 'AI', 'GTA'].includes(w)) return w;
+      const baseWord = w.replace(/['’]s$/i, '');
+      if (properNouns.includes(baseWord)) return w;
       return idx === 0 ? w.toLowerCase() : w;
     }).join(' ');
   }
 
-  function detectVideoNiche(title, author) {
-    const text = `${title} ${author}`.toLowerCase();
+  function detectVideoNiche(title, author, description) {
+    const text = `${title} ${author} ${description || ''}`.toLowerCase();
     
-    // 1. Gaming & Entertainment
+    // 1. Automotive, Aerospace & Extreme Vehicles (Checked BEFORE generic Tech!)
+    if (/\b(roadster|supercar|hypercar|cybertruck|tesla roadster|spacex|rocket|rockets|fly|flying|flight|thruster|thrusters|engine|horsepower|aerospace|ferrari|lamborghini|porsche|aircraft|jet|plane|aviation|propulsion|starship|falcon 9|curved ramp|electric vehicle|evs)\b/i.test(text) || (/\b(car|cars|vehicle|vehicles|ev)\b/i.test(text) && /\b(tesla|speed|race|drift|0-60|drive|driver|wheel)\b/i.test(text))) {
+      return 'automotive_aerospace';
+    }
+    // 2. Gaming & Entertainment
     if (/\b(game|gaming|gamer|gta|minecraft|fortnite|roblox|zelda|playstation|xbox|nintendo|movie|film|trailer|marvel|actor|anime|celebrity|easter egg|hollywood)\b/i.test(text)) {
       return 'gaming_entertainment';
     }
-    // 2. Tech & AI
+    // 3. Tech & AI
     if (/\b(ai|artificial intelligence|chatgpt|openai|apple|iphone|tech|technology|robot|coding|software|hardware|computer|cyber|algorithm|elon|musk|tesla|nvidia|crypto|bitcoin|phone|app|gadget)\b/i.test(text)) {
       return 'tech_ai';
     }
@@ -583,6 +597,32 @@
         cta: "Bookmark this to share with someone who loves deep science. Follow for daily breakdowns of our planet's wildest phenomena.",
         duration: "32s",
         tags: "#DeepScience #NatureBreakdown #ScienceLovers #ViralShorts #Trending"
+      }
+    },
+    automotive_aerospace: {
+      curiosity: {
+        lead: "Almost nobody believed Elon Musk when he claimed ",
+        tail: " could actually defy gravity until the engineering telemetry was revealed.",
+        body: "Using specialized cold-gas thrusters developed by SpaceX, this electric supercar launches off the line with instantaneous aerospace propulsion. While traditional supercars rely strictly on tire friction to hit 60 miles per hour, this system uses high-pressure composite tanks to produce omnidirectional thrust capable of counteracting gravity and stabilizing mid-air flight. Automotive engineers are calling it the single most aggressive crossover between consumer electric vehicles and orbital rocket science ever attempted.",
+        cta: "Would you ever trust a production sports car equipped with rocket thrusters? Drop your honest take in the comments below.",
+        duration: "32s",
+        tags: "#TeslaRoadster #SpaceX #RocketCar #Supercars #ElonMusk #Trending"
+      },
+      hot_take: {
+        lead: "The entire automotive industry is mocking ",
+        tail: ", but traditional car companies are completely terrified.",
+        body: "Legacy manufacturers have spent decades refining internal combustion engines just to shave off tenths of a second. But integrating cold-gas rocket propulsion completely breaks the traditional rules of track physics and automotive safety regulations. If this vehicle achieves certified street-legal flight and sub-one-second acceleration, it makes every multi-million dollar hypercar obsolete overnight.",
+        cta: "Is this revolutionary aerospace engineering or an impossible regulatory nightmare? Debate in the comments below right now.",
+        duration: "34s",
+        tags: "#Hypercars #EVRevolution #AutomotiveDebate #Tesla #SpaceX #Trending"
+      },
+      teardown: {
+        lead: "Here is the secret aerospace physics behind ",
+        tail: " explained in 30 seconds.",
+        body: "Notice the rear package placement: replacing the back seats with a carbon-wrapped pressurized air vessel allows seamless cold-gas propulsion through hidden active nozzles. At launch, the instantaneous downward and forward thrust vectoring provides unlimited traction, eliminating wheel spin before the aerodynamic lifting surfaces take over for sustained flight and controlled dampening upon landing.",
+        cta: "Bookmark this engineering breakdown before your next road trip. Hit follow for daily breakdowns of high-performance tech.",
+        duration: "30s",
+        tags: "#EngineeringExplained #RocketScience #Aerodynamics #TeslaRoadster #ViralShorts"
       }
     },
     tech_ai: {
@@ -772,7 +812,7 @@
   function buildViralScripts(videoContext) {
     const rawSubject = extractSubject(videoContext.title);
     const subject = formatSubjectForSentence(rawSubject);
-    const niche = detectVideoNiche(videoContext.title, videoContext.author);
+    const niche = detectVideoNiche(videoContext.title, videoContext.author, videoContext.description);
     const nicheData = NICHE_SCRIPTS[niche] || NICHE_SCRIPTS.general_curiosity;
     const metrics = calculateRetentionMetrics(videoContext.views);
 
