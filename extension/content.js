@@ -70,6 +70,79 @@
     return clean || '@creator';
   }
 
+  function parseViewCountToNumber(str) {
+    if (!str || typeof str !== 'string') return 0;
+    let clean = str.trim().toUpperCase();
+    const unitMatch = clean.match(/([KMB])$/);
+    const unit = unitMatch ? unitMatch[1] : null;
+    if (unit) {
+      clean = clean.slice(0, -1).trim();
+    }
+    if (clean.includes(',') && !clean.includes('.')) {
+      if (/,\d{1,2}$/.test(clean)) {
+        clean = clean.replace(',', '.');
+      } else {
+        clean = clean.replace(/,/g, '');
+      }
+    } else {
+      clean = clean.replace(/,/g, '');
+    }
+    let num = parseFloat(clean);
+    if (isNaN(num)) return 0;
+    if (unit === 'B') num *= 1_000_000_000;
+    else if (unit === 'M') num *= 1_000_000;
+    else if (unit === 'K') num *= 1_000;
+    return num;
+  }
+
+  function calculateRetentionMetrics(viewsStr) {
+    const num = parseViewCountToNumber(viewsStr);
+
+    if (num >= 5_000_000) {
+      return {
+        retentionBadge: '🔥 Top 0.1% Retention',
+        retentionClass: 'sm-pill-highlight',
+        baseScore: 98
+      };
+    } else if (num >= 1_000_000) {
+      return {
+        retentionBadge: '🔥 Top 1% Retention',
+        retentionClass: 'sm-pill-highlight',
+        baseScore: 96
+      };
+    } else if (num >= 250_000) {
+      return {
+        retentionBadge: '⚡ Top 5% Retention',
+        retentionClass: 'sm-pill-orange',
+        baseScore: 92
+      };
+    } else if (num >= 50_000) {
+      return {
+        retentionBadge: '📈 Top 10% Retention',
+        retentionClass: 'sm-pill-cyan',
+        baseScore: 86
+      };
+    } else if (num >= 10_000) {
+      return {
+        retentionBadge: '⭐ Top 25% Retention',
+        retentionClass: 'sm-pill-slate',
+        baseScore: 78
+      };
+    } else if (num > 0) {
+      return {
+        retentionBadge: '🌱 Rising Traction',
+        retentionClass: 'sm-pill-slate',
+        baseScore: 71
+      };
+    } else {
+      return {
+        retentionBadge: '⚡ Top 5% Velocity',
+        retentionClass: 'sm-pill-orange',
+        baseScore: 91
+      };
+    }
+  }
+
   function extractLiveViewCount(platform, url, container) {
     // 1. YouTube & YouTube Shorts
     if (url.includes('youtube.com')) {
@@ -444,6 +517,7 @@
   function buildViralScripts(videoContext) {
     const subject = extractSubject(videoContext.title);
     const hashtags = generateDynamicHashtags(videoContext.title);
+    const metrics = calculateRetentionMetrics(videoContext.views);
 
     return [
       {
@@ -451,7 +525,9 @@
         title: 'Curiosity Gap',
         subtitle: 'High Intrigue & Scroll-Stopping Hook',
         duration: '30s',
-        viralScore: '98/100',
+        viralScore: `${metrics.baseScore}/100`,
+        retentionBadge: metrics.retentionBadge,
+        retentionClass: metrics.retentionClass,
         hookLead: `Nobody realized this secret about `,
         hookHighlight: `${subject}`,
         hookTail: ` until now. The real story behind what you're watching is blowing everyone's mind.`,
@@ -464,7 +540,9 @@
         title: 'Hot Take',
         subtitle: 'Controversial Angle for Maximum Comments',
         duration: '34s',
-        viralScore: '96/100',
+        viralScore: `${Math.max(60, metrics.baseScore - 2)}/100`,
+        retentionBadge: metrics.retentionBadge,
+        retentionClass: metrics.retentionClass,
         hookLead: `Everyone is talking about `,
         hookHighlight: `${subject}`,
         hookTail: `, but everyone is getting the entire story completely backwards. Here is the uncomfortable truth.`,
@@ -477,7 +555,9 @@
         title: 'Teardown',
         subtitle: 'Breakdown of Why It Worked',
         duration: '32s',
-        viralScore: '95/100',
+        viralScore: `${Math.max(60, metrics.baseScore - 3)}/100`,
+        retentionBadge: metrics.retentionBadge,
+        retentionClass: metrics.retentionClass,
         hookLead: `This video about `,
         hookHighlight: `${subject}`,
         hookTail: ` is currently breaking the algorithm. Let's break down the exact formula in 30 seconds.`,
@@ -876,12 +956,36 @@
       font-family: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', Consolas, monospace;
     }
 
-    /* Gamified Badge: Pink/Red (#FF3366) and warm orange strictly for gamification */
+    /* Gamified Retention Badges: Pink/Red (#FF3366) and warm orange strictly for gamification */
     .sm-pill-highlight {
       color: #FF3366 !important;
       border-color: rgba(255, 51, 102, 0.45);
       background: rgba(255, 51, 102, 0.12);
       font-weight: 700;
+      font-family: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', Consolas, monospace;
+    }
+
+    .sm-pill-orange {
+      color: #F97316 !important;
+      border-color: rgba(249, 115, 22, 0.45);
+      background: rgba(249, 115, 22, 0.12);
+      font-weight: 700;
+      font-family: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', Consolas, monospace;
+    }
+
+    .sm-pill-cyan {
+      color: #00E5FF !important;
+      border-color: rgba(0, 229, 255, 0.4);
+      background: rgba(0, 229, 255, 0.1);
+      font-weight: 700;
+      font-family: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', Consolas, monospace;
+    }
+
+    .sm-pill-slate {
+      color: #94A3B8 !important;
+      border-color: #30363D;
+      background: #0D1117;
+      font-weight: 600;
       font-family: 'JetBrains Mono', 'Roboto Mono', 'SF Mono', Consolas, monospace;
     }
 
@@ -1152,6 +1256,8 @@
     const scoreEl = sidebar.querySelector('#smMetaScore');
     const angleTitleEl = sidebar.querySelector('#smScriptAngleTitle');
     const remixAngleText = sidebar.querySelector('#smRemixAngleText');
+    const pacingEl = sidebar.querySelector('#smMetricPacing');
+    const retentionEl = sidebar.querySelector('#smMetricRetention');
     const hookLeadEl = sidebar.querySelector('#smHookLead');
     const hookHighlightEl = sidebar.querySelector('#smHookHighlight');
     const hookTailEl = sidebar.querySelector('#smHookTail');
@@ -1169,6 +1275,11 @@
     if (viewsEl) viewsEl.textContent = currentContext.views || 'Trending';
     if (scoreEl) scoreEl.textContent = curScript.viralScore;
     if (angleTitleEl) angleTitleEl.textContent = `${curScript.title} Formula`;
+    if (pacingEl) pacingEl.textContent = `⏱️ ${curScript.duration} Pacing`;
+    if (retentionEl) {
+      retentionEl.textContent = curScript.retentionBadge;
+      retentionEl.className = `sm-metric-pill ${curScript.retentionClass} sm-data-font`;
+    }
 
     const nextIdx = (activeStyleIndex + 1) % generatedScripts.length;
     if (remixAngleText) remixAngleText.textContent = `⚡ Remix: ${generatedScripts[nextIdx].title}`;
@@ -1285,8 +1396,8 @@
             <span id="smScriptAngleTitle">${curScript.title} Formula</span>
           </div>
           <div class="sm-output-metrics">
-            <span class="sm-metric-pill sm-data-font">⏱️ ${curScript.duration} Pacing</span>
-            <span class="sm-metric-pill sm-pill-highlight sm-data-font">🔥 Top 1% Retention</span>
+            <span class="sm-metric-pill sm-data-font" id="smMetricPacing">⏱️ ${curScript.duration} Pacing</span>
+            <span class="sm-metric-pill ${curScript.retentionClass} sm-data-font" id="smMetricRetention">${curScript.retentionBadge}</span>
           </div>
         </div>
 
